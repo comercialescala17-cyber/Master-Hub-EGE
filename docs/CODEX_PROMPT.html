@@ -1,0 +1,222 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CODEX PROMPT - EGE Platform</title>
+  <style>
+    :root { --bg:#030C18; --panel:#061524; --line:#182E48; --text:#E6F0FF; --muted:#8FA8C4; --green:#00C08A; --blue:#1354CC; }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; background:var(--bg); color:var(--text); font-family: Inter, Arial, sans-serif; }
+    body { padding: 32px; }
+    main { max-width: 1100px; margin: 0 auto; }
+    .eyebrow { color: var(--green); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+    h1 { margin: 10px 0 10px; font-size: clamp(30px, 5vw, 56px); line-height: .95; }
+    p { color: var(--muted); line-height: 1.6; max-width: 820px; }
+    .toolbar { display:flex; gap: 10px; flex-wrap: wrap; margin: 22px 0; }
+    .pill { border:1px solid var(--line); color:var(--text); background:rgba(19,84,204,.16); border-radius:8px; padding:10px 12px; text-decoration:none; font-size:13px; }
+    pre { white-space: pre-wrap; word-break: break-word; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px; line-height: 1.55; font-size: 13px; overflow:auto; }
+    code { font-family: "IBM Plex Mono", Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Prompt operacional</div>
+    <h1>CODEX PROMPT<br />EGE Platform</h1>
+    <p>Contexto oficial para Codex, Cursor, Copilot ou outro assistente de IA trabalhar neste workspace com a arquitetura correta, comandos reais e fluxo de deploy do GitHub Pages.</p>
+    <div class="toolbar">
+      <a class="pill" href="../CODEX_PROMPT.html">Abrir documento</a>
+      <a class="pill" href="https://github.com/comercialescala17-cyber/Master-Hub-EGE">Repositorio GitHub</a>
+      <a class="pill" href="https://comercialescala17-cyber.github.io/Master-Hub-EGE/">Site publicado</a>
+    </div>
+    <pre><code># CODEX PROMPT - EGE Platform
+
+Use este arquivo como contexto inicial para Codex, Cursor, Copilot ou outro assistente de IA ao trabalhar neste workspace.
+
+## Objetivo
+
+Este workspace contem o EGE Platform Hub, um hub de documentacao estrategica para o projeto Enterprise Growth Ecosystem.
+
+O site principal ja foi publicado no GitHub Pages:
+
+- Site: https://comercialescala17-cyber.github.io/Master-Hub-EGE/
+- Repo: https://github.com/comercialescala17-cyber/Master-Hub-EGE
+- Fonte local principal: `ege-framework/`
+- Build publicado localmente em: `github-master-hub/`
+
+## Estrutura Local
+
+```text
+portfolio-nextjs-v2-final/
+  ege-framework/       Projeto Next.js principal do EGE Hub
+  github-master-hub/   Clone do repo GitHub Pages publicado
+  portfolio/           Portfolio Next.js separado
+  n8n/                 Workflows de automacao
+  tools/               Node.js portatil usado neste Windows
+  tiiny-site.html      HTML original importado do Tiiny
+```
+
+## Stack
+
+EGE Framework:
+
+```text
+Next.js 15.2.0
+React 19.0.0
+TypeScript 5.7
+CSS puro
+Sem Tailwind
+Sem shadcn
+Sem Radix
+```
+
+Observacao importante: `next@15.2.0` possui aviso de vulnerabilidade critica no `npm install`. O projeto funciona, mas deve ser atualizado em uma proxima rodada.
+
+## Node e npm
+
+Nesta maquina, `node` e `npm` nao estavam disponiveis no PATH global. Foi instalado um Node portatil em:
+
+```text
+tools/node-v24.15.0-win-x64/
+```
+
+Para rodar comandos no PowerShell:
+
+```powershell
+$nodeDir = Resolve-Path &quot;..\tools\node-v24.15.0-win-x64&quot;
+&amp; &quot;$nodeDir\npm.cmd&quot; install
+```
+
+Para evitar erro de `npm.ps1` bloqueado por Execution Policy, use sempre `npm.cmd`.
+
+## Comandos Principais
+
+Instalar dependencias:
+
+```powershell
+cd ege-framework
+$nodeDir = Resolve-Path &quot;..\tools\node-v24.15.0-win-x64&quot;
+&amp; &quot;$nodeDir\npm.cmd&quot; install
+```
+
+Rodar dev server:
+
+```powershell
+cd ege-framework
+$nodeDir = Resolve-Path &quot;..\tools\node-v24.15.0-win-x64&quot;
+&amp; &quot;$nodeDir\node.exe&quot; node_modules\next\dist\bin\next dev -p 3002 -H 127.0.0.1
+```
+
+URL local usada:
+
+```text
+http://127.0.0.1:3002
+```
+
+Gerar build estatico para GitHub Pages:
+
+```powershell
+cd ege-framework
+$nodeDir = Resolve-Path &quot;..\tools\node-v24.15.0-win-x64&quot;
+$npm = Join-Path $nodeDir &quot;npm.cmd&quot;
+cmd.exe /c &quot;set PATH=$nodeDir;%PATH%&amp;&amp; `&quot;$npm`&quot; run build&quot;
+```
+
+## Deploy no GitHub Pages
+
+O `ege-framework/next.config.mjs` esta configurado para export estatico em GitHub Pages:
+
+```js
+const nextConfig = {
+  output: &#39;export&#39;,
+  trailingSlash: true,
+  basePath: &#39;/Master-Hub-EGE&#39;,
+  assetPrefix: &#39;/Master-Hub-EGE/&#39;,
+};
+```
+
+Apos o build, copie `ege-framework/out/*` para `github-master-hub/`, mantendo a pasta `.git`, crie `.nojekyll`, commit e push:
+
+```powershell
+cd ege-framework
+$repo = Resolve-Path &quot;..\github-master-hub&quot;
+$out = Resolve-Path &quot;.\out&quot;
+
+Get-ChildItem -LiteralPath $repo.Path -Force |
+  Where-Object { $_.Name -ne &quot;.git&quot; } |
+  Remove-Item -Recurse -Force
+
+Copy-Item -Path (Join-Path $out.Path &quot;*&quot;) -Destination $repo.Path -Recurse -Force
+New-Item -ItemType File -Path (Join-Path $repo.Path &quot;.nojekyll&quot;) -Force | Out-Null
+
+cd ..\github-master-hub
+git add -A
+git commit -m &quot;Deploy EGE framework Next export&quot;
+git push origin main
+```
+
+## Arquitetura do EGE Framework
+
+```text
+ege-framework/
+  app/
+    layout.tsx
+    page.tsx
+    globals.css
+    docs/[id]/page.tsx
+    flows/page.tsx
+  components/
+    Topbar.tsx
+    Sidebar.tsx
+    DocCard.tsx
+    DocViewer.tsx
+    KpiRow.tsx
+    FlowCanvas.tsx
+    CopyButton.tsx
+  lib/
+    docs.ts
+  public/
+    docs/
+    n8n/
+  scripts/
+    extract-docs.mjs
+```
+
+## Regras de Codigo
+
+1. Use TypeScript estrito.
+2. Use Server Components por padrao.
+3. Use `&#39;use client&#39;` apenas quando houver hooks, eventos ou APIs do navegador.
+4. Em rotas dinamicas do Next 15, trate `params` como async quando necessario.
+5. Use imports com `@/`, por exemplo `@/components/Topbar`.
+6. Nao use Tailwind.
+7. Nao adicione bibliotecas de UI sem necessidade.
+8. Preserve o estilo visual atual: dark UI, sidebar fixa, topbar, cards densos.
+9. Para docs, a fonte de verdade e `lib/docs.ts`.
+10. Para arquivos HTML dos documentos, use `public/docs/[id].html`.
+
+## Fluxo Recomendado Para Mudancas
+
+1. Alterar codigo em `ege-framework/`.
+2. Rodar build.
+3. Testar localmente em `http://127.0.0.1:3002`.
+4. Exportar para `out/`.
+5. Copiar `out/` para `github-master-hub/`.
+6. Commit e push para `main`.
+7. Verificar:
+
+```text
+https://comercialescala17-cyber.github.io/Master-Hub-EGE/
+```
+
+## Estado Atual
+
+- Dependencias instaladas em `ege-framework/node_modules`.
+- Dev server rodou com sucesso em `127.0.0.1:3002`.
+- GitHub Pages ativado e respondendo `200 OK`.
+- Ultimo deploy conhecido: `3df6f2d Deploy EGE framework Next export`.
+
+</code></pre>
+  </main>
+</body>
+</html>
