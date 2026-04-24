@@ -1,0 +1,635 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EGE — Construction Package</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--s4:#162C44;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#C49020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+  --glow:rgba(0,192,138,.15);
+  --font-mono:'IBM Plex Mono',monospace;
+  --font-head:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--font-head);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── HEADER ── */
+.topbar{position:sticky;top:0;z-index:200;background:rgba(3,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd2);padding:14px 32px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--b),var(--p));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:14px;color:#fff}
+.brand-name{font-size:16px;font-weight:800;letter-spacing:-.5px}
+.brand-name span{color:var(--g)}
+.brand-sub{font-size:11px;color:var(--mid);font-family:var(--font-mono)}
+.build-badge{background:linear-gradient(135deg,rgba(0,192,138,.2),rgba(19,84,204,.2));border:1px solid rgba(0,192,138,.3);color:var(--g);font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 65px)}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--s1);border-right:1px solid var(--bd);padding:24px 0;position:sticky;top:65px;height:calc(100vh - 65px);overflow-y:auto}
+.sidebar-section{margin-bottom:8px}
+.sidebar-label{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--mid);padding:12px 20px 6px}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none;color:var(--mid)}
+.sidebar-item:hover{color:var(--txt);background:var(--s2)}
+.sidebar-item.active{color:var(--g);border-left-color:var(--g);background:rgba(0,192,138,.06)}
+.sidebar-item .si-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--font-mono);flex-shrink:0}
+.sidebar-item .si-label{font-size:13px;font-weight:600}
+.sidebar-item .si-badge{margin-left:auto;font-family:var(--font-mono);font-size:10px;padding:2px 6px;border-radius:10px;background:var(--s3)}
+.si-icon.m1{background:rgba(8,128,160,.2);color:#4DBBCC}
+.si-icon.m2{background:rgba(19,84,204,.2);color:#4D90FF}
+.si-icon.m3{background:rgba(0,192,138,.2);color:var(--g)}
+.si-icon.m4{background:rgba(114,48,220,.2);color:#A56EFF}
+.si-icon.m5{background:rgba(196,144,32,.2);color:#FFD166}
+.si-icon.m6{background:rgba(217,90,8,.2);color:#FF9F5A}
+.si-icon.be{background:rgba(0,192,138,.15);color:var(--g)}
+.si-icon.fe{background:rgba(19,84,204,.15);color:#4D90FF}
+.si-icon.ai{background:rgba(114,48,220,.15);color:#A56EFF}
+.si-icon.db{background:rgba(196,144,32,.15);color:#FFD166}
+.si-icon.sq{background:rgba(217,90,8,.15);color:#FF9F5A}
+
+/* ── MAIN ── */
+.main{overflow-x:hidden}
+.section{display:none;padding:40px 48px;max-width:1100px}
+.section.active{display:block}
+
+/* ── SECTION HEADER ── */
+.sec-hero{margin-bottom:40px}
+.sec-num{font-family:var(--font-mono);font-size:12px;color:var(--mid);margin-bottom:8px;letter-spacing:1px}
+.sec-title{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+.sec-title .hl{color:var(--g)}
+.sec-desc{color:var(--mid);font-size:14px;max-width:640px;line-height:1.7}
+
+/* ── CODE BLOCKS ── */
+pre{background:var(--s2);border:1px solid var(--bd2);border-radius:10px;padding:20px 24px;font-family:var(--font-mono);font-size:12px;line-height:1.8;overflow-x:auto;margin-bottom:20px;tab-size:2}
+.ct{color:#88C0D0} /* dir */
+.cf{color:#A3BE8C} /* file */
+.cc{color:var(--mid)} /* comment */
+.ck{color:#81A1C1} /* keyword */
+.cv{color:#EBCB8B} /* value */
+.cs{color:#B48EAD} /* string */
+.cn{color:#D08770} /* number */
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:24px;margin-bottom:20px}
+.card-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.card-hdr h3{font-size:15px;font-weight:700}
+.card-dot{width:8px;height:8px;border-radius:50%;background:var(--g);flex-shrink:0}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+
+/* ── STAT CHIPS ── */
+.stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px}
+.stat{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px 20px;text-align:center;min-width:120px}
+.stat-val{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--g)}
+.stat-lbl{font-size:11px;color:var(--mid);margin-top:4px}
+
+/* ── MODULE CARDS ── */
+.mod-card{background:var(--s2);border-radius:10px;border-left:3px solid var(--b);padding:18px 20px;margin-bottom:12px}
+.mod-card.m1{border-left-color:#4DBBCC}
+.mod-card.m2{border-left-color:#4D90FF}
+.mod-card.m3{border-left-color:var(--g)}
+.mod-card.m4{border-left-color:#A56EFF}
+.mod-card.m5{border-left-color:#FFD166}
+.mod-card.m6{border-left-color:#FF9F5A}
+.mod-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.mod-id{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--mid)}
+.mod-name{font-size:14px;font-weight:700;color:var(--txt)}
+.mod-status{margin-left:auto;font-size:11px;font-family:var(--font-mono);padding:2px 8px;border-radius:4px}
+.mvp{background:rgba(0,192,138,.15);color:var(--g)}
+.v2{background:rgba(217,90,8,.15);color:#FF9F5A}
+.v3{background:rgba(114,48,220,.15);color:#A56EFF}
+.mod-desc{font-size:12px;color:var(--mid);margin-bottom:10px}
+.mod-files{display:flex;flex-wrap:wrap;gap:6px}
+.mod-file{font-family:var(--font-mono);font-size:11px;background:var(--s3);color:#A3BE8C;padding:2px 8px;border-radius:4px}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px}
+th{background:var(--s3);color:var(--mid);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bd2)}
+td{padding:10px 14px;border-bottom:1px solid var(--bd);vertical-align:top;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.t-mono{font-family:var(--font-mono);color:var(--g);font-size:11px}
+.t-type{font-family:var(--font-mono);color:#EBCB8B;font-size:11px}
+.t-mid{color:var(--mid)}
+
+/* ── SEQUENCE ── */
+.seq-item{display:flex;gap:20px;padding:16px 0;border-bottom:1px solid var(--bd);position:relative}
+.seq-item:last-child{border-bottom:none}
+.seq-num{width:36px;height:36px;border-radius:8px;background:var(--s3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--b);flex-shrink:0}
+.seq-body{flex:1}
+.seq-title{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.seq-detail{font-size:12px;color:var(--mid);line-height:1.6}
+.seq-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.seq-tag{font-size:11px;font-family:var(--font-mono);padding:2px 8px;border-radius:4px;background:var(--s3);color:var(--mid)}
+.seq-week{font-family:var(--font-mono);font-size:10px;color:var(--y);margin-bottom:4px}
+
+/* ── PHASE ── */
+.phase-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:14px 20px;background:var(--s2);border-radius:10px;border-left:3px solid var(--b)}
+.phase-hdr.p1{border-left-color:#4DBBCC}
+.phase-hdr.p2{border-left-color:var(--b)}
+.phase-hdr.p3{border-left-color:var(--p)}
+.phase-hdr.p4{border-left-color:var(--o)}
+.phase-title{font-size:15px;font-weight:700}
+.phase-weeks{font-family:var(--font-mono);font-size:12px;color:var(--mid);margin-left:auto}
+.phase-gate{font-family:var(--font-mono);font-size:11px;color:var(--g);background:rgba(0,192,138,.1);padding:3px 10px;border-radius:12px;border:1px solid rgba(0,192,138,.2)}
+
+/* ── SCHEMA ── */
+.schema-domain{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:20px;margin-bottom:20px}
+.schema-domain-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.schema-domain-id{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--g)}
+.schema-domain-name{font-size:14px;font-weight:700}
+.schema-domain-mod{font-size:11px;color:var(--mid)}
+.table-card{background:var(--s2);border-radius:8px;padding:14px 16px;margin-bottom:8px}
+.table-name{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--g);margin-bottom:8px}
+.field-row{font-family:var(--font-mono);font-size:11px;padding:2px 0;display:flex;gap:8px;color:var(--mid)}
+.field-name{color:#88C0D0;min-width:160px}
+.field-type{color:#EBCB8B}
+.field-note{color:var(--mid);font-size:10px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">EGE</div>
+    <div>
+      <div class="brand-name">Enterprise<span> Growth</span> Ecosystem</div>
+      <div class="brand-sub">Construction Package v1.0 — Build-Ready</div>
+    </div>
+  </div>
+  <div class="build-badge">▶ CONSTRUCTION READY</div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Overview</div>
+    <div class="sidebar-item active" onclick="show('overview')">
+      <div class="si-icon be">⊞</div><span class="si-label">Architecture</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Folder Structure</div>
+    <div class="sidebar-item" onclick="show('backend-struct')">
+      <div class="si-icon be">BE</div><span class="si-label">Backend</span><span class="si-badge">Node.js</span>
+    </div>
+    <div class="sidebar-item" onclick="show('frontend-struct')">
+      <div class="si-icon fe">FE</div><span class="si-label">Frontend</span><span class="si-badge">Next.js</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Database</div>
+    <div class="sidebar-item" onclick="show('schema')">
+      <div class="si-icon db">DB</div><span class="si-label">Prisma Schema</span><span class="si-badge">28 tables</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Backend Modules</div>
+    <div class="sidebar-item" onclick="show('m1')"><div class="si-icon m1">M1</div><span class="si-label">Auth & Identity</span></div>
+    <div class="sidebar-item" onclick="show('m2')"><div class="si-icon m2">M2</div><span class="si-label">Diagnostic</span></div>
+    <div class="sidebar-item" onclick="show('m3')"><div class="si-icon m3">M3</div><span class="si-label">Planning</span></div>
+    <div class="sidebar-item" onclick="show('m4')"><div class="si-icon m4">M4</div><span class="si-label">Execution</span></div>
+    <div class="sidebar-item" onclick="show('m5')"><div class="si-icon m5">M5</div><span class="si-label">AI Intelligence</span></div>
+    <div class="sidebar-item" onclick="show('m6')"><div class="si-icon m6">M6</div><span class="si-label">Data Intelligence</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Frontend Modules</div>
+    <div class="sidebar-item" onclick="show('fe-modules')"><div class="si-icon fe">FE</div><span class="si-label">All Pages & Hooks</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">AI Services</div>
+    <div class="sidebar-item" onclick="show('ai-services')"><div class="si-icon ai">AI</div><span class="si-label">8 Layer Architecture</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Build Plan</div>
+    <div class="sidebar-item" onclick="show('sequence')"><div class="si-icon sq">▶</div><span class="si-label">Implementation Sequence</span></div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- OVERVIEW -->
+<div class="section active" id="s-overview">
+  <div class="sec-hero">
+    <div class="sec-num">CONSTRUCTION PACKAGE — v1.0</div>
+    <h1 class="sec-title">Platform <span class="hl">Build Package</span></h1>
+    <p class="sec-desc">Real implementation files — database schema, backend modules, frontend hooks, AI services, and build sequence. Everything needed to start construction.</p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-val">47</div><div class="stat-lbl">Files Generated</div></div>
+    <div class="stat"><div class="stat-val">9</div><div class="stat-lbl">Backend Modules</div></div>
+    <div class="stat"><div class="stat-val">28</div><div class="stat-lbl">DB Tables</div></div>
+    <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">AI Layers (C1–C8)</div></div>
+    <div class="stat"><div class="stat-val">16w</div><div class="stat-lbl">MVP Timeline</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-dot"></div><h3>Files Delivered</h3></div>
+      <table>
+        <tr><th>File</th><th>Purpose</th></tr>
+        <tr><td class="t-mono">prisma/schema.prisma</td><td class="t-mid">Full DB — 6 domains, 28 tables, RLS-ready</td></tr>
+        <tr><td class="t-mono">prisma/seed.ts</td><td class="t-mid">40 diagnostic questions, 8 dimensions (PT-BR)</td></tr>
+        <tr><td class="t-mono">auth/auth.service.ts</td><td class="t-mid">Register, login, JWT, refresh, me</td></tr>
+        <tr><td class="t-mono">diagnostics/diagnostic.service.ts</td><td class="t-mid">Full scoring engine, maturity snapshots</td></tr>
+        <tr><td class="t-mono">ai/ai.service.ts</td><td class="t-mid">Context builder C1–C7, SSE chat, recommender</td></tr>
+        <tr><td class="t-mono">cron/monitor.cron.ts</td><td class="t-mid">C6 monitor engine + DIE nightly pipeline</td></tr>
+        <tr><td class="t-mono">jobs/ai.worker.ts</td><td class="t-mid">BullMQ AI analysis queue worker</td></tr>
+        <tr><td class="t-mono">shared/lib/redis.ts</td><td class="t-mid">Redis client + cache helpers + key factory</td></tr>
+        <tr><td class="t-mono">shared/types/index.ts</td><td class="t-mid">AIContextPackage, scoring formula, dimensions</td></tr>
+        <tr><td class="t-mono">lib/api/hooks.ts</td><td class="t-mid">React Query hooks for all 6 MVP modules</td></tr>
+        <tr><td class="t-mono">lib/hooks/useAIChat.ts</td><td class="t-mid">SSE streaming AI chat hook</td></tr>
+        <tr><td class="t-mono">lib/stores/auth.store.ts</td><td class="t-mid">Zustand auth + company context store</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-dot"></div><h3>Tech Stack</h3></div>
+      <table>
+        <tr><th>Layer</th><th>Technology</th></tr>
+        <tr><td class="t-mid">Backend runtime</td><td>Node.js 20 LTS + Express 5 + TypeScript</td></tr>
+        <tr><td class="t-mid">ORM</td><td>Prisma 5 + PostgreSQL 15</td></tr>
+        <tr><td class="t-mid">Database</td><td>Supabase (OLTP) + ClickHouse (OLAP)</td></tr>
+        <tr><td class="t-mid">AI / LLM</td><td>Anthropic claude-sonnet-4 (temp 0.3)</td></tr>
+        <tr><td class="t-mid">Embeddings</td><td>OpenAI text-embedding-3-small + pgvector</td></tr>
+        <tr><td class="t-mid">Queue</td><td>BullMQ on Redis (concurrency: 5)</td></tr>
+        <tr><td class="t-mid">Frontend</td><td>React 18 + Next.js 14 + Tailwind + Radix UI</td></tr>
+        <tr><td class="t-mid">State</td><td>React Query (server) + Zustand (client)</td></tr>
+        <tr><td class="t-mid">Deploy MVP</td><td>Railway (BE) + Vercel (FE)</td></tr>
+        <tr><td class="t-mid">Monitoring</td><td>Sentry + Datadog</td></tr>
+        <tr><td class="t-mid">Payments</td><td>Stripe + Iugu (PIX/boleto)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- BACKEND STRUCTURE -->
+<div class="section" id="s-backend-struct">
+  <div class="sec-hero">
+    <div class="sec-num">FOLDER STRUCTURE</div>
+    <h1 class="sec-title">Backend <span class="hl">Architecture</span></h1>
+    <p class="sec-desc">Modular monolith. Each module is self-contained with controller → service → repository layers. Path aliases via tsconfig.</p>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-dot"></div><h3>ege-backend/ — Complete File Tree</h3></div>
+<pre><span class="ct">ege-backend/</span>
+├── <span class="cf">package.json</span>         <span class="cc"># Node 20 + Express 5 + Prisma 5</span>
+├── <span class="cf">tsconfig.json</span>        <span class="cc"># Path aliases: @modules, @shared, @jobs, @cron</span>
+├── <span class="cf">.env.example</span>         <span class="cc"># All env vars documented</span>
+│
+├── <span class="ct">prisma/</span>
+│   ├── <span class="cf">schema.prisma</span>    <span class="cc"># 6 domains, 28 tables, RLS-ready</span>
+│   ├── <span class="cf">seed.ts</span>          <span class="cc"># 40 diagnostic questions (PT-BR)</span>
+│   └── <span class="ct">migrations/</span>      <span class="cc"># Versioned SQL migrations</span>
+│
+└── <span class="ct">src/</span>
+    ├── <span class="cf">app.ts</span>           <span class="cc"># Express setup, routes, middleware, workers</span>
+    │
+    ├── <span class="ct">modules/</span>         <span class="cc"># Business logic — one folder per module</span>
+    │   ├── <span class="ct">auth/</span>
+    │   │   ├── <span class="cf">auth.service.ts</span>       <span class="cc"># Register, login, JWT, refresh</span>
+    │   │   ├── <span class="cf">auth.controller.ts</span>    <span class="cc"># Route handlers (thin)</span>
+    │   │   ├── <span class="cf">auth.routes.ts</span>        <span class="cc"># Express router</span>
+    │   │   └── <span class="cf">auth.schema.ts</span>        <span class="cc"># Zod validation</span>
+    │   │
+    │   ├── <span class="ct">companies/</span>
+    │   │   ├── <span class="cf">companies.service.ts</span>
+    │   │   ├── <span class="cf">companies.controller.ts</span>
+    │   │   └── <span class="cf">companies.routes.ts</span>
+    │   │
+    │   ├── <span class="ct">diagnostics/</span>
+    │   │   ├── <span class="cf">diagnostic.service.ts</span>  <span class="cc"># ✅ BUILT — full scoring engine</span>
+    │   │   ├── <span class="cf">diagnostic.controller.ts</span>
+    │   │   ├── <span class="cf">diagnostic.routes.ts</span>
+    │   │   └── <span class="cf">diagnostic.schema.ts</span>
+    │   │
+    │   ├── <span class="ct">planning/</span>
+    │   │   ├── <span class="cf">planning.service.ts</span>
+    │   │   ├── <span class="cf">planning.controller.ts</span>
+    │   │   └── <span class="cf">planning.routes.ts</span>
+    │   │
+    │   ├── <span class="ct">execution/</span>
+    │   │   ├── <span class="cf">execution.service.ts</span>
+    │   │   ├── <span class="cf">execution.controller.ts</span>
+    │   │   └── <span class="cf">execution.routes.ts</span>
+    │   │
+    │   ├── <span class="ct">ai/</span>
+    │   │   ├── <span class="cf">ai.service.ts</span>          <span class="cc"># ✅ BUILT — C1–C7: context, analysis, chat, alerts</span>
+    │   │   ├── <span class="cf">ai.controller.ts</span>
+    │   │   └── <span class="cf">ai.routes.ts</span>
+    │   │
+    │   ├── <span class="ct">intelligence/</span>
+    │   │   ├── <span class="cf">intelligence.service.ts</span> <span class="cc"># benchmarks, predictions</span>
+    │   │   └── <span class="cf">intelligence.routes.ts</span>
+    │   │
+    │   └── <span class="ct">automation/</span>
+    │       ├── <span class="cf">automation.service.ts</span>   <span class="cc"># n8n webhook triggers</span>
+    │       └── <span class="cf">automation.routes.ts</span>
+    │
+    ├── <span class="ct">shared/</span>
+    │   ├── <span class="ct">middleware/</span>
+    │   │   ├── <span class="cf">auth.ts</span>              <span class="cc"># ✅ BUILT — JWT + tenant resolver + requireRole</span>
+    │   │   ├── <span class="cf">errorHandler.ts</span>      <span class="cc"># ✅ BUILT — AppError + Zod + Prisma errors</span>
+    │   │   └── <span class="cf">rateLimiter.ts</span>       <span class="cc"># Redis-backed per-user limits</span>
+    │   │
+    │   ├── <span class="ct">lib/</span>
+    │   │   ├── <span class="cf">prisma.ts</span>            <span class="cc"># ✅ BUILT — Singleton Prisma client</span>
+    │   │   └── <span class="cf">redis.ts</span>             <span class="cc"># ✅ BUILT — Redis client + cache helpers</span>
+    │   │
+    │   └── <span class="ct">types/</span>
+    │       └── <span class="cf">index.ts</span>             <span class="cc"># ✅ BUILT — AIContextPackage, AuthRequest, helpers</span>
+    │
+    ├── <span class="ct">jobs/</span>
+    │   ├── <span class="cf">ai.worker.ts</span>         <span class="cc"># ✅ BUILT — BullMQ AI analysis queue</span>
+    │   ├── <span class="cf">score.worker.ts</span>      <span class="cc"># Diagnostic scoring queue</span>
+    │   └── <span class="cf">alert.worker.ts</span>      <span class="cc"># Alert dispatch (P0: WhatsApp/email/push)</span>
+    │
+    └── <span class="ct">cron/</span>
+        └── <span class="cf">monitor.cron.ts</span>     <span class="cc"># ✅ BUILT — C6 monitor + DIE nightly pipeline</span></pre>
+  </div>
+</div>
+
+<!-- FRONTEND STRUCTURE -->
+<div class="section" id="s-frontend-struct">
+  <div class="sec-hero">
+    <div class="sec-num">FOLDER STRUCTURE</div>
+    <h1 class="sec-title">Frontend <span class="hl">Architecture</span></h1>
+    <p class="sec-desc">Next.js 14 App Router. Route groups for auth/marketing/app. Server Components for initial load, Client Components for interactive UI.</p>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-dot"></div><h3>ege-frontend/ — Complete File Tree</h3></div>
+<pre><span class="ct">ege-frontend/</span>
+├── <span class="cf">package.json</span>         <span class="cc"># React 18 + Next.js 14 + Radix + Recharts</span>
+├── <span class="cf">.env.example</span>
+│
+├── <span class="ct">app/</span>                 <span class="cc"># Next.js App Router</span>
+│   ├── <span class="ct">marketing/</span>       <span class="cc"># Landing, pricing (SSG)</span>
+│   │   ├── <span class="cf">page.tsx</span>     <span class="cc"># Landing page</span>
+│   │   └── <span class="cf">pricing/page.tsx</span>
+│   │
+│   ├── <span class="ct">auth/</span>            <span class="cc"># Unauthenticated routes</span>
+│   │   ├── <span class="cf">login/page.tsx</span>
+│   │   ├── <span class="cf">register/page.tsx</span>
+│   │   └── <span class="cf">invite/[token]/page.tsx</span>
+│   │
+│   └── <span class="ct">app/</span>             <span class="cc"># Authenticated app — requires JWT</span>
+│       ├── <span class="cf">layout.tsx</span>   <span class="cc"># App shell: sidebar + topbar + providers</span>
+│       ├── <span class="cf">providers.tsx</span> <span class="cc"># QueryClient + Zustand + Toast</span>
+│       ├── <span class="ct">dashboard/</span>
+│       │   └── <span class="cf">page.tsx</span> <span class="cc"># Health score, tasks, alerts, AI summary</span>
+│       ├── <span class="ct">diagnostic/</span>
+│       │   ├── <span class="cf">page.tsx</span>           <span class="cc"># Cycle list + start new</span>
+│       │   └── <span class="ct">[cycleId]/</span>
+│       │       ├── <span class="cf">page.tsx</span>       <span class="cc"># Step-by-step questionnaire</span>
+│       │       └── <span class="cf">results/page.tsx</span> <span class="cc"># Scores + radar + recommendations</span>
+│       ├── <span class="ct">planning/</span>
+│       │   ├── <span class="cf">page.tsx</span>           <span class="cc"># OKR overview</span>
+│       │   └── <span class="ct">[cycleId]/page.tsx</span>
+│       ├── <span class="ct">execution/</span>
+│       │   ├── <span class="cf">tasks/page.tsx</span>     <span class="cc"># Kanban board</span>
+│       │   ├── <span class="cf">kpis/page.tsx</span>      <span class="cc"># KPI dashboard</span>
+│       │   └── <span class="cf">check-ins/page.tsx</span>
+│       ├── <span class="ct">ai/</span>
+│       │   └── <span class="cf">page.tsx</span>           <span class="cc"># AI Advisor chat + recommendation feed</span>
+│       ├── <span class="ct">intelligence/</span>
+│       │   └── <span class="cf">page.tsx</span>           <span class="cc"># Benchmarks + trends + predictions</span>
+│       └── <span class="ct">settings/</span>
+│           └── <span class="cf">page.tsx</span>           <span class="cc"># Company + team + billing</span>
+│
+├── <span class="ct">components/</span>
+│   ├── <span class="ct">ui/</span>              <span class="cc"># Base: Button, Card, Input, Modal, Badge, Skeleton</span>
+│   ├── <span class="ct">charts/</span>          <span class="cc"># RadarChart, KpiTrend, BenchmarkBar (Recharts)</span>
+│   ├── <span class="ct">diagnostic/</span>      <span class="cc"># DiagnosticStepper, ScoreCard, MaturityBadge</span>
+│   ├── <span class="ct">planning/</span>        <span class="cc"># OKRTree, InitiativeCard, KRProgressBar</span>
+│   ├── <span class="ct">execution/</span>       <span class="cc"># TaskKanban, KpiTable, CheckInForm</span>
+│   ├── <span class="ct">ai/</span>              <span class="cc"># ChatWindow, MessageBubble, RecommendationCard, AlertBanner</span>
+│   └── <span class="ct">shared/</span>          <span class="cc"># Sidebar, Topbar, Breadcrumb, EmptyState, LoadingSpinner</span>
+│
+└── <span class="ct">lib/</span>
+    ├── <span class="ct">api/</span>
+    │   ├── <span class="cf">client.ts</span>    <span class="cc"># ✅ BUILT — Axios + auth interceptor + token refresh</span>
+    │   └── <span class="cf">hooks.ts</span>     <span class="cc"># ✅ BUILT — React Query hooks for all 6 MVP modules</span>
+    ├── <span class="ct">stores/</span>
+    │   └── <span class="cf">auth.store.ts</span> <span class="cc"># ✅ BUILT — Zustand with persist (user, company, tokens)</span>
+    └── <span class="ct">hooks/</span>
+        └── <span class="cf">useAIChat.ts</span> <span class="cc"># ✅ BUILT — SSE streaming chat hook</span></pre>
+  </div>
+</div>
+
+<!-- DATABASE SCHEMA -->
+<div class="section" id="s-schema">
+  <div class="sec-hero">
+    <div class="sec-num">DATABASE</div>
+    <h1 class="sec-title">Prisma <span class="hl">Schema</span></h1>
+    <p class="sec-desc">PostgreSQL 15 via Supabase. 6 domains, 28 tables. RLS policy on every table. ClickHouse for OLAP benchmarks. pgvector for AI embeddings.</p>
+  </div>
+  <div class="schema-domain">
+    <div class="schema-domain-hdr"><div class="schema-domain-id" style="color:#4DBBCC">D1</div><div><div class="schema-domain-name">Identity</div><div class="schema-domain-mod">Module M1 — 5 tables</div></div></div>
+    <div class="g3">
+      <div class="table-card"><div class="table-name">companies</div><div class="field-row"><span class="field-name">id</span><span class="field-type">uuid PK</span></div><div class="field-row"><span class="field-name">name, segment, size</span><span class="field-type">text/enum</span></div><div class="field-row"><span class="field-name">plan</span><span class="field-type">PlanTier enum</span></div><div class="field-row"><span class="field-name">city, state, country</span><span class="field-type">text</span></div></div>
+      <div class="table-card"><div class="table-name">users</div><div class="field-row"><span class="field-name">id</span><span class="field-type">uuid PK</span></div><div class="field-row"><span class="field-name">email</span><span class="field-type">text UNIQUE</span></div><div class="field-row"><span class="field-name">authId</span><span class="field-type">uuid (Supabase)</span></div><div class="field-row"><span class="field-name">locale</span><span class="field-type">text (pt-BR)</span></div></div>
+      <div class="table-card"><div class="table-name">user_companies</div><div class="field-row"><span class="field-name">userId, companyId</span><span class="field-type">uuid FK</span></div><div class="field-row"><span class="field-name">role</span><span class="field-type">UserRole enum</span></div><div class="field-row" style="color:var(--g);font-size:10px">UNIQUE(userId, companyId)</div></div>
+      <div class="table-card"><div class="table-name">invitations</div><div class="field-row"><span class="field-name">token</span><span class="field-type">uuid UNIQUE</span></div><div class="field-row"><span class="field-name">expiresAt, acceptedAt</span><span class="field-type">timestamptz</span></div></div>
+      <div class="table-card"><div class="table-name">audit_logs</div><div class="field-row"><span class="field-name">action, entity</span><span class="field-type">text</span></div><div class="field-row"><span class="field-name">payload</span><span class="field-type">json</span></div><div class="field-row" style="color:var(--o);font-size:10px">APPEND ONLY — no UPDATE/DELETE</div></div>
+    </div>
+  </div>
+  <div class="schema-domain">
+    <div class="schema-domain-hdr"><div class="schema-domain-id" style="color:#4D90FF">D2</div><div><div class="schema-domain-name">Diagnostic</div><div class="schema-domain-mod">Module M2 — 5 tables</div></div></div>
+    <div class="g3">
+      <div class="table-card"><div class="table-name">diagnostic_cycles</div><div class="field-row"><span class="field-name">companyId</span><span class="field-type">uuid FK</span></div><div class="field-row"><span class="field-name">version, status</span><span class="field-type">int/enum</span></div><div class="field-row"><span class="field-name">startedAt, completedAt</span><span class="field-type">timestamptz</span></div></div>
+      <div class="table-card"><div class="table-name">diagnostic_questions</div><div class="field-row"><span class="field-name">dimension</span><span class="field-type">text (8 values)</span></div><div class="field-row"><span class="field-name">weight</span><span class="field-type">float (scoring)</span></div><div class="field-row"><span class="field-name">text, helpText</span><span class="field-type">text (PT-BR)</span></div></div>
+      <div class="table-card"><div class="table-name">diagnostic_responses</div><div class="field-row"><span class="field-name">score</span><span class="field-type">int (1–5)</span></div><div class="field-row"><span class="field-name">UNIQUE(cycleId, questionId)</span><span class="field-type"></span></div></div>
+      <div class="table-card"><div class="table-name">dimension_scores</div><div class="field-row"><span class="field-name">weightedScore</span><span class="field-type">float (0–100)</span></div><div class="field-row"><span class="field-name">benchmarkDelta</span><span class="field-type">float | null</span></div></div>
+      <div class="table-card"><div class="table-name">maturity_snapshots</div><div class="field-row"><span class="field-name">totalScore</span><span class="field-type">float</span></div><div class="field-row"><span class="field-name">maturityLevel</span><span class="field-type">MaturityLevel enum</span></div><div class="field-row" style="color:var(--o);font-size:10px">IMMUTABLE — never updated</div></div>
+    </div>
+  </div>
+  <div class="schema-domain">
+    <div class="schema-domain-hdr"><div class="schema-domain-id" style="color:var(--g)">D3+D4</div><div><div class="schema-domain-name">Planning + Execution</div><div class="schema-domain-mod">Modules M3 + M4 — 11 tables</div></div></div>
+    <div class="g4">
+      <div class="table-card"><div class="table-name">strategic_cycles</div><div class="field-row"><span class="field-name">quarter, year</span><span class="field-type">int</span></div><div class="field-row"><span class="field-name">status, okrTheme</span></div></div>
+      <div class="table-card"><div class="table-name">objectives</div><div class="field-row"><span class="field-name">ownerId</span><span class="field-type">uuid FK→users</span></div><div class="field-row"><span class="field-name">aiGenerated</span><span class="field-type">bool</span></div></div>
+      <div class="table-card"><div class="table-name">key_results</div><div class="field-row"><span class="field-name">baseline, target, current</span><span class="field-type">float</span></div><div class="field-row"><span class="field-name">unit</span><span class="field-type">text (%,R$,un)</span></div></div>
+      <div class="table-card"><div class="table-name">initiatives</div><div class="field-row"><span class="field-name">priority</span><span class="field-type">int (1–3)</span></div><div class="field-row"><span class="field-name">dueDate</span><span class="field-type">timestamptz</span></div></div>
+      <div class="table-card"><div class="table-name">kpi_configs</div><div class="field-row"><span class="field-name">category, unit, target</span></div><div class="field-row"><span class="field-name">frequency</span><span class="field-type">KpiFrequency</span></div></div>
+      <div class="table-card"><div class="table-name">kpi_values</div><div class="field-row"><span class="field-name">value, period*</span><span class="field-type">float/ts</span></div><div class="field-row" style="color:var(--o);font-size:10px">APPEND ONLY time series</div></div>
+      <div class="table-card"><div class="table-name">tasks</div><div class="field-row"><span class="field-name">status</span><span class="field-type">TaskStatus enum</span></div><div class="field-row"><span class="field-name">priority</span><span class="field-type">TaskPriority enum</span></div></div>
+      <div class="table-card"><div class="table-name">check_ins</div><div class="field-row"><span class="field-name">period</span><span class="field-type">"2024-W42"</span></div><div class="field-row"><span class="field-name">statusFlag</span><span class="field-type">StatusFlag enum</span></div></div>
+    </div>
+  </div>
+  <div class="schema-domain">
+    <div class="schema-domain-hdr"><div class="schema-domain-id" style="color:#FFD166">D5</div><div><div class="schema-domain-name">Intelligence</div><div class="schema-domain-mod">Modules M5 + M6 — 5 tables</div></div></div>
+    <div class="g3">
+      <div class="table-card"><div class="table-name">ai_recommendations</div><div class="field-row"><span class="field-name">priority</span><span class="field-type">P0/P1/P2/P3</span></div><div class="field-row"><span class="field-name">priorityScore</span><span class="field-type">float (0–1)</span></div><div class="field-row"><span class="field-name">evidenceJson</span><span class="field-type">jsonb</span></div></div>
+      <div class="table-card"><div class="table-name">recommendation_feedback</div><div class="field-row"><span class="field-name">rating</span><span class="field-type">int 1–5</span></div><div class="field-row"><span class="field-name">actionTaken</span><span class="field-type">bool → C8</span></div></div>
+      <div class="table-card"><div class="table-name">alert_queue</div><div class="field-row"><span class="field-name">channel</span><span class="field-type">PUSH/EMAIL/WA/APP</span></div><div class="field-row"><span class="field-name">status, sentAt, ackAt</span></div></div>
+      <div class="table-card"><div class="table-name">ai_conversations</div><div class="field-row"><span class="field-name">messagesJson</span><span class="field-type">jsonb</span></div><div class="field-row"><span class="field-name">contextSnapshot</span><span class="field-type">jsonb</span></div></div>
+      <div class="table-card"><div class="table-name">benchmark_cache</div><div class="field-row"><span class="field-name">segment, sizeBand, dim</span></div><div class="field-row"><span class="field-name">p25, p50, p75</span><span class="field-type">float</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE PAGES M1-M6 -->
+<div class="section" id="s-m1">
+  <div class="sec-hero"><div class="sec-num">M1 — BACKEND MODULE</div><h1 class="sec-title">Auth & <span class="hl">Identity</span></h1><p class="sec-desc">JWT auth, Supabase integration, company isolation, role-based access, audit trail. Foundation for all other modules.</p></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files</h3></div>
+  <table><tr><th>File</th><th>Status</th><th>Key Functions</th></tr>
+  <tr><td class="t-mono">auth.service.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">register(), login(), refreshToken(), getMe()</td></tr>
+  <tr><td class="t-mono">auth.controller.ts</td><td style="color:var(--y)">⚡ Scaffold</td><td class="t-mid">Thin handlers calling service</td></tr>
+  <tr><td class="t-mono">auth.routes.ts</td><td style="color:var(--y)">⚡ Scaffold</td><td class="t-mid">POST /register /login /refresh /invite</td></tr>
+  <tr><td class="t-mono">auth.schema.ts</td><td style="color:var(--y)">⚡ Scaffold</td><td class="t-mid">Zod schemas for all inputs</td></tr>
+  <tr><td class="t-mono">middleware/auth.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">authenticate(), resolveTenant(), requireRole()</td></tr>
+  </table></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Key Design Decisions</h3></div>
+  <table><tr><th>Decision</th><th>Implementation</th></tr>
+  <tr><td>JWT Strategy</td><td>Short-lived access token (15min) + long-lived refresh token (7d). Rotation on refresh.</td></tr>
+  <tr><td>Multi-company</td><td>One user can belong to multiple companies. companyId in JWT claims — switched on login.</td></tr>
+  <tr><td>RLS Enforcement</td><td>company_id injected into req.context by middleware before any resolver. Prisma RLS via Supabase.</td></tr>
+  <tr><td>Audit Log</td><td>Every write action writes to audit_logs. Append-only. No UPDATE or DELETE ever granted.</td></tr>
+  </table></div>
+</div>
+
+<div class="section" id="s-m2">
+  <div class="sec-hero"><div class="sec-num">M2 — BACKEND MODULE</div><h1 class="sec-title">Diagnostic <span class="hl">Engine</span></h1><p class="sec-desc">8-dimension business assessment. Weighted scoring engine. Maturity classification. Benchmark delta computation. Immutable snapshot history.</p></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files</h3></div>
+  <table><tr><th>File</th><th>Status</th><th>Key Functions</th></tr>
+  <tr><td class="t-mono">diagnostic.service.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">startCycle(), submitResponses(), completeCycle(), scoring engine</td></tr>
+  <tr><td class="t-mono">prisma/seed.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">40 questions, 8 dimensions, PT-BR, weighted</td></tr>
+  </table></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Scoring Algorithm</h3></div>
+  <table><tr><th>Step</th><th>Logic</th></tr>
+  <tr><td>1. Normalize</td><td>score 1–5 → 0–100: ((score - 1) / 4) × 100</td></tr>
+  <tr><td>2. Weight</td><td>Each question has a weight (1.0–1.3). Weighted average within dimension.</td></tr>
+  <tr><td>3. Dimension score</td><td>Weighted avg of all questions in dimension → 0-100</td></tr>
+  <tr><td>4. Total score</td><td>Simple avg of 8 dimension scores → 0-100</td></tr>
+  <tr><td>5. Maturity level</td><td>0-25 INICIAL / 26-50 BASICO / 51-75 INTERMEDIARIO / 76-100 AVANCADO</td></tr>
+  <tr><td>6. Benchmark delta</td><td>dimension_score - segment_p50 (from benchmark_cache)</td></tr>
+  </table></div>
+</div>
+
+<div class="section" id="s-m5">
+  <div class="sec-hero"><div class="sec-num">M5 — BACKEND MODULE</div><h1 class="sec-title">AI <span class="hl">Intelligence</span></h1><p class="sec-desc">8-layer AI processing. Context builder (C1-C2), analysis engine (C3-C4), SSE chat (C7), monitor engine (C6), learning engine (C8).</p></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files</h3></div>
+  <table><tr><th>File</th><th>Status</th><th>Key Functions</th></tr>
+  <tr><td class="t-mono">ai/ai.service.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">buildContextPackage(), analyzeAndRecommend(), streamChat()</td></tr>
+  <tr><td class="t-mono">cron/monitor.cron.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">C6: KPI anomaly detection, overdue tasks, check-in streak</td></tr>
+  <tr><td class="t-mono">jobs/ai.worker.ts</td><td style="color:var(--g)">✅ Built</td><td class="t-mid">BullMQ worker, concurrency 5, exponential backoff</td></tr>
+  </table></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Recommendation Formula</h3></div>
+  <pre><span class="ck">priority_score</span> = (<span class="cv">impact</span> × 0.35) + (<span class="cv">speed</span> × 0.25) + (<span class="cv">evidence</span> × 0.25) + (<span class="cv">efficiency</span> × 0.15)
+
+<span class="cc">// threshold: score &lt; 0.60 → suppressed (never shown to user)</span>
+<span class="cc">// P0: score ≥ 0.85 | P1: ≥ 0.75 | P2: ≥ 0.65 | P3: ≥ 0.60</span></pre>
+  </div>
+</div>
+
+<div class="section" id="s-m3"><div class="sec-hero"><div class="sec-num">M3 — BACKEND MODULE</div><h1 class="sec-title">Strategic <span class="hl">Planning</span></h1><p class="sec-desc">OKR framework. Quarterly cycles. AI plan generation. Initiative + milestone tracking. KR progress → objective health.</p></div><div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files to Build</h3></div><table><tr><th>File</th><th>Key Functions</th></tr><tr><td class="t-mono">planning.service.ts</td><td class="t-mid">createCycle(), createObjective(), updateKR(), generatePlanWithAI()</td></tr><tr><td class="t-mono">planning.routes.ts</td><td class="t-mid">POST /cycles, /objectives, /key-results, /generate</td></tr></table></div></div>
+
+<div class="section" id="s-m4"><div class="sec-hero"><div class="sec-num">M4 — BACKEND MODULE</div><h1 class="sec-title">Execution <span class="hl">Engine</span></h1><p class="sec-desc">Task management (Kanban), KPI tracking (time series), check-in system, BOS rhythms. Served by M9 automation in background.</p></div><div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files to Build</h3></div><table><tr><th>File</th><th>Key Functions</th></tr><tr><td class="t-mono">execution.service.ts</td><td class="t-mid">createTask(), updateTaskStatus(), submitKpiValue(), submitCheckIn()</td></tr><tr><td class="t-mono">execution.routes.ts</td><td class="t-mid">CRUD /tasks, /kpis/:id/values, /check-ins</td></tr></table></div></div>
+
+<div class="section" id="s-m6"><div class="sec-hero"><div class="sec-num">M6 — BACKEND MODULE</div><h1 class="sec-num">Data <span class="hl">Intelligence</span></h1><p class="sec-desc">Nightly pipeline. Anonymized data → ClickHouse. Benchmark computation (p25/p50/p75 by segment+size+dimension). Cache refresh every 60min.</p></div><div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>Files to Build</h3></div><table><tr><th>File</th><th>Key Functions</th></tr><tr><td class="t-mono">intelligence.service.ts</td><td class="t-mid">getBenchmarks(), getPredictions(), getPatterns()</td></tr><tr><td class="t-mono">cron/monitor.cron.ts</td><td style="color:var(--g)">✅ Built — DIE pipeline in runDIEPipeline()</td></tr></table></div></div>
+
+<!-- FRONTEND MODULES -->
+<div class="section" id="s-fe-modules">
+  <div class="sec-hero"><div class="sec-num">FRONTEND</div><h1 class="sec-title">Pages & <span class="hl">Hooks</span></h1><p class="sec-desc">React Query hooks for all 6 MVP modules. SSE streaming AI chat hook. Zustand auth store with token refresh. Axios interceptors.</p></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>React Query Hooks (lib/api/hooks.ts) — ✅ Built</h3></div>
+  <table><tr><th>Hook</th><th>Module</th><th>Purpose</th></tr>
+  <tr><td class="t-mono">useDiagnosticCycles()</td><td>M2</td><td class="t-mid">List all company cycles</td></tr>
+  <tr><td class="t-mono">useCompleteCycle()</td><td>M2</td><td class="t-mid">Complete + trigger scoring + AI analysis job</td></tr>
+  <tr><td class="t-mono">useMaturitySnapshots()</td><td>M2</td><td class="t-mid">Full maturity history</td></tr>
+  <tr><td class="t-mono">useStrategicCycle(id)</td><td>M3</td><td class="t-mid">Cycle with OKRs, KRs, initiatives</td></tr>
+  <tr><td class="t-mono">useGeneratePlan()</td><td>M3</td><td class="t-mid">Trigger AI plan generation async job</td></tr>
+  <tr><td class="t-mono">useTasks(filters)</td><td>M4</td><td class="t-mid">Tasks with filter: assignee, status, initiative</td></tr>
+  <tr><td class="t-mono">useKpiHistory(id)</td><td>M4</td><td class="t-mid">KPI time series for trend chart</td></tr>
+  <tr><td class="t-mono">useRecommendations()</td><td>M5</td><td class="t-mid">Active recs — refetches every 60s</td></tr>
+  <tr><td class="t-mono">useAlerts()</td><td>M5</td><td class="t-mid">Pending alerts — refetches every 30s</td></tr>
+  <tr><td class="t-mono">useBenchmarks()</td><td>M6</td><td class="t-mid">Segment benchmarks — stale 60min</td></tr>
+  </table></div>
+  <div class="card"><div class="card-hdr"><div class="card-dot"></div><h3>useAIChat (lib/hooks/useAIChat.ts) — ✅ Built</h3></div>
+  <pre><span class="ck">const</span> { messages, sendMessage, isStreaming, error, clearMessages } = <span class="cv">useAIChat</span>()
+
+<span class="cc">// Connects to POST /api/v1/ai/chat</span>
+<span class="cc">// Reads SSE stream via fetch() + ReadableStream</span>
+<span class="cc">// Accumulates tokens into assistant message in real-time</span>
+<span class="cc">// Persists conversation on backend after stream completes</span>
+<span class="cc">// Handles network errors + fallback state</span></pre>
+  </div>
+</div>
+
+<!-- AI SERVICES -->
+<div class="section" id="s-ai-services">
+  <div class="sec-hero"><div class="sec-num">AI SERVICES</div><h1 class="sec-title">8-Layer <span class="hl">Architecture</span></h1><p class="sec-desc">C1 Data → C2 Context → C3 Analysis → C4 Recommender → C5 Growth Planner → C6 Monitor → C7 Chat → C8 Learning</p></div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-dot"></div><h3>Layer Map</h3></div>
+    <table>
+      <tr><th>Layer</th><th>Name</th><th>File</th><th>SLA</th><th>Status</th></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C1</td><td>Data Processing</td><td class="t-mono">ai.service.ts → buildContextPackage()</td><td class="t-mono" style="color:var(--g)">&lt;50ms</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C2</td><td>Context Building</td><td class="t-mono">ai.service.ts → Redis cache TTL 3min</td><td class="t-mono" style="color:var(--g)">&lt;30ms</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C3</td><td>Analysis Engine</td><td class="t-mono">ai.service.ts → Claude API temp 0.3</td><td class="t-mono" style="color:var(--y)">&lt;8s P99</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C4</td><td>Recommender</td><td class="t-mono">ai.service.ts → scoring formula + threshold</td><td class="t-mono" style="color:var(--y)">&lt;10s</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C5</td><td>Growth Planner</td><td class="t-mono">ai.service.ts → BullMQ async job</td><td class="t-mono" style="color:var(--o)">&lt;30s async</td><td style="color:var(--y)">⚡ Scaffold</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C6</td><td>Monitor Engine</td><td class="t-mono">cron/monitor.cron.ts → every 5min</td><td class="t-mono" style="color:var(--r)">&lt;5min P0</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C7</td><td>Chat (SSE)</td><td class="t-mono">ai.service.ts → streamChat()</td><td class="t-mono" style="color:var(--g)">&lt;3s 1st token</td><td style="color:var(--g)">✅</td></tr>
+      <tr><td class="t-mono" style="color:#4D90FF">C8</td><td>Learning Engine</td><td class="t-mono">cron/ → nightly feedback analysis</td><td class="t-mono">Nightly</td><td style="color:var(--y)">⚡ Scaffold</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SEQUENCE -->
+<div class="section" id="s-sequence">
+  <div class="sec-hero"><div class="sec-num">IMPLEMENTATION SEQUENCE</div><h1 class="sec-title">Build <span class="hl">Order</span></h1><p class="sec-desc">16 weeks, 4 phases, 4 gate milestones. Start with foundation. Gate before advancing.</p></div>
+
+  <div class="phase-hdr p1"><div class="phase-title">Phase 1 — Foundation</div><div class="phase-weeks">Weeks 1–4</div><div class="phase-gate">G1: 50 companies</div></div>
+  <div class="seq-item"><div class="seq-num">1</div><div class="seq-body"><div class="seq-week">WEEK 1</div><div class="seq-title">Project Bootstrap</div><div class="seq-detail">Init monorepo. Setup Railway (BE staging) + Vercel (FE preview). Create Supabase project. Redis on Railway. Configure CI/CD (GitHub Actions). Init Prisma + run first migration (D1 only).</div><div class="seq-tags"><span class="seq-tag">Railway</span><span class="seq-tag">Vercel</span><span class="seq-tag">Supabase</span><span class="seq-tag">GitHub Actions</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">2</div><div class="seq-body"><div class="seq-week">WEEK 2</div><div class="seq-title">M1: Auth Backend</div><div class="seq-detail">Build auth.service.ts (register, login, JWT). Add middleware: auth.ts, errorHandler.ts. Test all auth endpoints with Jest. Configure RLS policies in Supabase for D1 tables.</div><div class="seq-tags"><span class="seq-tag">M1</span><span class="seq-tag">Supabase RLS</span><span class="seq-tag">JWT</span><span class="seq-tag">Jest</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">3</div><div class="seq-body"><div class="seq-week">WEEK 3</div><div class="seq-title">M1: Frontend + Onboarding</div><div class="seq-detail">Build auth pages (login, register, invite). App shell with sidebar + topbar. Company onboarding wizard. Connect to auth.store.ts + api/client.ts. Protected route guard.</div><div class="seq-tags"><span class="seq-tag">Next.js</span><span class="seq-tag">Zustand</span><span class="seq-tag">React Query</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">4</div><div class="seq-body"><div class="seq-week">WEEK 4</div><div class="seq-title">Beta Launch + Monitoring</div><div class="seq-detail">Soft launch to 50 beta companies. Sentry DSN configured. Datadog APM active. Load test /auth/* endpoints. Fix all critical issues found in beta.</div><div class="seq-tags"><span class="seq-tag">Sentry</span><span class="seq-tag">Datadog</span><span class="seq-tag">🎯 GATE G1</span></div></div></div>
+
+  <div class="phase-hdr p2" style="margin-top:28px"><div class="phase-title">Phase 2 — Core BOS</div><div class="phase-weeks">Weeks 5–12</div><div class="phase-gate">G2: 30 diagnostics + NPS &gt;40</div></div>
+  <div class="seq-item"><div class="seq-num">5</div><div class="seq-body"><div class="seq-week">WEEK 5–6</div><div class="seq-title">M2: Diagnostic Backend</div><div class="seq-detail">Migrate D2 schema. Seed 40 questions (prisma/seed.ts ✅ ready). Build full diagnostic.service.ts (✅ built). API routes: /diagnostics/*. RLS for D2. Integration tests.</div><div class="seq-tags"><span class="seq-tag">M2</span><span class="seq-tag">✅ seed.ts ready</span><span class="seq-tag">✅ service ready</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">6</div><div class="seq-body"><div class="seq-week">WEEK 7</div><div class="seq-title">M2: Diagnostic Frontend</div><div class="seq-detail">DiagnosticStepper component (8 dimensions, progress bar). Score results page with RadarChart (Recharts). MaturityBadge component. useCompleteCycle() mutation triggers scoring + queues AI job.</div><div class="seq-tags"><span class="seq-tag">Recharts RadarChart</span><span class="seq-tag">React Hook Form</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">7</div><div class="seq-body"><div class="seq-week">WEEK 8–10</div><div class="seq-title">M3: Planning</div><div class="seq-detail">Migrate D3 schema. Build planning.service.ts (OKR CRUD + AI plan stub). OKR tree UI component. Quarterly cycle selector. KR progress bar. Initiative cards. Plan stub returns template — real AI in Phase 3.</div><div class="seq-tags"><span class="seq-tag">M3</span><span class="seq-tag">OKR UI</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">8</div><div class="seq-body"><div class="seq-week">WEEK 11–12</div><div class="seq-title">M4: Execution + Gate G2</div><div class="seq-detail">Migrate D4 schema. Build execution.service.ts. Kanban task board. KPI table + trend chart. Weekly check-in form. BOS rhythm UI (meeting notes, streak display). NPS survey. Gate G2 review.</div><div class="seq-tags"><span class="seq-tag">M4</span><span class="seq-tag">Kanban</span><span class="seq-tag">🎯 GATE G2</span></div></div></div>
+
+  <div class="phase-hdr p3" style="margin-top:28px"><div class="phase-title">Phase 3 — AI Intelligence</div><div class="phase-weeks">Weeks 13–16</div><div class="phase-gate">G3: 20 AI convos/week</div></div>
+  <div class="seq-item"><div class="seq-num">9</div><div class="seq-body"><div class="seq-week">WEEK 13</div><div class="seq-title">M6: DIE Pipeline</div><div class="seq-detail">Activate runDIEPipeline() in monitor.cron.ts (✅ built). Provision ClickHouse Cloud. First benchmark computation run. Display benchmark deltas on diagnostic results page. benchmark_cache populated.</div><div class="seq-tags"><span class="seq-tag">M6</span><span class="seq-tag">✅ cron ready</span><span class="seq-tag">ClickHouse</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">10</div><div class="seq-body"><div class="seq-week">WEEK 14</div><div class="seq-title">M5: AI Core</div><div class="seq-detail">Wire up ai.service.ts (✅ built). Configure Anthropic API key. Run first analyzeAndRecommend() on beta companies. Recommendation feed UI (RecommendationCard component). Alert banner in topbar.</div><div class="seq-tags"><span class="seq-tag">M5</span><span class="seq-tag">✅ ai.service ready</span><span class="seq-tag">Claude API</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">11</div><div class="seq-body"><div class="seq-week">WEEK 15</div><div class="seq-title">M5: AI Chat + Alerts</div><div class="seq-detail">Connect streamChat() SSE endpoint. useAIChat() hook (✅ built) + ChatWindow component. Activate monitor.cron.ts C6 (✅ built). Configure Twilio (WhatsApp P0) + Resend (email P1). P0–P3 dispatch tested.</div><div class="seq-tags"><span class="seq-tag">✅ hooks ready</span><span class="seq-tag">SSE</span><span class="seq-tag">Twilio</span><span class="seq-tag">Resend</span></div></div></div>
+  <div class="seq-item"><div class="seq-num">12</div><div class="seq-body"><div class="seq-week">WEEK 16</div><div class="seq-title">C8 Learning + Production Launch</div><div class="seq-detail">Build C8 nightly learning engine. Replace plan stub with real AI generation (C5). Final MVP QA. Production deploy (Railway prod + Vercel prod). Enable Stripe billing. Gate G3 review.</div><div class="seq-tags"><span class="seq-tag">C8</span><span class="seq-tag">Stripe</span><span class="seq-tag">🎯 GATE G3</span><span class="seq-tag">🚀 LAUNCH</span></div></div></div>
+</div>
+
+</main>
+</div>
+
+<script>
+const items = document.querySelectorAll('.sidebar-item')
+const sections = document.querySelectorAll('.section')
+
+function show(id) {
+  sections.forEach(s => s.classList.remove('active'))
+  items.forEach(i => i.classList.remove('active'))
+  const sec = document.getElementById('s-' + id)
+  if (sec) sec.classList.add('active')
+  event.currentTarget.classList.add('active')
+}
+</script>
+</body>
+</html>

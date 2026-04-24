@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Monitoramento Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 5% 10%,rgba(0,192,138,.05),transparent),radial-gradient(ellipse 50% 55% at 95% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:48px 20px 90px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:50px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:560px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:44px;animation:up 1s .06s ease both}
+@media(max-width:580px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:15px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.sy::after{background:var(--y)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.sy .sv{color:var(--y)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:38px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(3,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--o)}.n4::after{background:var(--g)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:34px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:620px}
+.blk{margin-bottom:24px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.06em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:11px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:17px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:24px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:13px 18px;margin:12px 0;font-size:13px;font-style:italic;line-height:1.75}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}.bt{background:rgba(8,128,160,.12);color:var(--t)}
+.db{background:var(--s1);border:1px solid var(--bd);border-radius:18px;overflow:hidden;margin-bottom:20px}
+.db-bar{background:var(--s3);padding:10px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.db-dots{display:flex;gap:6px}
+.db-dot{width:10px;height:10px;border-radius:50%}
+.db-title{font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.06em;text-transform:uppercase;margin-left:4px}
+.db-inner{padding:18px}
+.z1{display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:16px;align-items:start}
+.score-big{text-align:center;background:var(--s2);border:1px solid var(--bd2);border-radius:14px;padding:18px 24px}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:62px;font-weight:900;color:var(--g);line-height:1}
+.score-lbl{font-size:11px;color:var(--mid);margin-top:4px}
+.score-lvl{font-size:14px;font-weight:800;margin-top:5px;color:var(--txt)}
+.z1-meta{display:flex;flex-direction:column;gap:10px;min-width:190px}
+.meta-card{background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:12px 14px}
+.meta-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:3px}
+.meta-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
+.meta-sub{font-size:10.5px;color:var(--mid);margin-top:2px}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:720px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:13px;position:relative;overflow:hidden}
+.kpi-lbl{font-size:9.5px;font-weight:700;color:var(--mid);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-delta{font-size:10.5px;font-weight:700}
+.kpi-spark{height:28px;margin-top:8px}
+.kpi-spark svg{width:100%;height:100%}
+.funnel{display:flex;flex-direction:column;gap:6px}
+.fn-row{display:flex;align-items:center;gap:8px}
+.fn-label{font-size:11px;font-weight:600;min-width:88px;color:var(--mid)}
+.fn-bar-wrap{flex:1;height:22px;background:var(--s3);border-radius:6px;overflow:hidden;position:relative}
+.fn-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700}
+.fn-conv{font-size:10px;color:var(--mid);min-width:38px;text-align:right}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;align-items:flex-start;gap:12px;background:var(--s2);border:1px solid var(--bd);border-radius:11px;padding:13px 15px}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.alert-t{font-size:12.5px;font-weight:700;margin-bottom:3px}
+.alert-d{font-size:11.5px;color:var(--mid);line-height:1.6}
+.alert-action{display:inline-block;margin-top:5px;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:5px;background:rgba(0,192,138,.1);color:var(--g)}
+.ai-insight{background:linear-gradient(135deg,rgba(0,192,138,.05),rgba(19,84,204,.05));border:1px solid rgba(0,192,138,.18);border-radius:13px;padding:16px 20px;margin-top:12px}
+.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai-icon{font-size:22px}
+.ai-ttl{font-size:12.5px;font-weight:800}
+.ai-sub{font-size:11px;color:var(--mid)}
+.ai-body{font-size:12.5px;line-height:1.75;color:var(--txt)}
+polyline{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.algo{display:flex;flex-direction:column;gap:10px}
+.algo-item{display:flex;gap:12px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.algo-n{min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0}
+.algo-t{font-size:13px;font-weight:700;margin-bottom:4px}
+.algo-d{font-size:12px;color:var(--mid);line-height:1.6}
+.al-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.al-grid{grid-template-columns:1fr}}
+.al-card{border-radius:14px;padding:18px;border:1px solid}
+.al-icon{font-size:28px;margin-bottom:8px}
+.al-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.al-cond{font-size:11.5px;margin-bottom:8px;line-height:1.55;color:var(--mid)}
+.al-msg{font-size:11px;line-height:1.65;font-style:italic;padding:10px;border-radius:8px;margin-top:8px}
+.cycle{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:16px}
+.cy{display:flex;align-items:center;gap:6px}
+.cy-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.cy-lbl{font-size:11px;font-weight:600;color:var(--mid)}
+.cy-arr{font-size:14px;color:var(--bd2);padding:0 4px}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Sistema Nervoso da Plataforma</div>
+  <h1>Monitoramento Empresarial<br><span>em Tempo Real</span></h1>
+  <p class="sub">35 KPIs · 7 grupos estratégicos · Dashboard em 5 zonas · Alertas inteligentes · IA que detecta gargalos antes que virem crises.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">35</div><div class="sl">KPIs monitorados</div></div>
+  <div class="st sb"><div class="sv">7</div><div class="sl">Grupos estratégicos</div></div>
+  <div class="st so"><div class="sv">5</div><div class="sl">Zonas do dashboard</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Níveis de alerta</div></div>
+  <div class="st sy"><div class="sv">4</div><div class="sl">Gargalos sistêmicos</div></div>
+</div>
+<div class="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📊 35 KPIs</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🖥 Dashboard</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">🚨 Alertas</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🤖 IA Consultora</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+function spark(data,color,w=110,h=28){
+  const max=Math.max(...data),min=Math.min(...data),range=max-min||1;
+  const pts=data.map((v,i)=>{const x=4+(i/(data.length-1))*(w-8);const y=h-4-((v-min)/range)*(h-8);return x+','+y;}).join(' ');
+  const lx=4+((data.length-1)/(data.length-1))*(w-8),ly=h-4-((data[data.length-1]-min)/range)*(h-8);
+  return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><polyline points="'+pts+'" stroke="'+color+'" opacity="0.85"/><circle cx="'+lx+'" cy="'+ly+'" r="2.5" fill="'+color+'"/></svg>';
+}
+function funnelHtml(){
+  var steps=[{l:"Prospecção",v:100,c:"rgba(0,192,138,.75)",cv:""},{l:"Qualificação",v:68,c:"rgba(19,84,204,.75)",cv:"68%"},{l:"Reunião",v:45,c:"rgba(8,128,160,.75)",cv:"66%"},{l:"Proposta",v:28,c:"rgba(184,114,0,.75)",cv:"62%"},{l:"Fechamento",v:16,c:"rgba(0,192,138,.9)",cv:"57%"}];
+  return steps.map(function(s){return '<div class="fn-row"><span class="fn-label">'+s.l+'</span><div class="fn-bar-wrap"><div class="fn-bar" style="width:'+s.v+'%;background:'+s.c+'">'+s.v+' oport.</div></div><span class="fn-conv">'+s.cv+'</span></div>';}).join('');
+}
+
+function p0(){return '<div class="sh"><div class="sh-bar" style="background:var(--g)"></div><div class="sh-icon">🎯</div><div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div><div class="sh-title">Por que Monitorar em Tempo Real?</div><div class="sh-desc">Transformar dados em previsibilidade, controle e poder de decisão — antes que problemas virem crises.</div></div></div><div class="cll">"Dado sem contexto é ruído. Dado com tendência é inteligência. Dado com alerta e recomendação é poder de decisão. O sistema entrega os três."</div><div class="blk"><div class="blk-h">O Problema que o Monitoramento Resolve</div><div class="tw"><table><thead><tr><th>Sem Monitoramento</th><th>Com Monitoramento em Tempo Real</th></tr></thead><tbody><tr><td>Faturamento só conhecido no dia 30</td><td>Projeção atualizada diariamente com base no ritmo</td></tr><tr><td>Churn descoberto no balanço semestral</td><td>Sinal de risco detectado 30 dias antes pela IA</td></tr><tr><td>Ruptura de caixa como surpresa</td><td>Alerta preventivo 45 dias antes com ação sugerida</td></tr><tr><td>Queda de conversão percebida 2 meses depois</td><td>Queda detectada na semana 1 com diagnóstico imediato</td></tr><tr><td>Decisões baseadas em feeling</td><td>Decisões com dados, contexto e impacto calculado</td></tr></tbody></table></div></div><div class="blk"><div class="blk-h">3 Pilares — Previsibilidade · Controle · Decisão</div><div class="grid3"><div class="card"><div class="c-e">🔭</div><div class="c-t">Previsibilidade</div><div class="c-b">Projeções de faturamento, caixa e churn atualizadas continuamente. O futuro deixa de ser surpresa.</div></div><div class="card"><div class="c-e">🎛️</div><div class="c-t">Controle</div><div class="c-b">DRE, pipeline e margem visíveis a qualquer hora — sem esperar relatório. Controle libera energia para o estratégico.</div></div><div class="card"><div class="c-e">⚡</div><div class="c-t">Poder de Decisão</div><div class="c-b">Cada decisão tem dados, histórico e impacto projetado. Não mais feeling — fundamento real.</div></div></div></div><div class="blk"><div class="blk-h">Decisões que o Sistema Fundamenta</div><div class="tw"><table><thead><tr><th>Decisão</th><th>Sem Sistema</th><th>Com Sistema</th></tr></thead><tbody><tr><td>Contratar vendedor</td><td>"Acho que precisa"</td><td>CAC atual + payback calculado + capacidade do pipeline</td></tr><tr><td>Aumentar investimento em marketing</td><td>Olha o saldo da conta</td><td>ROI por canal, CPL, LTV e margem por origem</td></tr><tr><td>Dar desconto para fechar</td><td>Pressão do momento</td><td>Margem atual, ticket histórico e impacto no MRR</td></tr><tr><td>Expandir ou consolidar</td><td>Animação do fundador</td><td>Score de escalabilidade, reserva e eficiência operacional</td></tr></tbody></table></div></div>';}
+
+function p1(){return '<div class="sh"><div class="sh-bar" style="background:var(--b)"></div><div class="sh-icon">📊</div><div><div class="sh-tag" style="color:var(--b)">Seção 02 — KPIs</div><div class="sh-title">35 KPIs em 7 Grupos Estratégicos</div><div class="sh-desc">Fórmula, frequência, benchmark e limiar de alerta para cada KPI — calibrado ao setor e porte da empresa.</div></div></div><div class="blk"><div class="blk-h">Mapa dos 7 Grupos</div><div class="tw"><table><thead><tr><th>Grupo</th><th>KPIs Incluídos</th><th>Peso</th></tr></thead><tbody><tr><td><span class="badge by">01 Financeiro</span></td><td>Faturamento, MRR, Margem de Contribuição, Lucro Líquido, Fluxo de Caixa</td><td>Crítico</td></tr><tr><td><span class="badge bo">02 Comercial</span></td><td>Ticket Médio, Conversão por Etapa, Pipeline, Forecast, Ciclo de Venda</td><td>Alto</td></tr><tr><td><span class="badge bp">03 Marketing</span></td><td>CAC, CPL por Canal, ROI de Marketing, NPS, Churn Rate</td><td>Alto</td></tr><tr><td><span class="badge bt">04 Operacional</span></td><td>Taxa de Retrabalho, Cumprimento de SLA, Capacidade Utilizada</td><td>Médio</td></tr><tr><td><span class="badge bb">05 Equipe</span></td><td>Produtividade por Colaborador, Turnover, Absenteísmo, NPS Interno</td><td>Médio</td></tr><tr><td><span class="badge bg">06 Cliente</span></td><td>LTV, NPS, Recorrência, Satisfação, Tempo de Resposta</td><td>Alto</td></tr><tr><td><span class="badge bg">07 Estratégico</span></td><td>Score EGE, Progresso do Plano, OKRs, Score por Dimensão</td><td>Crítico</td></tr></tbody></table></div></div><div class="blk"><div class="blk-h">KPIs Financeiros e Comerciais — Grupos 01 e 02</div><div class="tw"><table><thead><tr><th>KPI</th><th>Fórmula</th><th>Frequência</th><th>Alerta</th></tr></thead><tbody><tr><td><strong>Faturamento</strong></td><td>Σ receitas do período</td><td>Diária</td><td>Projeção &lt;85% da meta</td></tr><tr><td><strong>MRR Líquido</strong></td><td>Novo + Expansão − Churn</td><td>Diária</td><td>MRR negativo por 2 meses</td></tr><tr><td><strong>Margem de Contribuição</strong></td><td>(Receita − CV) ÷ Receita × 100</td><td>Mensal</td><td>&lt;30% para serviços</td></tr><tr><td><strong>Fluxo de Caixa 90d</strong></td><td>Saldo + Entradas − Saídas projetadas</td><td>Semanal</td><td>Saldo negativo em qualquer janela</td></tr><tr><td><strong>Ticket Médio</strong></td><td>Receita ÷ Negócios Fechados</td><td>Semanal</td><td>Queda &gt;15% por 2 meses</td></tr><tr><td><strong>Conversão Final</strong></td><td>Fechamentos ÷ Oportunidades × 100</td><td>Semanal</td><td>&lt;50% em qualquer etapa</td></tr></tbody></table></div></div><div class="blk"><div class="blk-h">KPIs de Aquisição, Operação e Estratégia — Grupos 03–07</div><div class="tw"><table><thead><tr><th>KPI</th><th>Fórmula</th><th>Meta Saudável</th><th>Alerta em</th></tr></thead><tbody><tr><td><strong>CAC</strong></td><td>(Mktg + Vendas) ÷ Novos Clientes</td><td>CAC &lt; LTV ÷ 3</td><td>CAC &gt;33% do LTV</td></tr><tr><td><strong>NPS Clientes</strong></td><td>% Promotores − % Detratores</td><td>&gt;60</td><td>&lt;30 ou queda &gt;10pts</td></tr><tr><td><strong>Churn Rate</strong></td><td>Perdidos ÷ Base Inicial × 100</td><td>&lt;2%/mês</td><td>&gt;5%/mês</td></tr><tr><td><strong>LTV</strong></td><td>Ticket × Frequência × Retenção</td><td>LTV &gt; 3× CAC</td><td>LTV &lt; 3× CAC</td></tr><tr><td><strong>Retrabalho</strong></td><td>Entregas refeitas ÷ Total × 100</td><td>&lt;5%</td><td>&gt;15% por 2 semanas</td></tr><tr><td><strong>Score EGE</strong></td><td>Algoritmo ponderado 10 dimensões</td><td>Crescimento contínuo</td><td>Queda &gt;15pts em 30 dias</td></tr><tr><td><strong>Execução OKRs</strong></td><td>OKRs no prazo ÷ Total × 100</td><td>&gt;70%</td><td>&lt;50% no meio do ciclo</td></tr></tbody></table></div></div>';}
+
+function p2(){
+  var kpis1=[{l:"Faturamento",v:"R$127k",d:"▲ +8%",dc:"var(--g)",s:[98,105,110,108,115,120,127],c:"var(--g)"},{l:"MRR",v:"R$84k",d:"▲ +5%",dc:"var(--g)",s:[72,75,78,80,81,83,84],c:"var(--b)"},{l:"Margem",v:"34%",d:"▼ -3pp",dc:"var(--r)",s:[40,39,38,37,36,35,34],c:"var(--y)"},{l:"Caixa 90d",v:"R$52k",d:"⚠ baixo",dc:"var(--y)",s:[80,74,68,62,58,55,52],c:"var(--o)"},{l:"Lucro Líq.",v:"R$18k",d:"▲ +2%",dc:"var(--g)",s:[14,15,16,16,17,17,18],c:"var(--g)"}];
+  var kpis2=[{l:"Ticket Médio",v:"R$7.940",d:"▼ -11%",dc:"var(--r)",s:[9200,8800,8500,8200,8100,8000,7940],c:"var(--y)"},{l:"Forecast 30d",v:"R$118k",d:"⚠ -23%",dc:"var(--r)",s:[140,138,135,130,125,120,118],c:"var(--o)"},{l:"CAC",v:"R$1.240",d:"▲ +18%",dc:"var(--r)",s:[850,920,1000,1050,1100,1180,1240],c:"var(--r)"},{l:"NPS",v:"62",d:"▲ +4pts",dc:"var(--g)",s:[52,54,55,57,58,60,62],c:"var(--g)"}];
+  var kRow1=kpis1.map(function(k){return '<div class="kpi"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+k.c+'"></div><div class="kpi-lbl">'+k.l+'</div><div class="kpi-val" style="color:'+k.c+'">'+k.v+'</div><div class="kpi-delta" style="color:'+k.dc+'">'+k.d+'</div><div class="kpi-spark">'+spark(k.s,k.c)+'</div></div>';}).join('');
+  var kRow2=kpis2.map(function(k){return '<div class="kpi"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+k.c+'"></div><div class="kpi-lbl">'+k.l+'</div><div class="kpi-val" style="color:'+k.c+';font-size:17px">'+k.v+'</div><div class="kpi-delta" style="color:'+k.dc+'">'+k.d+'</div><div class="kpi-spark">'+spark(k.s,k.c)+'</div></div>';}).join('');
+  return '<div class="sh"><div class="sh-bar" style="background:var(--p)"></div><div class="sh-icon">🖥️</div><div><div class="sh-tag" style="color:var(--p)">Seção 03 — Dashboard</div><div class="sh-title">Dashboard em 5 Zonas — Mockup ao Vivo</div><div class="sh-desc">O estado completo do negócio em menos de 60 segundos — com funil visual e cards de KPI em tempo real.</div></div></div><div class="db"><div class="db-bar"><div class="db-dots"><div class="db-dot" style="background:#ff5f57"></div><div class="db-dot" style="background:#febc2e"></div><div class="db-dot" style="background:#28c840"></div></div><span class="db-title">EGE Dashboard · Semana 7/12 · Ciclo Q1 2026</span></div><div class="db-inner"><div class="z1"><div><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:8px">ZONA 1 — COMANDO</div><div class="score-big"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)">Score de Maturidade</div><div class="score-val">487</div><div class="score-lvl">Nível 3 — Estruturação</div><div class="score-lbl">▲ +31 pts este ciclo · +113 para o Nível 4</div></div><div style="margin-top:10px;background:var(--s2);border-radius:10px;padding:12px"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span style="color:var(--mid)">Progresso do ciclo</span><span style="font-weight:700;color:var(--g)">58% concluído</span></div><div style="height:7px;background:var(--s3);border-radius:10px;overflow:hidden"><div style="width:58%;height:100%;background:var(--g);border-radius:10px"></div></div></div></div><div class="z1-meta"><div class="meta-card"><div class="meta-lbl">🔴 Alerta Ativo</div><div class="meta-val" style="color:var(--r);font-size:12px">Pipeline baixo</div><div class="meta-sub">Forecast 23% abaixo da meta</div></div><div class="meta-card"><div class="meta-lbl">Semana Atual</div><div class="meta-val" style="color:var(--b)">7 de 12</div><div class="meta-sub">Próx. revisão: semana 8</div></div><div class="meta-card"><div class="meta-lbl">Iniciativas</div><div class="meta-val" style="color:var(--g)">2 de 4</div><div class="meta-sub">On track · 1 em risco</div></div></div></div><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:8px">ZONA 2 — FINANCEIRO</div><div class="kpi-row">'+kRow1+'</div><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin:14px 0 8px">ZONA 3 — COMERCIAL</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px"><div style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px"><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:10px">Funil de Vendas</div><div class="funnel">'+funnelHtml()+'</div></div><div class="kpi-row" style="grid-template-columns:repeat(2,1fr);margin:0">'+kRow2+'</div></div><div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:8px">ZONA 5 — CENTRAL DA IA</div><div class="ai-insight"><div class="ai-head"><div class="ai-icon">🧠</div><div><div class="ai-ttl">Insight da Semana — Segunda, 03/03/2026</div><div class="ai-sub">Análise baseada em todos os dados do período</div></div></div><div class="ai-body">O forecast projeta R$118k — 23% abaixo da meta de R$153k. Causa principal: queda do ticket médio (−11% em 7 semanas) + pipeline abaixo do necessário. CAC subiu 18%. <strong style="color:var(--g)">Ação prioritária:</strong> revisão das últimas 8 propostas perdidas com o time comercial — identificar se é precificação, alinhamento ou timing.</div></div></div></div><div class="blk"><div class="blk-h">Arquitetura das 5 Zonas</div><div class="tw"><table><thead><tr><th>Zona</th><th>Nome</th><th>Conteúdo</th><th>Posição</th></tr></thead><tbody><tr><td><span class="badge bg">Z1</span></td><td>Comando</td><td>Score, nível, progresso do ciclo, alerta ativo</td><td>Topo — primeira visão</td></tr><tr><td><span class="badge by">Z2</span></td><td>Financeiro</td><td>Faturamento, MRR, Margem, Caixa + mini-gráficos</td><td>Esquerda — coluna principal</td></tr><tr><td><span class="badge bo">Z3</span></td><td>Comercial</td><td>Funil visual, Ticket, Forecast, CAC, NPS</td><td>Centro — destaque</td></tr><tr><td><span class="badge bt">Z4</span></td><td>Operacional</td><td>SLA, Retrabalho, Turnover, Produtividade</td><td>Direita — suporte</td></tr><tr><td><span class="badge bb">Z5</span></td><td>Central da IA</td><td>Insight semanal, Top 3 alertas, Próxima ação</td><td>Rodapé — sempre visível</td></tr></tbody></table></div></div>';}
+
+function p3(){return '<div class="sh"><div class="sh-bar" style="background:var(--o)"></div><div class="sh-icon">🚨</div><div><div class="sh-tag" style="color:var(--o)">Seção 04 — Alertas</div><div class="sh-title">Sistema de Alertas Inteligentes — 4 Níveis</div><div class="sh-desc">Seletivos, específicos e acionáveis. Cada alerta traz o problema, o impacto e a ação recomendada.</div></div></div><div class="cll">"Um sistema com muitos alertas é ignorado. Cada alerta do EGE passou por um filtro de relevância e traz a ação recomendada junto."</div><div class="blk"><div class="blk-h">Os 4 Níveis de Alerta</div><div class="al-grid"><div class="al-card" style="background:rgba(192,32,32,.05);border-color:rgba(192,32,32,.25)"><div class="al-icon">🔴</div><div class="al-title" style="color:var(--r)">N1 — Crítico</div><div class="al-cond">KPI cai &gt;20% em &lt;7 dias ou projeção de caixa negativa</div><div style="font-size:11px;color:var(--mid)"><strong style="color:var(--txt)">Canais:</strong> Banner + push + e-mail</div><div class="al-msg" style="background:rgba(192,32,32,.07);color:var(--txt)">"Faturamento projetado 32% abaixo da meta. CAC subiu 18%. Ação imediata: revisão do processo de qualificação e follow-up das 5 oportunidades paradas há 7+ dias."</div></div><div class="al-card" style="background:rgba(184,114,0,.05);border-color:rgba(184,114,0,.25)"><div class="al-icon">🟡</div><div class="al-title" style="color:var(--y)">N2 — Atenção</div><div class="al-cond">KPI cai 10–20% ou meta com &gt;25% de gap com 30% do tempo restante</div><div style="font-size:11px;color:var(--mid)"><strong style="color:var(--txt)">Canais:</strong> Card laranja + push</div><div class="al-msg" style="background:rgba(184,114,0,.07);color:var(--txt)">"Margem caiu 4pp este mês. Custo variável subiu sem ajuste de preço. Recomendo revisão de precificação nos próximos 15 dias — impacto estimado: +R$4.200/mês."</div></div><div class="al-card" style="background:rgba(0,192,138,.04);border-color:rgba(0,192,138,.2)"><div class="al-icon">🟢</div><div class="al-title" style="color:var(--g)">N3 — Oportunidade</div><div class="al-cond">KPI acima da meta &gt;20% ou tendência positiva acelerada</div><div style="font-size:11px;color:var(--mid)"><strong style="color:var(--txt)">Canais:</strong> Card verde</div><div class="al-msg" style="background:rgba(0,192,138,.06);color:var(--txt)">"NPS atingiu 62 — acima da meta. Oportunidade: estruturar programa de indicações com os 38 promotores identificados. Potencial de 8–12 novos leads/mês."</div></div><div class="al-card" style="background:rgba(19,84,204,.04);border-color:rgba(19,84,204,.2)"><div class="al-icon">ℹ️</div><div class="al-title" style="color:var(--b)">N4 — Informativo</div><div class="al-cond">Marco atingido, tendência relevante, benchmark superado</div><div style="font-size:11px;color:var(--mid)"><strong style="color:var(--txt)">Canais:</strong> Card azul + resumo</div><div class="al-msg" style="background:rgba(19,84,204,.06);color:var(--txt)">"Iniciativa Financeiro concluída 1 semana antes. Score Financeiro foi de 34 para 57 neste ciclo. Você está a 47 pontos do Nível 4."</div></div></div></div><div class="blk"><div class="blk-h">Motor de Detecção de 4 Gargalos Sistêmicos</div><div class="algo"><div class="algo-item"><div class="algo-n" style="background:rgba(192,32,32,.12);color:var(--r)">G1</div><div><div class="algo-t">Gargalo de Capacidade</div><div class="algo-d">Alta utilização + queda de NPS + aumento de retrabalho = empresa crescendo mais rápido do que a operação suporta. IA sugere análise de capacidade antes de qualquer nova contratação de cliente.</div></div></div><div class="algo-item"><div class="algo-n" style="background:rgba(184,114,0,.12);color:var(--y)">G2</div><div><div class="algo-t">Gargalo Comercial</div><div class="algo-d">Pipeline cheio + baixa conversão + ciclo longo = problema no processo de vendas, não na geração de demanda. IA recomenda análise das perdas antes de aumentar investimento em marketing.</div></div></div><div class="algo-item"><div class="algo-n" style="background:rgba(217,90,8,.12);color:var(--o)">G3</div><div><div class="algo-t">Gargalo Financeiro</div><div class="algo-d">Faturamento crescendo + margem caindo + caixa apertando = crescimento destruindo valor. IA prioriza revisão de precificação e estrutura de custos antes de qualquer expansão.</div></div></div><div class="algo-item"><div class="algo-n" style="background:rgba(114,48,220,.12);color:var(--p)">G4</div><div><div class="algo-t">Gargalo de Liderança</div><div class="algo-d">Produtividade caindo + NPS interno baixo + turnover elevado = problema de gestão, não de mercado. IA recomenda pesquisa de clima e análise de distribuição de tarefas antes de culpar o mercado.</div></div></div></div></div>';}
+
+function p4(){return '<div class="sh"><div class="sh-bar" style="background:var(--g)"></div><div class="sh-icon">🤖</div><div><div class="sh-tag" style="color:var(--g)">Seção 05 — IA Consultora</div><div class="sh-title">Como a IA Usa os Dados para Ajustar a Estratégia</div><div class="sh-desc">Cada KPI fora do padrão é um input para ajuste estratégico — tático, de iniciativa ou estratégico.</div></div></div><div class="blk"><div class="blk-h">Como a IA Processa os Dados</div><div class="tw"><table><thead><tr><th>Tipo de Dado</th><th>Como a IA Processa</th><th>Output Gerado</th></tr></thead><tbody><tr><td>KPI abaixo da meta</td><td>Calcula gap, analisa tendência, cruza com histórico</td><td>Hipótese de causa + ação corretiva + impacto estimado</td></tr><tr><td>KPI acima da meta</td><td>Identifica o que está funcionando e replicabilidade</td><td>Insight de amplificação + meta revisada sugerida</td></tr><tr><td>Múltiplos KPIs fora do padrão</td><td>Análise de correlação — sistêmico vs. isolado</td><td>Diagnóstico de gargalo integrado + plano de correção</td></tr><tr><td>Tendência de queda 3+ semanas</td><td>Modelo preditivo projeta trajetória e impacto no score</td><td>Alerta de trajetória + intervenção estratégica</td></tr><tr><td>KPI melhora após iniciativa</td><td>Correlaciona melhora com a ação concluída</td><td>Validação do ROI + recomendação de replicação</td></tr></tbody></table></div></div><div class="blk"><div class="blk-h">3 Horizontes de Ajuste Estratégico</div><div class="grid3"><div class="card"><div class="c-e">⚡</div><div class="c-t" style="color:var(--r)">Tático — 1 a 4 semanas</div><div class="c-b">Alertas N1/N2 geram ação específica com responsável e prazo para conter o desvio antes que afete o resultado do ciclo.</div><div style="margin-top:10px;font-size:11px;color:var(--g);font-style:italic">"Roleplay de objeções na próxima terça — 5 cases de perda do último mês como base."</div></div><div class="card"><div class="c-e">🔧</div><div class="c-t" style="color:var(--y)">Iniciativa — 4 a 8 semanas</div><div class="c-b">Múltiplos alertas indicam iniciativa com escopo errado. IA sugere revisão com novo escopo, sequência ou responsável.</div><div style="margin-top:10px;font-size:11px;color:var(--g);font-style:italic">"Retrabalho alto + baixa execução = escopo grande demais. Reduzir para 1 processo prioritário."</div></div><div class="card"><div class="c-e">🗺️</div><div class="c-t" style="color:var(--b)">Estratégico — 8 a 12 semanas</div><div class="c-b">Dados mostram estratégia fora da realidade. IA propõe revisão completa do plano na revisão de meio de ciclo.</div><div style="margin-top:10px;font-size:11px;color:var(--g);font-style:italic">"Score Vendas acima do esperado — antecipar expansão de canal do próximo ciclo."</div></div></div></div><div class="blk"><div class="blk-h">Memória da IA — 4 Tipos</div><div class="tw"><table><thead><tr><th>Memória</th><th>O que Armazena</th><th>Como Melhora</th></tr></thead><tbody><tr><td><span class="badge bg">Individual</span></td><td>Histórico completo de KPIs, alertas, ações e resultados</td><td>Previsões mais precisas e alertas calibrados ao perfil</td></tr><tr><td><span class="badge bb">Padrão</span></td><td>Correlações que precedem problemas recorrentes</td><td>Alertas preditivos — antes do evento, não depois</td></tr><tr><td><span class="badge bp">Coletiva</span></td><td>Padrões anônimos de empresas similares</td><td>Benchmarks mais relevantes e previsões baseadas em casos reais</td></tr><tr><td><span class="badge by">Eficácia</span></td><td>Quais ações geraram qual resultado real</td><td>IA aprende o que funciona naquela empresa específica</td></tr></tbody></table></div></div><div class="blk"><div class="blk-h">Ciclo Completo — Dado → Decisão → Resultado</div><div class="cycle">'+[["📥","Coleta"],["🧠","Análise"],["🚨","Alertas"],["💬","Consulta"],["⚡","Decisão"],["✅","Ação"],["📈","Resultado"]].map(function(s,i,a){return '<div class="cy"><div class="cy-dot" style="background:rgba(0,192,138,'+(0.1+i*0.015)+');color:var(--g)">'+s[0]+'</div><span class="cy-lbl">'+s[1]+'</span>'+(i<a.length-1?'<span class="cy-arr">→</span>':'')+'</div>';}).join('')+'</div><div class="tw"><table><thead><tr><th>Etapa</th><th>O que Acontece</th></tr></thead><tbody><tr><td><strong>Coleta</strong></td><td>KPIs atualizados via CRM, sistema financeiro e inputs da equipe</td></tr><tr><td><strong>Análise</strong></td><td>IA identifica padrões, compara com histórico e benchmarks</td></tr><tr><td><strong>Alertas</strong></td><td>Desvios classificados por urgência com ação recomendada</td></tr><tr><td><strong>Consulta</strong></td><td>Empresário aprofunda análise no chat com contexto completo</td></tr><tr><td><strong>Decisão</strong></td><td>Decisão embasada em dados, tendência e impacto projetado</td></tr><tr><td><strong>Ação</strong></td><td>Tarefa criada na plataforma — rastreada e com responsável</td></tr><tr><td><strong>Resultado</strong></td><td>KPI monitorado — IA valida o efeito e aprende para o próximo ciclo</td></tr></tbody></table></div></div>';}
+
+var panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach(function(b,j){b.classList.toggle('on',j===i);});
+  var el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(function(){el.innerHTML=panels[i]();el.style.transition='opacity .35s';el.style.opacity=1;},150);
+}
+show(0);
+</script>
+</body>
+</html>

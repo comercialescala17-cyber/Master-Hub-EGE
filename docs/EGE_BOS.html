@@ -1,0 +1,561 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Business Operating System (BOS)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 5% 8%,rgba(0,192,138,.06),transparent),radial-gradient(ellipse 55% 50% at 95% 90%,rgba(19,84,204,.05),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up .9s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(26px,5vw,54px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 em{font-style:normal;background:linear-gradient(130deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:13.5px;color:var(--mid);max-width:680px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}
+.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+/* NAV — 10 tabs, 2 rows of 5 */
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:36px}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:11px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.c0::after{background:var(--g)}.c1::after{background:var(--b)}.c2::after{background:var(--p)}.c3::after{background:var(--t)}.c4::after{background:var(--o)}
+.c5::after{background:var(--r)}.c6::after{background:var(--y)}.c7::after{background:var(--g)}.c8::after{background:var(--p)}.c9::after{background:var(--b)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--mid);margin-bottom:4px}
+.nb-t{font-size:10.5px;font-weight:700;color:var(--txt);line-height:1.25}
+/* content */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:34px;flex-shrink:0}
+.sh-tag{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.7;max-width:720px}
+.blk{margin-bottom:28px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:13px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.cll-b{background:rgba(19,84,204,.04);border-left-color:var(--b);border-color:rgba(19,84,204,.18)}
+.cll-o{background:rgba(217,90,8,.04);border-left-color:var(--o);border-color:rgba(217,90,8,.18)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+/* flow steps */
+.flow{display:flex;flex-direction:column;gap:0;margin-bottom:14px}
+.fl{display:flex;gap:12px}
+.fl::before{content:'';display:none}
+.fl-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0;background:var(--bg);z-index:1;margin-top:4px}
+.fl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 15px;margin-bottom:8px}
+.fl-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fl-desc{font-size:12px;color:var(--mid);line-height:1.55}
+/* cascade */
+.cascade{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.cas-row{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--bd)}
+.cas-row:last-child{border-bottom:none}
+.cas-lv{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;min-width:28px}
+.cas-title{font-size:13px;font-weight:700;min-width:160px}
+.cas-ex{font-size:12px;color:var(--mid);flex:1;font-style:italic}
+.cas-horizon{font-family:'JetBrains Mono',monospace;font-size:9.5px;margin-left:auto}
+/* rhythm cards */
+.rhythm{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:700px){.rhythm{grid-template-columns:repeat(2,1fr)}}
+.rc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.r0::before{background:var(--g)}.r1::before{background:var(--b)}.r2::before{background:var(--o)}.r3::before{background:var(--p)}
+.rc-freq{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:6px}
+.rc-name{font-size:14px;font-weight:800;margin-bottom:6px}
+.rc-dur{font-size:10px;color:var(--mid);margin-bottom:8px}
+.rc-items{list-style:none}
+.rc-items li{font-size:11.5px;color:var(--mid);padding:2px 0;display:flex;gap:6px}
+.rc-items li::before{content:'→';color:inherit;flex-shrink:0}
+/* arch */
+.arch{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.arch-layer{border-bottom:1px solid var(--bd);padding:14px 20px;position:relative}
+.arch-layer:last-child{border-bottom:none}
+.arch-layer::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.a0::before{background:var(--g)}.a1::before{background:var(--b)}.a2::before{background:var(--o)}.a3::before{background:var(--p)}.a4::before{background:var(--t)}
+.arch-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.arch-label{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;min-width:80px}
+.arch-title{font-size:14px;font-weight:800}
+.arch-boxes{display:flex;gap:8px;flex-wrap:wrap}
+.arch-box{background:var(--s3);border:1px solid var(--bd2);border-radius:8px;padding:7px 12px;font-size:11px}
+/* stage cards */
+.stages{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:600px){.stages{grid-template-columns:1fr}}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.s0::after{background:var(--r)}.s1::after{background:var(--o)}.s2::after{background:var(--b)}.s3::after{background:var(--g)}
+.sc-stage{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:5px}
+.sc-name{font-size:15px;font-weight:800;margin-bottom:4px}
+.sc-score{font-size:11px;margin-bottom:10px}
+.sc-items{list-style:none}
+.sc-items li{font-size:12px;color:var(--mid);padding:3px 0;display:flex;gap:6px}
+.sc-items li::before{content:'✓';color:var(--g);font-weight:700;flex-shrink:0}
+/* compare table */
+.cmp{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.cmp-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;border-bottom:1px solid var(--bd)}
+.cmp-row:last-child{border-bottom:none}
+.cmp-cell{padding:10px 14px;font-size:12px;line-height:1.5}
+.cmp-cell:first-child{font-weight:700;background:rgba(255,255,255,.015)}
+.cmp-head{background:var(--s3);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--mid)}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Business Operating System · EGE Platform</div>
+  <h1>Business Operating<br><em>System (BOS)</em></h1>
+  <p class="sub">O sistema operacional do negócio — o framework que define como uma empresa organiza suas operações, alinha sua equipe, executa sua estratégia e toma decisões de forma sistemática, mensurável e continuamente aprimorada.</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="st sg"><div class="sv">6</div><div class="sl">Componentes centrais</div></div>
+  <div class="st sb"><div class="sv">4</div><div class="sl">Cadências de revisão</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Estágios de evolução</div></div>
+  <div class="st so"><div class="sv">12</div><div class="sl">Semanas por ciclo</div></div>
+  <div class="st st2"><div class="sv">5</div><div class="sl">Camadas de arquitetura</div></div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nb c0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">🎯 Purpose</div></div>
+  <div class="nb c1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">🧱 Components</div></div>
+  <div class="nb c2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">🏢 Org Structure</div></div>
+  <div class="nb c3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">⚙️ Execution</div></div>
+  <div class="nb c4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">📅 Reviews</div></div>
+  <div class="nb c5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">📋 Processes</div></div>
+  <div class="nb c6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">📊 Performance</div></div>
+  <div class="nb c7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">🤖 AI Integration</div></div>
+  <div class="nb c8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">📈 Evolution</div></div>
+  <div class="nb c9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">🏗 Architecture</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+const C={g:'var(--g)',b:'var(--b)',p:'var(--p)',o:'var(--o)',t:'var(--t)',r:'var(--r)',y:'var(--y)'};
+
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 01 — Purpose</div>
+    <div class="sh-title">O Propósito do Business Operating System</div>
+    <div class="sh-desc">O BOS é o sistema operacional do negócio. Não é uma ferramenta, não é uma metodologia — é a arquitetura que define como a empresa funciona como sistema: quem decide o quê, como as prioridades são estabelecidas, como o progresso é medido, e como a empresa aprende e se adapta.</div>
+  </div>
+</div>
+
+<div class="cll">"O maior fracasso estratégico nas PMEs não é a qualidade da estratégia — é a capacidade de executá-la. Existe uma lacuna de tradução entre o que foi decidido estrategicamente e o que as pessoas fazem na segunda-feira de manhã. O BOS fecha essa lacuna."</div>
+
+<div class="blk"><div class="blk-h">Sem BOS vs. Com BOS — O que Muda</div>
+<div class="cmp">
+  <div class="cmp-row"><div class="cmp-cell cmp-head">Dimensão</div><div class="cmp-cell cmp-head" style="color:var(--r)">❌ Sem BOS</div><div class="cmp-cell cmp-head" style="color:var(--g)">✅ Com BOS</div></div>
+  ${[
+    ['Estratégia','Na cabeça do fundador, nunca comunicada','Documentada, comunicada, revisada trimestralmente'],
+    ['Prioridades','Tudo é urgente, foco muda semanalmente','3 iniciativas por ciclo, claramente priorizadas'],
+    ['Responsabilidades','"Eu acho que isso é minha função"','Papéis explícitos, RACI por processo crítico'],
+    ['Processos','Na memória das pessoas, inconsistentes','Documentados, medidos, continuamente melhorados'],
+    ['Métricas','Relatório financeiro no fim do mês','KPIs em tempo real com alertas automáticos'],
+    ['Decisões','Reativas, baseadas em instinto','Estruturadas, baseadas em dados, com critérios claros'],
+    ['Reuniões','Sem pauta, terminam sem decisão','4 cadências com formato fixo e outputs obrigatórios'],
+  ].map(r=>`<div class="cmp-row"><div class="cmp-cell">${r[0]}</div><div class="cmp-cell" style="color:var(--r);font-size:11.5px">${r[1]}</div><div class="cmp-cell" style="color:var(--g);font-size:11.5px">${r[2]}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Os 5 Trabalhos do BOS</div>
+<div class="grid3">
+${[
+  {e:'🗂',t:'Organizar Operações',c:C.g,d:'Define estrutura de trabalho: papéis, processos, responsabilidades. A empresa funciona sem depender da presença do fundador.'},
+  {e:'🧭',t:'Alinhar Equipes',c:C.b,d:'Conecta a visão estratégica com o trabalho de cada pessoa. A equipe sabe o porquê, não apenas o quê.'},
+  {e:'⚡',t:'Executar Estratégias',c:C.p,d:'Traduz objetivos de longo prazo em ações de curta duração. Ciclos de 12 semanas com marcos semanais.'},
+  {e:'🧠',t:'Melhorar Decisões',c:C.t,d:'Estrutura o processo decisório com dados e critérios claros. Decisões mais rápidas e mais fundamentadas.'},
+  {e:'📐',t:'Escalar Sustentavelmente',c:C.o,d:'Codifica o conhecimento para que o crescimento não quebre o sistema. SOPs, processos documentados, onboarding estruturado.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">🧱</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 02 — Core Components</div>
+    <div class="sh-title">Os 6 Componentes Centrais do BOS</div>
+    <div class="sh-desc">6 componentes interdependentes que formam o sistema operacional completo. O valor real emerge das conexões: visão informa prioridades, prioridades guiam processos, processos são medidos por métricas, métricas alimentam revisões que atualizam a visão.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Visão dos 6 Componentes e suas Integrações</div>
+<div class="grid2">
+${[
+  {n:'01',e:'🌐',t:'Visão e Estratégia',c:C.g,d:'Propósito + Visão 3 anos + Posicionamento de mercado + Valores operacionais. O norte do sistema. Revisado anualmente, comunicado trimestralmente.'},
+  {n:'02',e:'🎯',t:'Metas e Prioridades',c:C.b,d:'Prioridades Anuais (3–5) → Objetivos de Ciclo (por 12 semanas) → Metas Semanais. A ponte entre visão de longo prazo e trabalho diário.'},
+  {n:'03',e:'👥',t:'Alinhamento de Equipe',c:C.p,d:'RACI por processo, Job Scorecards, OKRs de equipe, Accountability Chart. Alinhamento + responsabilidade — sem burocracia.'},
+  {n:'04',e:'📋',t:'Gestão de Processos',c:C.t,d:'SOPs documentados, propriedade por responsável, KPIs de processo, ciclo PDCA embutido no ritmo operacional.'},
+  {n:'05',e:'⚙️',t:'Execução Operacional',c:C.o,d:'Ciclo de 12 semanas com marcos semanais, sistema de tarefas com 4 atributos obrigatórios, 4 cadências de cerimônia.'},
+  {n:'06',e:'📊',t:'Monitoramento de Performance',c:C.r,d:'3 níveis de KPIs (saúde, estratégico, operacional), thresholds de alerta, ritmo de revisão por nível, benchmarking setorial.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${m.c}">${m.n}</span><span style="font-size:20px">${m.e}</span><span class="c-t" style="color:${m.c};margin:0">${m.t}</span></div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Componente 2 — Cascata de Metas: Da Visão à Tarefa</div>
+<div class="cascade">
+${[
+  ['N1','Visão de 3 Anos','Ser referência em gestão para PMEs de tecnologia no Brasil','Anual',C.g],
+  ['N2','Prioridades Anuais (3–5)','PA1: Atingir 500 clientes · PA2: Reduzir churn < 3%','Jan + revisão trimestral',C.b],
+  ['N3','Objetivos de Ciclo','OC: Implementar onboarding estruturado → impacta PA2','Por ciclo de 12 semanas',C.p],
+  ['N4','Marco Semanal','Script de onboarding + 3 vídeos gravados até sexta','Definido na weekly review',C.o],
+  ['N5','Tarefa','Escrever roteiro do vídeo 1 — @Ana — quarta 18h','Daily / criação imediata',C.t],
+].map(r=>`<div class="cas-row"><div class="cas-lv" style="color:${r[4]}">${r[0]}</div><div class="cas-title" style="color:${r[4]}">${r[1]}</div><div class="cas-ex">${r[2]}</div><div class="cas-horizon" style="color:${r[4]}">${r[3]}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Componente 3 — Ferramentas de Alinhamento de Equipe</div>
+<div class="tw"><table><thead><tr><th>Ferramenta</th><th>Propósito</th><th>Formato</th><th>Atualização</th></tr></thead><tbody>
+<tr><td><span class="badge bg">RACI por processo</span></td><td>Define quem é Responsável, Aprovador, Consultado, Informado</td><td>Tabela por processo crítico</td><td>Quando processo muda</td></tr>
+<tr><td><span class="badge bb">Job Scorecards</span></td><td>Define o resultado esperado de cada papel, não apenas atividades</td><td>Template estruturado por função</td><td>Semestral</td></tr>
+<tr><td><span class="badge bp">OKRs de equipe</span></td><td>Alinha metas individuais com objetivos estratégicos</td><td>Vinculados às Prioridades Anuais</td><td>Por ciclo de 12 semanas</td></tr>
+<tr><td><span class="badge bt">Accountability Chart</span></td><td>Mapa visual de quem é responsável por qual função</td><td>Organograma por função, não por pessoa</td><td>Quando equipe muda</td></tr>
+</tbody></table></div></div>`}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">🏢</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 03 — Organizational Structure</div>
+    <div class="sh-title">Como o BOS Organiza as Equipes</div>
+    <div class="sh-desc">O BOS não prescreve um organograma específico — prescreve uma lógica de organização. Toda empresa tem as mesmas 6 funções críticas, independente do tamanho. A diferença é quantas pessoas as desempenham, não quais são as funções.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 6 Funções Críticas — Obrigatórias em Todo Negócio</div>
+<div class="tw"><table><thead><tr><th>Função</th><th>Responsabilidades Primárias</th><th>KPIs de Responsabilidade</th><th>Reporte</th></tr></thead><tbody>
+${[
+  ['CEO / Fundador','Visão, estratégia, cultura, decisões de alto impacto, parcerias','Score de maturidade · MRR growth · NPS','Mensal ao board'],
+  ['Head Comercial','Pipeline, conversão, receita nova, expansão de clientes existentes','MRR novo · win rate · CAC · LTV','Semanal ao CEO'],
+  ['Head de Operações','Entrega, qualidade, eficiência, processos, SLA de atendimento','NPS · churn · throughput · SLA','Semanal ao CEO'],
+  ['Head Financeiro','Caixa, DRE, budget, relatórios, compliance, runway','Runway · margem · burn rate','Quinzenal ao CEO'],
+  ['Head de Produto','Roadmap, qualidade, NPS de produto, feedback loop','NPS produto · bugs críticos · velocity','Semanal ao CEO'],
+  ['Equipe de Execução','Tarefas vinculadas ao plano, progresso de iniciativas, processos','Task completion rate · qualidade','Daily standup'],
+].map((r,i)=>`<tr><td style="font-weight:700;color:${[C.g,C.b,C.t,C.o,C.p,C.r][i]}">${r[0]}</td><td>${r[1]}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px">${r[2]}</td><td><span class="badge ${['bg','bb','bt','bo','bp','br'][i]}">${r[3]}</span></td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Estrutura de Tomada de Decisão — 3 Níveis</div>
+<div class="flow">
+${[
+  {n:'L1',t:'Decisão Operacional',c:C.g,d:'Decisões dentro de um processo definido, sem impacto estratégico. Quem decide: Responsável pelo processo (RACI). Escalar se: sair do processo padrão.'},
+  {n:'L2',t:'Decisão Tática',c:C.b,d:'Decisões que afetam recursos, prioridades ou outras áreas. Quem decide: Head da área com consulta. Escalar se: impacta orçamento > 10% ou outra área.'},
+  {n:'L3',t:'Decisão Estratégica',c:C.p,d:'Decisões que afetam a direção, o modelo de negócio ou a equipe. Quem decide: CEO + liderança. Sempre sincrônico, sempre registrado.'},
+].map(s=>`<div class="fl"><div class="fl-dot" style="border-color:${s.c};color:${s.c}">${s.n}</div><div class="fl-body"><div class="fl-title" style="color:${s.c}">${s.t}</div><div class="fl-desc">${s.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Fluxo de Comunicação — 4 Ritmos</div>
+<div class="tw"><table><thead><tr><th>Ritmo</th><th>Formato</th><th>Participantes</th><th>Output Obrigatório</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Diário</span></td><td>Daily standup — 15 min</td><td>Toda a equipe</td><td>Bloqueios identificados + responsável definido</td></tr>
+<tr><td><span class="badge bb">Semanal</span></td><td>Reunião de execução — 60 min</td><td>Liderança + equipe</td><td>Decisões registradas + metas da semana</td></tr>
+<tr><td><span class="badge bo">Mensal</span></td><td>Revisão estratégica — 120 min</td><td>Liderança</td><td>Performance vs. plano + ajustes de prioridade</td></tr>
+<tr><td><span class="badge bp">Trimestral</span></td><td>Planejamento de crescimento — meio dia</td><td>Liderança + AI Advisor</td><td>Plano do próximo ciclo publicado</td></tr>
+</tbody></table></div></div>`}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 04 — Execution System</div>
+    <div class="sh-title">Como Estratégia Vira Execução — O Ciclo de 12 Semanas</div>
+    <div class="sh-desc">Longo o suficiente para executar iniciativas significativas. Curto o suficiente para manter senso de urgência e permitir ajustes frequentes. 12 semanas cria pressão saudável sem gerar a síndrome do "ainda tenho tempo" que destrói a execução anual.</div>
+  </div>
+</div>
+<div class="cll cll-b">"A cascata de execução: Visão de 3 anos → Prioridades Anuais → Objetivos de Ciclo (12 semanas) → Marcos Semanais → Tarefas Diárias. Cada tarefa pode ser rastreada de volta até a visão estratégica da empresa — isso é alinhamento real."</div>
+
+<div class="blk"><div class="blk-h">O Ciclo de 12 Semanas — Semana a Semana</div>
+<div class="tw"><table><thead><tr><th>Semana</th><th>Foco</th><th>Cerimônia</th><th>Output</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Sem 1</span></td><td>Lançamento do ciclo</td><td>Kickoff 90 min</td><td>Plano publicado e comunicado para toda equipe</td></tr>
+<tr><td><span class="badge bt">Sem 2–4</span></td><td>Execução + estabelecimento de ritmo</td><td>Daily standup + weekly review</td><td>Tarefas concluídas, bloqueios resolvidos</td></tr>
+<tr><td><span class="badge by">Sem 6</span></td><td>Marco de meio-ciclo</td><td>Mid-cycle review 60 min — obrigatório</td><td>Iniciativas em risco identificadas e replaneadas</td></tr>
+<tr><td><span class="badge bt">Sem 7–10</span></td><td>Execução acelerada com ajustes</td><td>Daily standup + weekly review</td><td>Progresso acelerado, foco em iniciativas prioritárias</td></tr>
+<tr><td><span class="badge bo">Sem 11–12</span></td><td>Finalização do ciclo</td><td>Closing week + retrospectiva</td><td>Score final do ciclo, aprendizados documentados</td></tr>
+<tr><td><span class="badge bp">Sem 13</span></td><td>Off-cycle — retrospectiva profunda</td><td>Planning session — meio dia</td><td>Próximo ciclo planejado, prioridades confirmadas</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 4 Atributos Obrigatórios de Toda Tarefa</div>
+<div class="grid2">
+${[
+  {n:'1',e:'👤',t:'Responsável Único',c:C.g,d:'Co-responsabilidade = nenhuma responsabilidade. Uma tarefa com dois donos não tem dono real. Campo obrigatório no formulário de criação.'},
+  {n:'2',e:'📅',t:'Prazo Específico',c:C.b,d:'"Quando puder" significa nunca. Prazo sem horário = prazo vago. Datepicker obrigatório + reminder automático configurado.'},
+  {n:'3',e:'🔗',t:'Vinculação ao Plano',c:C.p,d:'Tarefa sem contexto estratégico é ruído. Deve conectar a uma iniciativa do ciclo. Dropdown de iniciativa obrigatório no formulário.'},
+  {n:'4',e:'✅',t:'Critério de Conclusão',c:C.o,d:'"Pronto" precisa ser verificável por qualquer pessoa, não apenas por quem fez. Campo de definição de done no formulário.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${m.c}">${m.n}</span><span style="font-size:20px">${m.e}</span><span class="c-t" style="color:${m.c};margin:0">${m.t}</span></div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Como o EGE Rastreia Progresso de Iniciativas</div>
+<div class="tw"><table><thead><tr><th>Status</th><th>Definição</th><th>Ação do Sistema</th><th>Ação do Time</th></tr></thead><tbody>
+<tr><td><span class="badge bg">✅ No Prazo</span></td><td>≥ 90% do progresso esperado para a semana</td><td>Badge verde no dashboard</td><td>Manter ritmo</td></tr>
+<tr><td><span class="badge by">⚠️ Em Atenção</span></td><td>70–89% do progresso esperado</td><td>Badge amarelo + aviso na weekly</td><td>Identificar causa e plano de recuperação</td></tr>
+<tr><td><span class="badge br">🚨 Em Risco</span></td><td>< 70% do progresso esperado</td><td>Alerta P1 + análise AI automática</td><td>Decisão de escopo, prazo ou recursos até 48h</td></tr>
+<tr><td><span class="badge bt">⏸ Bloqueada</span></td><td>Impedimento externo ou de dependência</td><td>Flag para responsável do bloqueio</td><td>Desbloqueio em até 24h ou escalação</td></tr>
+</tbody></table></div></div>`}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">📅</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 05 — Meeting & Review System</div>
+    <div class="sh-title">O Sistema de Reuniões — 4 Cadências com Formato Fixo</div>
+    <div class="sh-desc">Reuniões ineficazes são o maior desperdício de tempo das PMEs. O BOS resolve isso com 4 cadências, cada uma com propósito único, formato padronizado e outputs obrigatórios. Toda reunião termina com decisões, ações e próximas datas registradas.</div>
+  </div>
+</div>
+<div class="cll cll-o">"Regra do BOS: toda reunião termina com três registros obrigatórios: decisões tomadas (com critério explícito), ações acordadas (com responsável e prazo) e dúvidas/itens para a próxima reunião. Sem esses três, a reunião foi uma conversa — não uma cerimônia de gestão."</div>
+
+<div class="blk"><div class="blk-h">As 4 Cadências do BOS</div>
+<div class="rhythm">
+${[
+  {cls:'r0',freq:'DIÁRIO',name:'Daily Standup',dur:'15 minutos',items:['O que concluí ontem?','O que farei hoje?','O que está me bloqueando?','Desbloqueio: responsável + horário']},
+  {cls:'r1',freq:'SEMANAL',name:'Weekly Exec Review',dur:'60 minutos',items:['Check-in equipe (5min)','Revisão de KPIs (10min)','Progresso de iniciativas (15min)','Decisões e desbloqueio (15min)','Metas da semana + Insight da IA (15min)']},
+  {cls:'r2',freq:'MENSAL',name:'Strategic Review',dur:'120 minutos',items:['Performance vs. plano (30min)','Progresso das iniciativas (30min)','Riscos e oportunidades (20min)','Próximo mês (30min)','Fechamento com registros (10min)']},
+  {cls:'r3',freq:'TRIMESTRAL',name:'Growth Planning',dur:'Meio dia',items:['Retrospectiva do ciclo (60min)','Diagnóstico atualizado (30min)','Planejamento do próximo ciclo (90min)','Alinhamento estratégico (30min)']},
+].map(r=>`<div class="rc ${r.cls}"><div class="rc-freq" style="color:${r.cls==='r0'?C.g:r.cls==='r1'?C.b:r.cls==='r2'?C.o:C.p}">${r.freq}</div><div class="rc-name">${r.name}</div><div class="rc-dur">${r.dur}</div><ul class="rc-items">${r.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Como o EGE Facilita Cada Cadência</div>
+<div class="tw"><table><thead><tr><th>Cadência</th><th>O que o EGE Prepara Automaticamente</th><th>O que o EGE Registra</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Daily</span></td><td>Resumo de tarefas concluídas ontem + vencendo hoje + em atraso</td><td>Bloqueios reportados + responsável atribuído</td></tr>
+<tr><td><span class="badge bb">Weekly</span></td><td>Briefing de 1 página: KPIs (verde/amarelo/vermelho), progresso de iniciativas, insight da IA</td><td>Decisões + ações + metas da semana + score semanal</td></tr>
+<tr><td><span class="badge bo">Monthly</span></td><td>Relatório de performance narrado em linguagem natural pelo AI Advisor</td><td>Ajustes de prioridade + aprendizados + plano do próximo mês</td></tr>
+<tr><td><span class="badge bp">Quarterly</span></td><td>Análise completa do ciclo + sugestões de objetivos e iniciativas para o próximo</td><td>Score do ciclo + retrospectiva + plano do próximo ciclo</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O Briefing Automático Semanal — O que o AI Advisor Prepara</div>
+<div class="grid2">
+${[
+  {e:'📊',t:'KPIs da Semana',c:C.g,d:'Evolução dos 5–7 KPIs principais vs. semana anterior, com destaque automático para os que mudaram de status (verde→amarelo, amarelo→vermelho).'},
+  {e:'🚦',t:'Progresso de Iniciativas',c:C.b,d:'Status de cada iniciativa do ciclo com previsão de risco: no prazo, em atenção, em risco, bloqueada — com análise de causa para as em risco.'},
+  {e:'⚠️',t:'Decisões Pendentes',c:C.o,d:'Itens identificados no standup da semana que precisam de decisão na weekly review, com contexto e opções mapeadas pela IA.'},
+  {e:'💡',t:'Insight Estratégico',c:C.p,d:'1 insight gerado pela análise de padrões dos dados da empresa — a pergunta ou oportunidade mais relevante para a semana.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p5(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">📋</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 06 — Process Management</div>
+    <div class="sh-title">Gestão de Processos — A Memória Operacional da Empresa</div>
+    <div class="sh-desc">Processos codificam o conhecimento acumulado de como fazer as coisas bem. Uma empresa sem processos documentados depende de pessoas específicas para funcionar — single points of failure que bloqueiam o crescimento e garantem retrabalho eterno.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">A Hierarquia de Processos no BOS</div>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Tipo</th><th>Descrição</th><th>Formato</th></tr></thead><tbody>
+<tr><td><span class="badge bg">L1</span></td><td>Processo Estratégico</td><td>Como a empresa toma decisões estratégicas e planeja seu futuro</td><td>BOS framework + cadência de reuniões</td></tr>
+<tr><td><span class="badge bb">L2</span></td><td>Processo Core</td><td>Os processos que diretamente geram e entregam valor ao cliente — vendas, entrega, atendimento</td><td>SOP com fluxograma + RACI</td></tr>
+<tr><td><span class="badge bt">L3</span></td><td>Processo de Suporte</td><td>Os processos que viabilizam os core — financeiro, RH, tecnologia</td><td>Checklist + automação n8n</td></tr>
+<tr><td><span class="badge bp">L4</span></td><td>Processo de Melhoria</td><td>Os processos para revisar e melhorar os outros processos</td><td>Cadência de reuniões + KPI de processo</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Estrutura Padrão do SOP — 6 Elementos</div>
+<div class="flow">
+${[
+  {n:'1',t:'Nome e Propósito',c:C.g,d:'O nome do processo e em uma frase o que ele garante quando executado corretamente. Define o resultado esperado — não a atividade.'},
+  {n:'2',t:'Gatilho',c:C.b,d:'O que inicia o processo — um evento, uma solicitação, uma data, um threshold de KPI. Sem gatilho claro, o processo fica órfão.'},
+  {n:'3',t:'Passos em Sequência',c:C.p,d:'Cada passo numerado com: responsável (RACI), ferramenta usada e output esperado. Verificável por qualquer pessoa sem treinamento prévio.'},
+  {n:'4',t:'Critério de Qualidade',c:C.t,d:'Como saber se o processo foi executado com qualidade — não apenas se foi concluído. A diferença entre "fiz" e "fiz bem".'},
+  {n:'5',t:'KPIs do Processo',c:C.o,d:'As métricas que o processo deve atingir: velocidade, qualidade, custo. Acompanhados no monitor de performance.'},
+  {n:'6',t:'Histórico de Versões',c:C.r,d:'Data da última atualização, o que mudou e por quê. Rastreabilidade da melhoria contínua — a empresa aprende documentada.'},
+].map(s=>`<div class="fl"><div class="fl-dot" style="border-color:${s.c};color:${s.c}">${s.n}</div><div class="fl-body"><div class="fl-title" style="color:${s.c}">${s.t}</div><div class="fl-desc">${s.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Sistema de Melhoria Contínua — Gatilhos de Atualização de Processo</div>
+<div class="tw"><table><thead><tr><th>Gatilho</th><th>Quem Identifica</th><th>Ação</th><th>Prazo</th></tr></thead><tbody>
+<tr><td>Processo gerou reclamação de cliente</td><td>Head de Ops ou CS</td><td>Registro imediato + análise de causa + SOP atualizado</td><td>Até próximo ciclo</td></tr>
+<tr><td>Processo foi executado de 2 formas diferentes</td><td>Qualquer membro da equipe</td><td>Registro na reunião semanal + padronização</td><td>Até próxima semana</td></tr>
+<tr><td>KPI do processo caiu abaixo do threshold</td><td>AI Advisor (alerta automático)</td><td>Alerta P2 + análise automática da IA</td><td>Decisão em 48h</td></tr>
+<tr><td>Boa prática identificada</td><td>Qualquer membro da equipe</td><td>Aprendizado na retrospectiva + atualização do SOP</td><td>Na atualização do ciclo</td></tr>
+</tbody></table></div></div>`}
+
+function p6(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.y}"></div>
+  <div class="sh-icon">📊</div>
+  <div><div class="sh-tag" style="color:${C.y}">Seção 07 — Performance Management</div>
+    <div class="sh-title">Gestão de Performance — 3 Níveis de KPIs</div>
+    <div class="sh-desc">Nem medir nada (operar no escuro) nem medir tudo (afogar em dados sem agir). O BOS adota uma abordagem pragmática: um conjunto mínimo e suficiente de indicadores em 3 níveis, cada um com seu ritmo de revisão e critério de intervenção.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 3 Níveis de KPIs — Organização e Ritmo de Revisão</div>
+<div class="grid3">
+${[
+  {n:'Nível 1',t:'KPIs de Saúde',c:C.r,freq:'Semanal',d:'Os sinais vitais da empresa. 5 a 7 KPIs máximo. Se entrarem em zona de risco, exigem atenção imediata independente de qualquer outra prioridade.'},
+  {n:'Nível 2',t:'KPIs Estratégicos',c:C.b,freq:'Mensal',d:'Medem progresso em direção aos objetivos de médio prazo. Respondem: "estamos avançando na direção certa?" Usados para ajustar prioridades.'},
+  {n:'Nível 3',t:'KPIs Operacionais',c:C.t,freq:'Tempo Real',d:'Indicadores específicos de cada processo. Respondem: "este processo está funcionando bem?" Acompanhados pelos responsáveis dos processos.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="c-t" style="color:${m.c};margin:0">${m.n}</span><span class="badge" style="background:${m.c}1A;color:${m.c}">${m.freq}</span></div><div style="font-size:13px;font-weight:700;margin-bottom:6px">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">KPIs de Saúde — Os 5 Sinais Vitais Obrigatórios</div>
+<div class="tw"><table><thead><tr><th>KPI de Saúde</th><th>Dimensão</th><th>Threshold Amarelo</th><th>Threshold Vermelho</th></tr></thead><tbody>
+<tr><td>MRR e variação MoM</td><td><span class="badge bg">Financeiro</span></td><td>Variação &gt; -5% em 2 semanas</td><td>Variação &gt; -10% ou 3 semanas consecutivas negativas</td></tr>
+<tr><td>Runway de caixa</td><td><span class="badge bg">Financeiro</span></td><td>90 dias</td><td>60 dias — alerta P0 imediato</td></tr>
+<tr><td>Churn de clientes</td><td><span class="badge bb">Comercial</span></td><td>&gt; 3% ao mês</td><td>&gt; 5% ao mês por 2 meses</td></tr>
+<tr><td>NPS (última janela)</td><td><span class="badge bt">Produto/CS</span></td><td>&lt; 40</td><td>&lt; 30 — revisão urgente</td></tr>
+<tr><td>Progresso de iniciativas</td><td><span class="badge bp">Execução</span></td><td>&lt; 80% do esperado</td><td>&lt; 70% do esperado — iniciativa em risco</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Gestão de Performance de Equipe — 4 Dimensões</div>
+<div class="tw"><table><thead><tr><th>Dimensão</th><th>O que Mede</th><th>Frequência</th><th>Ferramenta no EGE</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Entrega de Resultados</span></td><td>KPIs de resultado da função ou área — o que foi produzido</td><td>Mensal (revisão formal)</td><td>Dashboard de KPIs por responsável</td></tr>
+<tr><td><span class="badge bb">Execução no Sistema</span></td><td>Adesão ao ritmo do BOS: standup, tarefas no prazo, processos</td><td>Semanal (observação)</td><td>Task completion rate · check-in score</td></tr>
+<tr><td><span class="badge bp">Desenvolvimento</span></td><td>Evolução de competências e conhecimento da função</td><td>Semestral (avaliação 1:1)</td><td>Scorecard de competências por função</td></tr>
+<tr><td><span class="badge by">Cultura e Valores</span></td><td>Comportamentos alinhados com os valores operacionais</td><td>Trimestral (peer review)</td><td>eNPS + avaliação 360 simplificada</td></tr>
+</tbody></table></div></div>`}
+
+function p7(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🤖</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 08 — AI Integration</div>
+    <div class="sh-title">O AI Advisor como Sistema Nervoso do BOS</div>
+    <div class="sh-desc">Sem a IA, o BOS é um framework de gestão bem estruturado. Com a IA, o BOS torna-se um sistema que aprende, adapta e melhora continuamente. A IA conhece o estado completo de todos os componentes do BOS — e usa esse contexto para gerar inteligência impossível de produzir manualmente.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Pontos de Integração — IA em Cada Componente do BOS</div>
+<div class="tw"><table><thead><tr><th>Componente do BOS</th><th>Como a IA se Integra</th><th>Tipo</th></tr></thead><tbody>
+${[
+  ['Visão e Estratégia','Analisa consistência entre estratégia e KPIs. "Sua PA1 é crescimento mas seu CAC subiu 40% — revisão necessária"','Proativa'],
+  ['Sistema de Metas','Verifica se objetivos de ciclo são realistas dado o histórico. "Iniciativas similares levaram 16 semanas, não 12"','Reativa'],
+  ['Alinhamento de Equipe','Detecta desbalanceamento de carga. "80% das tarefas de alta prioridade estão com @Ana — redistribuir?"','Proativa'],
+  ['Gestão de Processos','Identifica processos que geram mais variância nos KPIs. "SLA variou 300% — processo sem critério claro?"','Proativa'],
+  ['Sistema de Execução','Sinaliza iniciativas em risco antes do marco de meio-ciclo. "Iniciativa 2 tem 30% do progresso esperado na semana 5"','Proativa'],
+  ['Reuniões e Revisões','Prepara briefing automático para cada cerimônia do BOS — briefing enviado 30min antes de toda reunião','Sintética'],
+  ['Gestão de Performance','Correlaciona KPIs de equipe com KPIs de negócio. "Semanas com NPS 50+ correlacionam com task completion 85%+"','Sintética'],
+  ['Planejamento Trimestral','Gera primeiro rascunho do plano de ciclo baseado no histórico e nos benchmarks — não começa em branco','Sintética'],
+].map((r,i)=>`<tr><td style="font-weight:700">${r[0]}</td><td>${r[1]}</td><td><span class="badge ${r[2]==='Proativa'?'bg':r[2]==='Reativa'?'bb':'bp'}">${r[2]}</span></td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Modos de Atuação da IA no BOS</div>
+<div class="grid3">
+${[
+  {e:'👁',t:'Observador Passivo',c:C.t,d:'Monitora e alerta sobre desvios sem intervenção ativa. Threshold checks síncronos, anomaly detection assíncrona. O BOS não precisa do fundador para detectar um problema.'},
+  {e:'💬',t:'Conselheiro Ativo',c:C.b,d:'Gera recomendações quando consultado ou quando thresholds são violados. Responde perguntas estratégicas com contexto completo do BOS + benchmarks.'},
+  {e:'📝',t:'Planejador Estrutural',c:C.p,d:'Participa ativamente do planejamento de ciclos e retrospectivas com análises baseadas em dados históricos da empresa e padrões da base EGE.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Como a IA Melhora Cada Cadência do BOS</div>
+<div class="tw"><table><thead><tr><th>Cadência</th><th>O que a IA Prepara</th><th>Quando Entregue</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Daily</span></td><td>Resumo de 3 bullet points: concluído ontem · vencendo hoje · em risco de atraso</td><td>1h antes do standup</td></tr>
+<tr><td><span class="badge bb">Weekly</span></td><td>Briefing completo: KPIs com mudanças de status · progresso de iniciativas · decisões pendentes · insight estratégico da semana</td><td>30min antes da reunião</td></tr>
+<tr><td><span class="badge bo">Monthly</span></td><td>Relatório narrado em linguagem natural: análise de KPIs com causa raiz · progresso das iniciativas · 3 maiores riscos · 3 maiores oportunidades · benchmark setorial</td><td>Véspera da revisão</td></tr>
+<tr><td><span class="badge bp">Quarterly</span></td><td>Análise completa do ciclo encerrado + padrões identificados + sugestões de objetivos e iniciativas + primeiro rascunho do plano do próximo ciclo</td><td>48h antes do planning</td></tr>
+</tbody></table></div></div>`}
+
+function p8(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 09 — Business Evolution Model</div>
+    <div class="sh-title">Os 4 Estágios de Evolução no BOS</div>
+    <div class="sh-desc">O BOS é construído progressivamente. Tentar implementar o BOS completo numa empresa em Estágio 1 é como instalar um sistema enterprise num computador com 512MB de RAM: o sistema trava. O EGE guia as empresas pelos 4 estágios com implementações graduais que respeitam o momento de cada negócio.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Estágios de Evolução</div>
+<div class="stages">
+${[
+  {cls:'s0',s:'ESTÁGIO 1',n:'Organização Inicial',score:'Score 0–25',c:C.r,focus:'Criar visibilidade básica — o fundador não sabe exatamente o que tem',items:['Propósito e visão de 1 ano em 1 página','3 prioridades do trimestre definidas','Papel de cada pessoa em 1 frase','3 SOPs dos processos mais problemáticos','Standup diário + reunião semanal','5 KPIs básicos acompanhados semanalmente']},
+  {cls:'s1',s:'ESTÁGIO 2',n:'Operações Estruturadas',score:'Score 26–50',c:C.o,focus:'Criar previsibilidade — quanto vou faturar nos próximos 90 dias?',items:['OKRs simplificados por ciclo','5–8 processos core com SOPs e KPIs','Revisão mensal de performance','RACI para todos os processos core','Dashboard dos 3 níveis de KPIs completo','Budget trimestral e projeção de caixa']},
+  {cls:'s2',s:'ESTÁGIO 3',n:'Sistemas Escaláveis',score:'Score 51–75',c:C.b,focus:'Crescer sem quebrar — mais clientes, mais equipe, mesma qualidade',items:['6 workflows essenciais automatizados no n8n','Líderes de área com autonomia L1 e L2','OKRs cascateados: empresa → área → individual','Sistema de onboarding em 30 dias','Planejamento trimestral com AI Advisor','Delegação estruturada sem supervisão diária']},
+  {cls:'s3',s:'ESTÁGIO 4',n:'Crescimento Estratégico',score:'Score 76–100',c:C.g,focus:'Crescimento intencional — expansão, novos mercados, vantagens duráveis',items:['AI Advisor como parceiro ativo de toda decisão estratégica','Benchmarking competitivo revisado mensalmente','BOS como cultura — não como sistema externo','Due diligence de BOS para M&A e parcerias','Inteligência estratégica integrada ao planejamento','Inovação e ecossistema: novos modelos de receita']},
+].map(s=>`<div class="sc ${s.cls}"><div class="sc-stage" style="color:${s.c}">${s.s}</div><div class="sc-name">${s.n}</div><div class="sc-score" style="color:${s.c};font-weight:700">${s.score} · ${s.focus}</div><ul class="sc-items">${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Guia de Transição Entre Estágios</div>
+<div class="tw"><table><thead><tr><th>Transição</th><th>Sinal de Prontidão</th><th>Ação de Transição</th><th>Tempo Médio</th></tr></thead><tbody>
+<tr><td><span class="badge br">E1 → E2</span></td><td>Cadências semanais mantidas por 6+ semanas sem esforço extra</td><td>Adicionar revisão mensal + formalizar OKRs simplificados</td><td>2–3 ciclos</td></tr>
+<tr><td><span class="badge bo">E2 → E3</span></td><td>Processos core seguidos sem supervisão direta do CEO</td><td>Implementar automações + treinar líderes de área para autonomia</td><td>3–4 ciclos</td></tr>
+<tr><td><span class="badge bg">E3 → E4</span></td><td>Liderança delega L1 e L2 confortavelmente, CEO foca no estratégico</td><td>Integrar AI Advisor como parceiro de planejamento estratégico</td><td>4–6 ciclos</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Como o EGE Diagnostica e Guia a Evolução</div>
+<div class="grid2">
+${[
+  {e:'🔬',t:'Diagnóstico de Maturidade',c:C.b,d:'O sistema de diagnóstico avalia 9 dimensões da empresa e gera o score de maturidade (0–100) que mapeia diretamente para o estágio do BOS. Realizado a cada ciclo.'},
+  {e:'🗺',t:'Guia de Implementação',c:C.g,d:'Para cada estágio, o EGE gera um guia priorizado de implementação — o que implementar primeiro, o que vem depois, e por que essa sequência importa.'},
+  {e:'📊',t:'Progresso por Componente',c:C.p,d:'Dashboard de maturidade por componente do BOS: qual está completo, qual está em progresso, qual ainda não foi iniciado — visibilidade clara do estado do sistema.'},
+  {e:'🤖',t:'Recomendações de Evolução',c:C.o,d:'O AI Advisor identifica quando a empresa está pronta para avançar de estágio e recomenda as ações de transição específicas com base no histórico e benchmarks.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p9(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 10 — Final Architecture</div>
+    <div class="sh-title">Arquitetura Completa do BOS — 5 Camadas + 4 Integrações</div>
+    <div class="sh-desc">O BOS como sistema integrado. 5 camadas internas (Strategic Foundation, Operating Layer, Rhythm & Review, Performance, AI Integration) conectadas com os 4 sistemas da plataforma EGE. Cada componente é mais poderoso por causa dos outros.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 5 Camadas da Arquitetura BOS</div>
+<div class="arch">
+${[
+  {cls:'a0',n:'LAYER 1',title:'Strategic Foundation',boxes:['Visão & Estratégia','Metas & Prioridades Anuais','Cascata de Metas','Posicionamento & Valores'],c:C.g},
+  {cls:'a1',n:'LAYER 2',title:'Organizational Operating Layer',boxes:['Alinhamento de Equipe (RACI · Scorecards)','Gestão de Processos (SOPs · PDCA)','Sistema de Execução (Ciclo 12sem · Tarefas)'],c:C.b},
+  {cls:'a2',n:'LAYER 3',title:'Rhythm & Review Layer',boxes:['Daily Standup (15min)','Weekly Exec Review (60min)','Monthly Strategic Review (120min)','Quarterly Growth Planning (meio dia)'],c:C.o},
+  {cls:'a3',n:'LAYER 4',title:'Performance Layer',boxes:['KPIs de Saúde (5–7 semanal)','KPIs Estratégicos (mensal)','KPIs Operacionais (tempo real)','Alertas P0–P3 automáticos'],c:C.p},
+  {cls:'a4',n:'LAYER 5',title:'AI Integration Layer',boxes:['AI Advisor (chat · insights · alerts)','Diagnóstico de Maturidade','Growth Engine (plano · ciclo)','Performance Monitor (KPIs · benchmarks)'],c:C.t},
+].map(l=>`<div class="arch-layer ${l.cls}"><div class="arch-row"><div class="arch-label" style="color:${l.c}">${l.n}</div><div class="arch-title" style="color:${l.c}">${l.title}</div></div><div class="arch-boxes">${l.boxes.map(b=>`<div class="arch-box">${b}</div>`).join('')}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Integração com os 4 Sistemas da Plataforma EGE</div>
+<div class="tw"><table><thead><tr><th>Sistema EGE</th><th>Como se Integra com o BOS</th><th>Fluxo de Dados</th></tr></thead><tbody>
+<tr><td><span class="badge bg">🤖 AI Advisor</span></td><td>Sistema nervoso do BOS — recebe o estado completo de todos os componentes como contexto. Gera briefings, alertas, análises e sugestões de planejamento.</td><td>BOS state → AI Brain → insights + recomendações → BOS</td></tr>
+<tr><td><span class="badge bb">🔬 Diagnóstico</span></td><td>Ponto de partida de todo planejamento. O score de maturidade determina o estágio do BOS e guia a sequência de implementação de componentes.</td><td>Diagnóstico score → Estágio BOS → Guia de implementação</td></tr>
+<tr><td><span class="badge bp">📈 Growth Engine</span></td><td>Recebe as Prioridades Anuais do BOS e gera o roadmap de ciclo. Os Objetivos de Ciclo do BOS são validados ou sugeridos pelo Growth Engine com base no histórico.</td><td>PAs do BOS → Growth Engine → Objetivos de Ciclo + plano</td></tr>
+<tr><td><span class="badge bt">📊 Performance Monitor</span></td><td>Acompanha em tempo real os KPIs definidos no BOS. Gera alertas P0–P3 que alimentam as cerimônias de revisão com informação tempestiva e acionável.</td><td>KPIs do BOS → Monitor → alertas + análise → cerimônias</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 5 Princípios de Design do BOS</div>
+<div class="grid3">
+${[
+  {e:'📏',t:'Simplicidade Progressiva',c:C.g,d:'O BOS começa simples e adiciona complexidade apenas quando a empresa está pronta. Nunca impõe estrutura além da capacidade de absorção atual.'},
+  {e:'🔄',t:'Feedback Loops Explícitos',c:C.b,d:'Todo componente tem entrada e saída claras. O que alimenta o sistema e o que ele produz. Sem loops cegos — toda ação tem rastreabilidade de impacto.'},
+  {e:'👤',t:'Accountability sem Burocracia',c:C.p,d:'Todo processo, meta e decisão tem um responsável único — mas o sistema não cria overhead desnecessário. Clareza, não complicação.'},
+  {e:'📊',t:'Dados sobre Instinto',c:C.o,d:'O BOS usa dados para orientar decisões, mas define critérios claros para quando o instinto é necessário. Estrutura sem rigidez.'},
+  {e:'🧬',t:'Adaptação Contínua',c:C.t,d:'O BOS não é um sistema estático. Evolui com a empresa, com o aprendizado acumulado dos ciclos, e com as mudanças do mercado.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">O BOS como Vantagem Competitiva Sustentável</div>
+<div class="cll">"Uma empresa que opera com BOS por 4 ciclos tem uma vantagem competitiva concreta: toma decisões baseadas em dados, executa com disciplina consistente, aprende mais rápido com seus erros, e consegue atrair e reter pessoas melhores porque oferece clareza e propósito. Em um mercado onde a maioria das PMEs opera no caos, isso é uma vantagem sustentável."</div>
+<div style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;font-size:11px;color:var(--mid);font-family:'JetBrains Mono',monospace;line-height:2">
+EGE Business Operating System · v1.0 · Março 2026 · Chief Business Systems Architect<br>
+696 parágrafos · 10 seções · 6 componentes · 4 cadências · 4 estágios · 5 camadas de arquitetura<br>
+Integrado com: AI Advisor (AI Brain) · Sistema de Diagnóstico · Growth Engine · Performance Monitor
+</div></div>`}
+
+const panels=[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

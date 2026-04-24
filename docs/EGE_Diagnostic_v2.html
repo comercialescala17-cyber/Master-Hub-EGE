@@ -1,0 +1,588 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Diagnóstico Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030A14;--s1:#071220;--s2:#0B1A2C;--s3:#0F2238;
+  --green:#00C28A;--blue:#1A5FD4;--purple:#7C3AED;
+  --orange:#E8600A;--gold:#C47A00;--teal:#0B8FA8;
+  --red:#CC2828;--yellow:#B58800;
+  --txt:#E8F0FC;--muted:#5E7A9A;--dim:#3A5470;
+  --bd:#1A3050;--bd2:#243C58;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.5}
+
+/* glow bg */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 45% at 8% 12%,rgba(0,194,138,.055),transparent),
+    radial-gradient(ellipse 50% 55% at 92% 88%,rgba(26,95,212,.045),transparent)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:52px 20px 110px;position:relative;z-index:1}
+
+/* ── HERO ─────────────────────────────── */
+.hero{text-align:center;margin-bottom:60px;animation:rise .9s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,194,138,.25);background:rgba(0,194,138,.07);
+  color:var(--green);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.2s infinite}
+h1{font-size:clamp(36px,6.5vw,70px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:18px}
+h1 .hi{background:linear-gradient(125deg,var(--green) 0%,var(--blue) 55%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:15.5px;color:var(--muted);max-width:520px;margin:0 auto;font-weight:400;line-height:1.75}
+
+/* ── STAT ROW ─────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:56px;animation:rise .9s .07s ease both}
+@media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 12px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--green)}.sb::after{background:var(--blue)}.so::after{background:var(--orange)}.sp::after{background:var(--purple)}.sy::after{background:var(--gold)}
+.sv{font-size:28px;font-weight:900;line-height:1}
+.sg .sv{color:var(--green)}.sb .sv{color:var(--blue)}.so .sv{color:var(--orange)}.sp .sv{color:var(--purple)}.sy .sv{color:var(--gold)}
+.sl{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ── NAV ──────────────────────────────── */
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:44px;animation:rise .9s .12s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:14px 12px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden}
+.nb::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .22s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::before,.nb:hover::before{opacity:1}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.nb-t{font-size:12.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.nb.c0::before,.nb.c1::before{background:var(--green)}
+.nb.c2::before,.nb.c3::before{background:var(--blue)}
+.nb.c4::before,.nb.c5::before{background:var(--purple)}
+
+/* ── PANEL ────────────────────────────── */
+.panel{display:none;animation:rise .4s ease both}
+.panel.on{display:block}
+
+/* ── SECTION HEAD ─────────────────────── */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:24px 28px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:18px;
+  margin-bottom:28px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.sh-icon{font-size:38px;flex-shrink:0}
+.sh-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:22px;font-weight:800;color:var(--txt);margin-bottom:7px;line-height:1.2}
+.sh-desc{font-size:13.5px;color:var(--muted);line-height:1.65;max-width:640px}
+
+/* ── BLOCK ────────────────────────────── */
+.blk{margin-bottom:28px}
+.blk-h{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* ── TABLE ────────────────────────────── */
+.t-wrap{overflow-x:auto;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--green);font-weight:700;
+  padding:9px 13px;text-align:left;font-size:10.5px;letter-spacing:.07em;white-space:nowrap}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+tbody tr:last-child td{border-bottom:none}
+
+/* ── CARDS ────────────────────────────── */
+.cards-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:11px;margin-bottom:4px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;
+  padding:18px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-2px);border-color:var(--bd2)}
+.ce{font-size:26px;margin-bottom:9px}
+.ct{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:5px}
+.cb{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ── AREA GRID ────────────────────────── */
+.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px}
+.ac{background:var(--s1);border:1px solid var(--bd);border-radius:14px;
+  padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;cursor:default}
+.ac:hover{transform:translateY(-2px)}
+.ac-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.ac-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.ac-icon{font-size:22px}
+.ac-w{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  padding:2px 8px;border-radius:5px;background:var(--s2)}
+.ac-name{font-size:13.5px;font-weight:800;color:var(--txt);margin-bottom:6px}
+.ac-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.ac-gap{padding:7px 10px;background:var(--s2);border-radius:7px;border-left:2px solid var(--red)}
+.ac-gl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:2px}
+.ac-gt{font-size:11.5px;color:var(--muted)}
+
+/* ── QUESTIONS ────────────────────────── */
+.qa{margin-bottom:26px}
+.qa-hd{display:flex;align-items:center;gap:12px;padding:13px 17px;
+  border-radius:12px;cursor:pointer;transition:opacity .2s;user-select:none}
+.qa-hd:hover{opacity:.85}
+.qa-nm{font-size:13.5px;font-weight:800;color:var(--txt);flex:1}
+.qa-cnt{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  padding:2px 8px;border-radius:5px;background:var(--s2);color:var(--muted)}
+.qa-arr{color:var(--muted);font-size:15px;transition:transform .25s;flex-shrink:0}
+.qa-list{display:none;flex-direction:column;gap:9px;padding:0 2px}
+.qa-list.open{display:flex}
+.qi{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px 18px}
+.qi-n{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.qi-q{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:8px;line-height:1.5}
+.qi-r{font-size:12px;color:var(--muted);display:flex;gap:6px;line-height:1.55;align-items:flex-start}
+.qi-r em{color:var(--green);font-style:normal;font-weight:700;flex-shrink:0}
+
+/* ── SCALE ────────────────────────────── */
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:11px 8px;text-align:center}
+.sc-n{font-size:22px;font-weight:900;line-height:1}
+.sc1 .sc-n{color:var(--red)}.sc2 .sc-n{color:var(--orange)}.sc3 .sc-n{color:var(--yellow)}
+.sc4 .sc-n{color:var(--blue)}.sc5 .sc-n{color:var(--green)}
+.sc-l{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.35}
+
+/* ── LEVELS ───────────────────────────── */
+.levels{display:flex;flex-direction:column;gap:10px}
+.lv{display:flex;align-items:center;gap:14px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:13px;padding:14px 18px}
+.lv-n{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:900;min-width:40px}
+.lv-info{flex:1}
+.lv-name{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:2px}
+.lv-range{font-family:'JetBrains Mono',monospace;font-size:10.5px;margin-bottom:4px;font-weight:600}
+.lv-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.lv-tag{font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap;text-align:center;min-width:130px}
+
+/* ── REPORT BLOCKS ────────────────────── */
+.rblks{display:flex;flex-direction:column;gap:11px}
+.rb{background:var(--s1);border:1px solid var(--bd);border-radius:14px;
+  padding:18px 20px;display:flex;gap:14px;align-items:flex-start}
+.rb-n{min-width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0}
+.rb-t{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:5px}
+.rb-d{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ── PIPELINE ─────────────────────────── */
+.pipe{display:flex;flex-direction:column;gap:0}
+.ps{display:flex;position:relative;gap:0}
+.ps::before{content:'';position:absolute;left:15px;top:34px;bottom:-10px;
+  width:2px;background:var(--bd)}
+.ps:last-child::before{display:none}
+.ps-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--bd2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  flex-shrink:0;z-index:1;background:var(--bg);margin-top:6px}
+.ps-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:13px 17px;margin-left:14px;margin-bottom:12px}
+.ps-lbl{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:3px}
+.ps-t{font-size:13.5px;font-weight:800;color:var(--txt);margin-bottom:4px}
+.ps-d{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ── CALLOUT ──────────────────────────── */
+.cll{background:rgba(0,194,138,.04);border:1px solid rgba(0,194,138,.18);
+  border-left:4px solid var(--green);border-radius:0 13px 13px 0;
+  padding:15px 20px;margin:16px 0;font-size:13px;font-style:italic;
+  color:var(--txt);line-height:1.75}
+
+/* ── BADGE ────────────────────────────── */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,194,138,.12);color:var(--green)}
+.bb{background:rgba(26,95,212,.12);color:var(--blue)}
+.bo{background:rgba(232,96,10,.12);color:var(--orange)}
+.bp{background:rgba(124,58,237,.12);color:var(--purple)}
+.by{background:rgba(196,122,0,.12);color:var(--gold)}
+.br{background:rgba(204,40,40,.12);color:var(--red)}
+
+/* ── FORMULA ─────────────────────────── */
+.formula{background:rgba(26,95,212,.05);border:1px solid rgba(26,95,212,.2);
+  border-radius:11px;padding:14px 18px;margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--blue)}
+
+/* ── ANIM ─────────────────────────────── */
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="chip"><span class="chip-dot"></span>Arquitetura do Diagnóstico</div>
+  <h1>Sistema de <span class="hi">Diagnóstico</span><br>Empresarial Inteligente</h1>
+  <p class="hero-sub">50 perguntas estratégicas · 10 áreas de análise · 5 níveis de maturidade · Relatório completo em 60 segundos</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="st sg"><div class="sv">50</div><div class="sl">Perguntas</div></div>
+  <div class="st sb"><div class="sv">10</div><div class="sl">Áreas</div></div>
+  <div class="st so"><div class="sv">5</div><div class="sl">Níveis</div></div>
+  <div class="st sp"><div class="sv">~20</div><div class="sl">Minutos</div></div>
+  <div class="st sy"><div class="sv">6</div><div class="sl">Blocos no Relatório</div></div>
+</div>
+
+<!-- NAV -->
+<div class="nav" id="nav">
+  <div class="nb c0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb c1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📐 10 Áreas de Análise</div></div>
+  <div class="nb c2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">❓ 50 Perguntas</div></div>
+  <div class="nb c3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">⚙️ Lógica de Análise</div></div>
+  <div class="nb c4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">📊 Relatório</div></div>
+  <div class="nb c5" onclick="show(5)"><div class="nb-n">SEÇÃO 06</div><div class="nb-t">🤖 Conexão com IA</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────
+const areas = [
+  {icon:"🧭",col:"var(--green)",n:"01",name:"Liderança",w:"12%",wc:"bg",
+   desc:"Clareza de visão, tomada de decisão por dados, delegação real e desenvolvimento de outros líderes.",
+   gap:"Empresa centralizada — não funciona sem o fundador",
+   qs:[
+    {n:1,q:"Você tem uma visão de futuro clara, documentada e comunicada ativamente para sua equipe?",r:"presença de visão estratégica e capacidade de comunicar propósito gerando alinhamento"},
+    {n:2,q:"Você consegue se ausentar da operação por 2 semanas sem impacto significativo no negócio?",r:"grau real de dependência do fundador e profundidade da delegação"},
+    {n:3,q:"Suas decisões estratégicas importantes são baseadas em dados e análises — não apenas intuição?",r:"maturidade e método da tomada de decisão na liderança"},
+    {n:4,q:"Além de você, a empresa tem líderes capazes de conduzir times e projetos estratégicos relevantes?",r:"desenvolvimento de outras lideranças e risco de centralização"},
+    {n:5,q:"Você solicita e recebe feedbacks honestos da equipe sobre sua liderança e os usa para melhorar?",r:"cultura de feedback 360° e abertura da liderança à melhoria contínua"},
+  ]},
+  {icon:"♟",col:"var(--blue)",n:"02",name:"Estratégia",w:"12%",wc:"bb",
+   desc:"Plano estratégico documentado, posicionamento diferenciado, inovação estruturada e revisão periódica.",
+   gap:"Opera no tático sem visão de médio prazo",
+   qs:[
+    {n:6,q:"Sua empresa tem um plano estratégico documentado para 12 meses com metas claras e priorizadas?",r:"existência, qualidade e usabilidade do planejamento estratégico"},
+    {n:7,q:"Você sabe exatamente o que diferencia sua empresa da concorrência — do ponto de vista do cliente?",r:"clareza e profundidade do posicionamento e da proposta de valor"},
+    {n:8,q:"Você monitora regularmente as tendências do setor e adapta sua estratégia conforme necessário?",r:"inteligência de mercado e capacidade de adaptação estratégica proativa"},
+    {n:9,q:"Sua empresa tem um processo estruturado de inovação — testa novos produtos, serviços ou modelos?",r:"cultura de inovação sistemática e capacidade de evolução da oferta"},
+    {n:10,q:"Você revisa e atualiza sua estratégia formalmente pelo menos uma vez por trimestre?",r:"disciplina de planejamento, revisão e adaptação ao contexto de mercado"},
+  ]},
+  {icon:"💰",col:"var(--gold)",n:"03",name:"Gestão Financeira",w:"15%",wc:"by",
+   desc:"DRE, fluxo de caixa projetado, margem de contribuição, separação PF/PJ, reserva e metas financeiras.",
+   gap:"Crescimento sem rentabilidade e sem visibilidade de caixa",
+   qs:[
+    {n:11,q:"Você tem um DRE atualizado mensalmente que acompanha com regularidade?",r:"controle financeiro fundamental e visibilidade dos resultados reais do negócio"},
+    {n:12,q:"Você conhece com precisão a margem de contribuição dos seus principais produtos e serviços?",r:"consciência da rentabilidade real e capacidade de precificação estratégica"},
+    {n:13,q:"Sua empresa tem uma projeção de fluxo de caixa para os próximos 90 dias, atualizada mensalmente?",r:"planejamento financeiro ativo e previsibilidade de caixa para decisões"},
+    {n:14,q:"As finanças pessoais e empresariais são completamente separadas — contas, cartões e investimentos?",r:"saúde financeira básica e eliminação do risco de capital mal gerido"},
+    {n:15,q:"Sua empresa mantém uma reserva financeira equivalente a pelo menos 3 meses de custos fixos?",r:"resiliência financeira e capacidade de atravessar períodos de baixa demanda"},
+    {n:16,q:"Você tem metas financeiras anuais claras e acompanha o progresso mensalmente?",r:"disciplina de gestão financeira orientada a objetivos mensuráveis"},
+  ]},
+  {icon:"📣",col:"var(--purple)",n:"04",name:"Marketing",w:"10%",wc:"bp",
+   desc:"ICP definido, geração de demanda previsível, CAC por canal, presença digital efetiva e retenção de clientes.",
+   gap:"Depende exclusivamente de indicações",
+   qs:[
+    {n:17,q:"Sua empresa tem um Perfil de Cliente Ideal (ICP) claramente definido e documentado?",r:"clareza sobre o público-alvo ideal e eficiência direcionada da comunicação"},
+    {n:18,q:"Você gera leads de forma consistente e previsível — sem depender exclusivamente de indicações?",r:"capacidade de geração de demanda estruturada e independente"},
+    {n:19,q:"Você conhece o Custo de Aquisição de Cliente (CAC) de cada canal de marketing que utiliza?",r:"eficiência do investimento em marketing e clareza do retorno por canal"},
+    {n:20,q:"Sua presença digital gera contatos qualificados de forma regular?",r:"qualidade, consistência e efetividade da estratégia de presença online"},
+    {n:21,q:"Você tem uma estratégia ativa de retenção com ações estruturadas de pós-venda e relacionamento?",r:"foco em LTV, capacidade de fidelização e receita recorrente"},
+  ]},
+  {icon:"🎯",col:"var(--orange)",n:"05",name:"Vendas",w:"12%",wc:"bo",
+   desc:"Processo comercial documentado, CRM ativo, taxas de conversão, ciclo de vendas e metas semanais.",
+   gap:"Pipeline invisível, vendas dependem de 1 pessoa",
+   qs:[
+    {n:22,q:"Sua empresa tem um processo de vendas documentado com etapas e critérios de avanço claros?",r:"maturidade e repetibilidade do processo comercial como ativo da empresa"},
+    {n:23,q:"Sua equipe usa ativamente um CRM para registrar oportunidades, histórico e próximos passos?",r:"uso de tecnologia em vendas e visibilidade total do pipeline"},
+    {n:24,q:"Você conhece sua taxa de conversão em cada etapa do funil — do primeiro contato ao fechamento?",r:"clareza granular sobre a eficiência e os gargalos do processo comercial"},
+    {n:25,q:"Sua equipe de vendas recebe treinamento e feedback estruturado regularmente?",r:"investimento em desenvolvimento contínuo da força comercial"},
+    {n:26,q:"Você sabe qual é o ciclo médio de vendas e trabalha ativamente para reduzi-lo?",r:"consciência e gestão ativa do tempo médio de conversão"},
+    {n:27,q:"As metas de vendas são claras, compartilhadas e acompanhadas em reuniões semanais?",r:"cultura de metas, transparência e ritmo de acompanhamento comercial"},
+  ]},
+  {icon:"⚙️",col:"var(--teal)",n:"06",name:"Operações",w:"10%",wc:"bb",
+   desc:"SLA cumprido, taxa de retrabalho, capacidade de escala, qualidade de entrega e indicadores operacionais.",
+   gap:"Retrabalho alto, empresa não escala sem colapsar",
+   qs:[
+    {n:28,q:"Sua operação entrega consistentemente dentro do prazo e com a qualidade prometida ao cliente?",r:"confiabilidade operacional, SLA e consistência na experiência de entrega"},
+    {n:29,q:"Você mede regularmente a taxa de retrabalho e tem metas ativas para redução contínua?",r:"eficiência operacional e cultura sistemática de qualidade"},
+    {n:30,q:"Sua capacidade produtiva suporta crescimento de 50% na demanda sem colapso de qualidade?",r:"resiliência, capacidade de escala e preparação estrutural para crescimento"},
+    {n:31,q:"Você acompanha indicadores operacionais regularmente (tempo de entrega, NPS, taxa de defeitos)?",r:"maturidade da gestão operacional orientada por dados"},
+    {n:32,q:"Os principais gargalos operacionais estão mapeados e têm plano de resolução ativo?",r:"consciência dos limitadores e orientação proativa à melhoria"},
+  ]},
+  {icon:"📋",col:"var(--blue)",n:"07",name:"Processos",w:"10%",wc:"bb",
+   desc:"SOPs documentados, onboarding padronizado, automações, melhoria contínua e accountability claro.",
+   gap:"Processos existem só na cabeça das pessoas",
+   qs:[
+    {n:33,q:"Os processos críticos estão documentados de forma que um novo colaborador consiga executá-los com qualidade?",r:"documentação real dos processos e independência de pessoas específicas"},
+    {n:34,q:"Sua empresa tem processos de onboarding padronizados para novos clientes e colaboradores?",r:"capacidade de crescer mantendo consistência de experiência e qualidade"},
+    {n:35,q:"Sua empresa utiliza automações para eliminar tarefas repetitivas e de baixo valor?",r:"maturidade digital, eficiência operacional e uso de tecnologia"},
+    {n:36,q:"Existe um processo formal e regular de identificação e melhoria de processos ineficientes?",r:"cultura de melhoria contínua e inovação operacional sistemática"},
+    {n:37,q:"Os processos financeiros, comerciais e operacionais têm donos claros com responsabilidades definidas?",r:"accountability organizacional e gestão por responsabilidade"},
+  ]},
+  {icon:"👥",col:"var(--purple)",n:"08",name:"Equipe",w:"10%",wc:"bp",
+   desc:"Mapa de competências, turnover, metas individuais, feedback mensal e investimento em treinamento.",
+   gap:"Alta rotatividade sem causa mapeada",
+   qs:[
+    {n:38,q:"Você tem um mapa de competências da equipe atualizado que orienta decisões de contratação?",r:"gestão estratégica de pessoas e planejamento de capital humano"},
+    {n:39,q:"A taxa de turnover voluntário anual da sua empresa está abaixo de 20%?",r:"retenção de talentos, clima organizacional e atratividade como empregador"},
+    {n:40,q:"Cada colaborador tem metas individuais claras e recebe feedback estruturado mensalmente?",r:"gestão de performance individual e cultura de desenvolvimento contínuo"},
+    {n:41,q:"Sua empresa investe em treinamento e desenvolvimento da equipe de forma estruturada e recorrente?",r:"investimento em capital humano e capacidade de evolução das competências"},
+    {n:42,q:"A produtividade individual da equipe é mensurada e comparada com benchmarks claros?",r:"gestão baseada em dados de performance e cultura de alta produtividade"},
+  ]},
+  {icon:"🌱",col:"var(--green)",n:"09",name:"Cultura",w:"5%",wc:"bg",
+   desc:"Valores praticados no cotidiano, comunicação bidirecional, pesquisa de clima e senso de propósito.",
+   gap:"Valores no papel, discurso ≠ prática real",
+   qs:[
+    {n:43,q:"Os valores da empresa são conhecidos por todos e se refletem nos comportamentos do cotidiano?",r:"autenticidade da cultura e alinhamento real entre discurso e prática"},
+    {n:44,q:"A comunicação interna é clara, frequente e bidirecional — os colaboradores se sentem ouvidos?",r:"qualidade da comunicação organizacional e engajamento real da equipe"},
+    {n:45,q:"Você realiza pesquisas de clima regularmente e toma ações visíveis sobre os resultados?",r:"escuta ativa da equipe e responsividade da liderança aos sinais culturais"},
+    {n:46,q:"Os colaboradores compreendem o propósito da empresa e sentem que seu trabalho contribui para ele?",r:"senso de propósito, engajamento profundo e motivação intrínseca"},
+  ]},
+  {icon:"🚀",col:"var(--gold)",n:"10",name:"Crescimento",w:"4%",wc:"by",
+   desc:"Estratégia de expansão documentada, novos mercados, barreiras mapeadas e acesso a capital.",
+   gap:"Crescimento oportunista sem estrutura de suporte",
+   qs:[
+    {n:47,q:"Sua empresa tem uma estratégia de crescimento documentada para os próximos 2 anos com marcos?",r:"visão de expansão, planejamento de crescimento e orientação ao futuro"},
+    {n:48,q:"Sua empresa está explorando ativamente novos mercados, canais ou segmentos de forma estruturada?",r:"proatividade na busca de crescimento e capacidade de diversificação"},
+    {n:49,q:"As principais barreiras ao crescimento estão identificadas e têm planos concretos de superação?",r:"consciência dos limitadores e gestão de riscos de crescimento"},
+    {n:50,q:"Sua empresa tem acesso a capital suficiente para financiar o crescimento planejado?",r:"capacidade financeira de sustentar expansão sem comprometer a operação"},
+  ]},
+];
+
+// ─────────────────────────────────────────────────────
+// PANELS
+// ─────────────────────────────────────────────────────
+function panelObjective(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--green)"></div>
+    <div class="sh-icon">🎯</div>
+    <div><div class="sh-tag" style="color:var(--green)">Seção 01 — Objetivo</div>
+      <div class="sh-title">Propósito do Diagnóstico</div>
+      <div class="sh-desc">Transformar percepções vagas em um mapa objetivo, mensurável e priorizado da realidade da empresa — em 20 minutos.</div>
+    </div>
+  </div>
+  <div class="cll">"O diagnóstico não é um questionário. É a primeira conversa estratégica real entre o empresário e a plataforma — e define toda a experiência que vem depois."</div>
+  <div class="blk"><div class="blk-h">Propósito Central</div>
+  <div class="cards-3">
+    <div class="card"><div class="ce">🔍</div><div class="ct">Revelar a Realidade</div><div class="cb">Visão clara e objetiva do estado atual da empresa, sem os filtros de quem está dentro do negócio todos os dias.</div></div>
+    <div class="card"><div class="ce">⚡</div><div class="ct">Priorizar Intervenções</div><div class="cb">Mostrar onde agir primeiro para gerar o maior impacto no menor tempo, evitando dispersão de energia e recursos.</div></div>
+    <div class="card"><div class="ce">🧬</div><div class="ct">Criar o DNA Empresarial</div><div class="cb">Gerar o contexto fundamental que alimenta toda a IA consultora para personalizar todas as interações futuras.</div></div>
+    <div class="card"><div class="ce">📍</div><div class="ct">Estabelecer o Ponto Zero</div><div class="cb">Criar a linha de base para medir a evolução real da empresa ao longo do tempo — diagnóstico a diagnóstico.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Decisões Apoiadas pelo Diagnóstico</div>
+  <div class="t-wrap"><table><thead><tr><th>Decisão</th><th>Sem Diagnóstico</th><th>Com Diagnóstico</th></tr></thead><tbody>
+  <tr><td>Onde investir primeiro</td><td>Intuição ou urgência do momento</td><td>Área de menor score com maior impacto estratégico</td></tr>
+  <tr><td>O que contratar</td><td>Pressão reativa do dia a dia</td><td>Gap de competência identificado na análise de equipe</td></tr>
+  <tr><td>Qual processo melhorar</td><td>O que mais incomoda agora</td><td>Gargalo operacional com maior custo sistêmico</td></tr>
+  <tr><td>Como crescer</td><td>Copiar o concorrente</td><td>Plano baseado no perfil real de maturidade</td></tr>
+  <tr><td>Quando escalar</td><td>Sensação subjetiva de estar pronto</td><td>Score mínimo por área antes da expansão</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Resultados Entregues</div>
+  <div class="t-wrap"><table><thead><tr><th>Resultado</th><th>O que é</th><th>Disponível em</th></tr></thead><tbody>
+  <tr><td><span class="badge bg">Score por Área</span></td><td>Nota 0–100 em cada uma das 10 dimensões</td><td>Imediato</td></tr>
+  <tr><td><span class="badge bb">Score Global</span></td><td>Índice de maturidade em 5 níveis classificatórios</td><td>Imediato</td></tr>
+  <tr><td><span class="badge bp">Radar Chart</span></td><td>Visualização gráfica de forças e fraquezas</td><td>Imediato</td></tr>
+  <tr><td><span class="badge br">Top 3 Gargalos</span></td><td>Problemas que mais custam crescimento agora</td><td>Imediato</td></tr>
+  <tr><td><span class="badge bg">Top 3 Oportunidades</span></td><td>Alavancas de maior retorno disponíveis</td><td>Imediato</td></tr>
+  <tr><td><span class="badge by">Plano 90 dias</span></td><td>5 iniciativas prioritárias geradas pela IA</td><td>60 segundos</td></tr>
+  </tbody></table></div></div>`;
+}
+
+function panelAreas(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--blue)"></div>
+    <div class="sh-icon">📐</div>
+    <div><div class="sh-tag" style="color:var(--blue)">Seção 02 — Áreas</div>
+      <div class="sh-title">10 Áreas de Análise</div>
+      <div class="sh-desc">Cada área tem peso estratégico próprio, indicadores específicos e gargalo típico identificado pelo algoritmo.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Visão Geral dos Pesos</div>
+  <div class="t-wrap"><table><thead><tr><th>#</th><th>Área</th><th>Peso</th><th>Foco Principal</th></tr></thead><tbody>
+  ${areas.map((a,i)=>`<tr><td><span class="badge ${a.wc}">${a.n}</span></td><td>${a.icon} ${a.name}</td><td><strong>${a.w}</strong></td><td>${a.desc.split(',')[0]}</td></tr>`).join('')}
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Detalhamento por Área</div>
+  <div class="areas">
+    ${areas.map(a=>`
+    <div class="ac">
+      <div class="ac-bar" style="background:${a.col}"></div>
+      <div class="ac-top"><span class="ac-icon">${a.icon}</span><span class="ac-w" style="color:${a.col}">${a.w}</span></div>
+      <div class="ac-name">Área ${a.n} — ${a.name}</div>
+      <div class="ac-desc">${a.desc}</div>
+      <div class="ac-gap"><div class="ac-gl">⚠ Gargalo Típico</div><div class="ac-gt">${a.gap}</div></div>
+    </div>`).join('')}
+  </div></div>`;
+}
+
+function panelQuestions(){
+  const html = areas.map(a=>`
+    <div class="qa">
+      <div class="qa-hd" style="background:var(--s1);border:1px solid var(--bd);border-left:3px solid ${a.col};border-radius:12px" onclick="toggleQ(this)">
+        <span style="font-size:18px">${a.icon}</span>
+        <span class="qa-nm">Área ${a.n} — ${a.name}</span>
+        <span class="qa-cnt">${a.qs.length} perguntas</span>
+        <span class="qa-arr">▸</span>
+      </div>
+      <div class="qa-list">
+        ${a.qs.map(q=>`
+        <div class="qi">
+          <div class="qi-n">Q${q.n}</div>
+          <div class="qi-q">${q.q}</div>
+          <div class="qi-r"><em>↳ Revela:</em>${q.r}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--purple)"></div>
+    <div class="sh-icon">❓</div>
+    <div><div class="sh-tag" style="color:var(--purple)">Seção 03 — Perguntas</div>
+      <div class="sh-title">50 Perguntas Estratégicas</div>
+      <div class="sh-desc">Clique em cada área para expandir. Escala Likert 1–5 com âncoras textuais específicas para eliminar ambiguidade.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Escala de Avaliação</div>
+  <div class="scale">
+    <div class="sc sc1"><div class="sc-n">1</div><div class="sc-l">Inexistente / Crítico</div></div>
+    <div class="sc sc2"><div class="sc-n">2</div><div class="sc-l">Inicial / Frágil</div></div>
+    <div class="sc sc3"><div class="sc-n">3</div><div class="sc-l">Em Desenvolvimento</div></div>
+    <div class="sc sc4"><div class="sc-n">4</div><div class="sc-l">Estruturado</div></div>
+    <div class="sc sc5"><div class="sc-n">5</div><div class="sc-l">Excelente / Referência</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Perguntas por Área — clique para expandir</div>${html}</div>`;
+}
+
+function panelLogic(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--orange)"></div>
+    <div class="sh-icon">⚙️</div>
+    <div><div class="sh-tag" style="color:var(--orange)">Seção 04 — Lógica</div>
+      <div class="sh-title">Análise, Pontuação e Classificação</div>
+      <div class="sh-desc">Fórmula ponderada, algoritmo de priorização de 3 etapas e os 5 níveis de maturidade empresarial.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Fórmulas de Cálculo</div>
+  <div class="formula">Score por Área = (Σ respostas da área ÷ score máximo) × 100</div>
+  <div class="formula">Score Global = Σ (Score da Área × Peso da Área) ÷ 100</div>
+  </div>
+  <div class="blk"><div class="blk-h">Algoritmo de Priorização — 3 Etapas</div>
+  <div class="cards-3">
+    <div class="card"><div class="ce">🔎</div><div class="ct">1 — Detecção</div><div class="cb">Identifica todas as áreas com score &lt;50% e perguntas individuais com resposta 1 ou 2 — inventário bruto de gargalos.</div></div>
+    <div class="card"><div class="ce">⚖️</div><div class="ct">2 — Ponderação</div><div class="cb">Calcula Impacto Ponderado: (100 – Score) × Peso da Área. Ex: Financeiro a 30% = déficit 70% × peso 15% = 10,5 pts.</div></div>
+    <div class="card"><div class="ce">🏆</div><div class="ct">3 — Priorização</div><div class="cb">Ordena pelo Impacto Ponderado e retorna os 3 maiores como os Gargalos Críticos do relatório.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">5 Níveis de Maturidade</div>
+  <div class="levels">
+    <div class="lv" style="border-left:3px solid var(--red)">
+      <div class="lv-n" style="color:var(--red)">1</div>
+      <div class="lv-info"><div class="lv-name">Caótico</div><div class="lv-range" style="color:var(--red)">Score: 0–20</div><div class="lv-desc">Sem estrutura. Decisões intuitivas. Sobrevivência no curto prazo.</div></div>
+      <div class="lv-tag br">Plano de emergência</div>
+    </div>
+    <div class="lv" style="border-left:3px solid var(--orange)">
+      <div class="lv-n" style="color:var(--orange)">2</div>
+      <div class="lv-info"><div class="lv-name">Iniciante</div><div class="lv-range" style="color:var(--orange)">Score: 21–40</div><div class="lv-desc">Consciência dos problemas. Primeiras estruturas surgindo, ainda frágeis.</div></div>
+      <div class="lv-tag bo">Estruturação básica</div>
+    </div>
+    <div class="lv" style="border-left:3px solid var(--yellow)">
+      <div class="lv-n" style="color:var(--yellow)">3</div>
+      <div class="lv-info"><div class="lv-name">Estruturado</div><div class="lv-range" style="color:var(--yellow)">Score: 41–60</div><div class="lv-desc">Processos básicos existem. Gestão funcional mas ainda majoritariamente reativa.</div></div>
+      <div class="lv-tag by">Otimização</div>
+    </div>
+    <div class="lv" style="border-left:3px solid var(--blue)">
+      <div class="lv-n" style="color:var(--blue)">4</div>
+      <div class="lv-info"><div class="lv-name">Profissional</div><div class="lv-range" style="color:var(--blue)">Score: 61–80</div><div class="lv-desc">Dados guiam decisões. Estratégia clara. Gestão profissional consolidada.</div></div>
+      <div class="lv-tag bb">Escala</div>
+    </div>
+    <div class="lv" style="border-left:3px solid var(--green)">
+      <div class="lv-n" style="color:var(--green)">5</div>
+      <div class="lv-info"><div class="lv-name">Líder de Mercado</div><div class="lv-range" style="color:var(--green)">Score: 81–100</div><div class="lv-desc">Alta maturidade. Crescimento previsível. Referência no setor. Cultura de dados.</div></div>
+      <div class="lv-tag bg">Expansão agressiva</div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Padrões de Correlação Sistêmica</div>
+  <div class="t-wrap"><table><thead><tr><th>Padrão Detectado</th><th>Diagnóstico de Correlação</th><th>Risco</th></tr></thead><tbody>
+  <tr><td><span class="badge br">Financeiro ↓</span> + <span class="badge bo">Vendas ↑</span></td><td>Crescimento sem controle de caixa</td><td><span class="badge br">CRÍTICO</span></td></tr>
+  <tr><td><span class="badge br">Liderança ↓</span> + <span class="badge br">Equipe ↓</span></td><td>Cultura organizacional fraca estrutural</td><td><span class="badge br">ALTO</span></td></tr>
+  <tr><td><span class="badge bg">Marketing ↑</span> + <span class="badge br">Vendas ↓</span></td><td>Funil quebrado na conversão</td><td><span class="badge bo">MÉDIO</span></td></tr>
+  <tr><td><span class="badge br">Operações ↓</span> + <span class="badge bb">Crescimento ↑</span></td><td>Empresa quer crescer sem suporte</td><td><span class="badge br">CRÍTICO</span></td></tr>
+  <tr><td><span class="badge bg">Tudo alto</span> exceto <span class="badge br">Crescimento ↓</span></td><td>Maturidade sem estratégia de expansão</td><td><span class="badge by">OPORTUNIDADE</span></td></tr>
+  </tbody></table></div></div>`;
+}
+
+function panelReport(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--gold)"></div>
+    <div class="sh-icon">📊</div>
+    <div><div class="sh-tag" style="color:var(--gold)">Seção 05 — Relatório</div>
+      <div class="sh-title">Relatório Gerado ao Empresário</div>
+      <div class="sh-desc">6 blocos progressivos — do macro ao específico — entregues em 60 segundos após conclusão do diagnóstico.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Os 6 Blocos do Relatório</div>
+  <div class="rblks">
+    <div class="rb"><div class="rb-n" style="background:rgba(0,194,138,.12);color:var(--green)">01</div><div><div class="rb-t">Capa e Síntese Executiva</div><div class="rb-d">Nome da empresa, data, nível de maturidade com ícone, Score Global em destaque e frase contextual personalizada gerada pela IA com base no perfil e score específico da empresa.</div></div></div>
+    <div class="rb"><div class="rb-n" style="background:rgba(26,95,212,.12);color:var(--blue)">02</div><div><div class="rb-t">Radar Chart das 10 Áreas</div><div class="rb-d">Visualização em radar (teia de aranha) com score percentual de cada área + linha de benchmark do setor sobreposta para comparação imediata. O empresário vê em segundos onde está forte e fraco.</div></div></div>
+    <div class="rb"><div class="rb-n" style="background:rgba(124,58,237,.12);color:var(--purple)">03</div><div><div class="rb-t">Ranking das 10 Áreas</div><div class="rb-d">Lista ordenada do maior para o menor score. Verde (>70%), Amarelo (50–70%), Vermelho (<50%). Insight de uma linha gerado pela IA para cada área.</div></div></div>
+    <div class="rb"><div class="rb-n" style="background:rgba(204,40,40,.12);color:var(--red)">04</div><div><div class="rb-t">Top 3 Gargalos Críticos</div><div class="rb-d">Card detalhado por gargalo: título, área afetada, impacto real no negócio (o custo de não resolver), causa raiz identificada pelo algoritmo e primeira ação concreta recomendada pela IA.</div></div></div>
+    <div class="rb"><div class="rb-n" style="background:rgba(0,194,138,.12);color:var(--green)">05</div><div><div class="rb-t">Top 3 Oportunidades de Crescimento</div><div class="rb-d">Alavancas de maior retorno identificadas por combinações de scores e perfil da empresa — com descrição da oportunidade, por que ela existe agora e caminho de ação sugerido.</div></div></div>
+    <div class="rb"><div class="rb-n" style="background:rgba(196,122,0,.12);color:var(--gold)">06</div><div><div class="rb-t">Plano Inicial de 90 Dias</div><div class="rb-d">5 iniciativas prioritárias com objetivo, ação concreta, prazo, responsável sugerido e indicador de sucesso. Importado automaticamente para o módulo de Tarefas da plataforma com um clique.</div></div></div>
+  </div></div>
+  <div class="cll">Exemplo de card de gargalo: "Fluxo de Caixa sem Projeção · Gestão Financeira · Custo: decisões de contratação e investimento tomadas sem visibilidade — principal causa de insolvência em PMEs · Causa: ausência de planejamento financeiro prospectivo · Ação: criar projeção de caixa para 90 dias nos próximos 7 dias."</div>`;
+}
+
+function panelIA(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--green)"></div>
+    <div class="sh-icon">🤖</div>
+    <div><div class="sh-tag" style="color:var(--green)">Seção 06 — IA</div>
+      <div class="sh-title">Conexão com a IA Consultora</div>
+      <div class="sh-desc">Como os dados do diagnóstico criam o DNA empresarial usado pela IA para personalizar absolutamente tudo.</div>
+    </div>
+  </div>
+  <div class="cll">"A IA nunca analisa uma empresa sem contexto. O diagnóstico é o DNA empresarial que ela usa para transformar respostas genéricas em orientação estratégica precisa."</div>
+  <div class="blk"><div class="blk-h">Dados Transmitidos ao Motor de IA</div>
+  <div class="t-wrap"><table><thead><tr><th>Dado do Diagnóstico</th><th>Como a IA Usa</th><th>Onde Aparece</th></tr></thead><tbody>
+  <tr><td>Score por área (10 valores)</td><td>Calibra peso e urgência das recomendações</td><td>Cards de Insight</td></tr>
+  <tr><td>Score Global + Nível</td><td>Define tom e complexidade das orientações</td><td>Chat Advisor</td></tr>
+  <tr><td>50 respostas individuais</td><td>Identifica padrões granulares por pergunta</td><td>Recomendações específicas</td></tr>
+  <tr><td>Campos qualitativos abertos</td><td>Enriquece com linguagem natural do empresário</td><td>Personalização de insights</td></tr>
+  <tr><td>Áreas prioritárias indicadas</td><td>Calibra plano com percepção do empresário</td><td>Plano de 90 Dias</td></tr>
+  <tr><td>Dados de perfil (setor, porte)</td><td>Seleciona benchmarks corretos do setor</td><td>Benchmarking e alertas</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Ciclo de Uso — Do Diagnóstico à Inteligência Contínua</div>
+  <div class="pipe">
+    <div class="ps"><div class="ps-dot" style="border-color:var(--green);color:var(--green)">1</div><div class="ps-body"><div class="ps-lbl">Imediato — 0 a 60 segundos</div><div class="ps-t">Relatório + Primeiros 5 Insights</div><div class="ps-d">IA processa os 50 dados, gera o relatório completo, o plano de 90 dias e os primeiros cards de insight no dashboard.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--blue);color:var(--blue)">2</div><div class="ps-body"><div class="ps-lbl">Dia 1</div><div class="ps-t">Tarefas Criadas + Email Estratégico</div><div class="ps-d">IA cria automaticamente as tarefas do plano no módulo de Tarefas e dispara email personalizado de orientação via n8n.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--purple);color:var(--purple)">3</div><div class="ps-body"><div class="ps-lbl">Semanas 2–4</div><div class="ps-t">Comparação + Ajuste de Curso</div><div class="ps-d">IA compara os primeiros indicadores reais com o baseline do diagnóstico e ajusta as recomendações.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--orange);color:var(--orange)">4</div><div class="ps-body"><div class="ps-lbl">Mês 3</div><div class="ps-t">Revisão + Recalibração</div><div class="ps-d">Análise completa de progresso por área. IA recalibra o plano com base no que evoluiu e no que ainda gargala.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--gold);color:var(--gold)">5</div><div class="ps-body"><div class="ps-lbl">Trimestre 2</div><div class="ps-t">Novo Diagnóstico Completo</div><div class="ps-d">IA sugere novo diagnóstico e gera relatório comparativo mostrando evolução do score por área e Score Global.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--green);color:var(--green)">6</div><div class="ps-body"><div class="ps-lbl">Ano 1</div><div class="ps-t">Análise de Evolução de Maturidade</div><div class="ps-d">Relatório comparativo completo: nível inicial vs. nível atual, impactos mensuráveis, conquistas por área e próximo ciclo estratégico.</div></div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Gatilhos Automáticos Ativados pelo Diagnóstico</div>
+  <div class="t-wrap"><table><thead><tr><th>Condição no Diagnóstico</th><th>Ação Automática da IA</th><th>Prioridade</th></tr></thead><tbody>
+  <tr><td>Score Financeiro &lt; 40%</td><td>Análise urgente + 3 ações imediatas de controle básico</td><td><span class="badge br">CRÍTICO</span></td></tr>
+  <tr><td>Score Liderança &lt; 40%</td><td>Alerta de dependência do fundador + plano de delegação</td><td><span class="badge bo">ALTO</span></td></tr>
+  <tr><td>Vendas &gt;70% + Marketing &lt;50%</td><td>Oportunidade: ampliar demanda para processo que funciona</td><td><span class="badge by">OPORTUNIDADE</span></td></tr>
+  <tr><td>Operações &lt;40% + Crescimento &gt;60%</td><td>Risco: empresa quer crescer sem estrutura de suporte</td><td><span class="badge br">CRÍTICO</span></td></tr>
+  <tr><td>Score Global &gt;70% pela 1ª vez</td><td>Celebração + plano de expansão + metas recalibradas</td><td><span class="badge bg">POSITIVO</span></td></tr>
+  </tbody></table></div></div>`;
+}
+
+// ─────────────────────────────────────────────────────
+// ENGINE
+// ─────────────────────────────────────────────────────
+const panels = [panelObjective, panelAreas, panelQuestions, panelLogic, panelReport, panelIA];
+
+function toggleQ(hd){
+  const list = hd.nextElementSibling;
+  const arr = hd.querySelector('.qa-arr');
+  const open = list.classList.toggle('open');
+  arr.style.transform = open ? 'rotate(90deg)' : '';
+}
+
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el = document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML = panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+  },150);
+}
+
+show(0);
+</script>
+</body>
+</html>

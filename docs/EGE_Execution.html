@@ -1,0 +1,421 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Plano de Execução Startup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),radial-gradient(ellipse 50% 50% at 96% 90%,rgba(217,90,8,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(28px,5vw,56px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--o));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:680px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+/* Roadmap timeline */
+.timeline{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.tl-item{display:flex;gap:16px;position:relative}
+.tl-item::before{content:'';position:absolute;left:19px;top:42px;bottom:-4px;width:2px;background:var(--bd)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:40px;height:40px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:2px}
+.tl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 20px;margin-bottom:10px}
+.tl-label{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.tl-title{font-size:15px;font-weight:800;margin-bottom:6px}
+.tl-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tl-items{font-size:12px;color:var(--mid);line-height:1.7}
+/* Module grid */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:14px 0}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
+.mc-head{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.mc-icon{font-size:18px}
+.mc-name{font-size:13px;font-weight:700}
+.mc-p{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-left:auto}
+.mc-body{padding:10px 16px}
+.mc-inc{font-size:11.5px;color:var(--g);line-height:1.6}
+.mc-exc{font-size:11px;color:var(--mid);line-height:1.5;margin-top:5px;font-style:italic}
+/* Stack table */
+.stack-grid{display:flex;flex-direction:column;gap:0}
+.sg-row{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--bd);padding:0}
+.sg-row:last-child{border-bottom:none}
+.sg-layer{width:130px;flex-shrink:0;padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border-right:1px solid var(--bd)}
+.sg-tech{flex:1;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-right:1px solid var(--bd)}
+.sg-reason{flex:2;padding:10px 14px;font-size:11.5px;color:var(--mid);line-height:1.5}
+/* Channel cards */
+.channel-grid{display:flex;flex-direction:column;gap:10px}
+.ch{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.ch-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.ch-n{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex-shrink:0}
+.ch-name{font-size:14px;font-weight:800}
+.ch-tag{margin-left:auto}
+.ch-body{padding:12px 18px;font-size:12.5px;color:var(--mid);line-height:1.7}
+/* Hiring timeline */
+.hire-grid{display:flex;flex-direction:column;gap:6px}
+.hr{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.hr-month{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--g);min-width:60px}
+.hr-role{font-size:13px;font-weight:700;flex:1}
+.hr-trigger{font-size:11.5px;color:var(--mid);flex:2;line-height:1.4}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Startup Execution Plan</div>
+  <h1>Plano de Execução<br><span>EGE — 24 Meses</span></h1>
+  <p class="sub">MVP em 16 semanas · 50 betas → 5.000 empresas · Time de 3 → 22 pessoas · R$25k → R$1,5M MRR. Específico, com datas, números e decisões reais — não aspirações.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">16</div><div class="sl">Semanas até MVP</div></div>
+  <div class="st sb"><div class="sv">8</div><div class="sl">Módulos no MVP</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Canais de aquisição</div></div>
+  <div class="st so"><div class="sv">22</div><div class="sl">Tecnologias no stack</div></div>
+  <div class="st st2"><div class="sv">R$197</div><div class="sl">Plano Essencial/mês</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🚀 MVP</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📅 Fases Dev</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">👥 Equipe</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">⚙️ Stack Tech</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">📣 Lançamento</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🚀</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — MVP</div>
+    <div class="sh-title">Produto Mínimo Viável — Escopo Fechado</div>
+    <div class="sh-desc">Não é um produto incompleto — é um produto completo para um problema específico. Diagnóstico de maturidade + plano gerado por IA + acompanhamento de execução. Se um empresário não consegue usar sozinho em 30 minutos, o MVP não está pronto.</div>
+  </div>
+</div>
+<div class="cll">"A pergunta certa não é 'o que conseguimos construir em 16 semanas?' mas sim 'qual é o menor conjunto de features que entrega o valor central de forma que empresários paguem por isso?'"</div>
+
+<div class="blk"><div class="blk-h">8 Módulos do MVP — O que Entra e o que Fica de Fora</div>
+<div class="module-grid">
+${[
+  {icon:'🔐',name:'M1 — Auth & Onboarding',p:'P0',pc:0,inc:'Registro email · Google OAuth · Wizard 4 etapas · Invite de equipe',exc:'SSO Enterprise, SAML, múltiplas empresas por conta'},
+  {icon:'🔬',name:'M2 — Diagnóstico',p:'P0',pc:0,inc:'40 questões · 9 dimensões · Save incremental · Radar chart · Score com percentil',exc:'Diagnósticos customizados, múltiplos idiomas, subsetor'},
+  {icon:'📊',name:'M3 — Dashboard',p:'P0',pc:0,inc:'KPIs resumidos · Pipeline overview · AI insight card semanal · Alertas ativos',exc:'Dashboard customizável, widgets drag-and-drop'},
+  {icon:'🤖',name:'M7 — AI Advisor',p:'P0',pc:0,inc:'Chat com Claude API · Contexto da empresa · 3 modos · SSE streaming',exc:'Análise de documentos, fine-tuning, dados externos'},
+  {icon:'📋',name:'M8 — Plano Estratégico',p:'P0',pc:0,inc:'Geração automática pós-diagnóstico · 3 iniciativas · Ciclo 12 semanas · Progresso',exc:'Múltiplos planos simultâneos, OKR, BSC'},
+  {icon:'🤝',name:'M4 — CRM Pipeline',p:'P1',pc:1,inc:'Kanban 5 estágios · Deals · Taxa de conversão · Integração com tarefas',exc:'Automação de CRM, sequências de e-mail, cotações'},
+  {icon:'✅',name:'M5 — Tarefas',p:'P1',pc:1,inc:'CRUD completo · Vinculação ao plano · Prioridades · Assignees · WebSocket',exc:'Dependências, Gantt, sprints, time tracking'},
+  {icon:'📈',name:'M6 — KPIs',p:'P1',pc:1,inc:'Criar KPIs · Registrar valores · Série temporal · Alerta simples',exc:'Integrações automáticas, KPIs calculados, forecasting'},
+].map(m=>`
+<div class="mc">
+  <div class="mc-head">
+    <div class="mc-icon">${m.icon}</div>
+    <div class="mc-name">${m.name}</div>
+    <span class="mc-p badge ${m.pc===0?'br':'bo'}">${m.p}</span>
+  </div>
+  <div class="mc-body">
+    <div class="mc-inc">✓ ${m.inc.split(' · ').join('<br>✓ ')}</div>
+    <div class="mc-exc">✗ ${m.exc}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">3 Gates de Validação — Antes do Lançamento Público</div>
+<div class="tw"><table><thead><tr><th>Gate</th><th>Critério</th><th>Método</th><th>Go / No-Go</th></tr></thead><tbody>
+<tr><td><span class="badge bt">Gate 1 — Usabilidade</span></td><td>10 empresários completam o fluxo sem ajuda em &lt; 30 min</td><td>Sessões gravadas com think-aloud</td><td>80% sem suporte = GO</td></tr>
+<tr><td><span class="badge bg">Gate 2 — Valor</span></td><td>8 de 10 empresários afirmam que pagariam pelo produto</td><td>Entrevista pós-teste com Likert</td><td>8/10 dispostos a pagar = GO</td></tr>
+<tr><td><span class="badge bb">Gate 3 — Técnico</span></td><td>Latência P99 &lt; 3s, zero erros críticos em 72h</td><td>Load test k6 + Datadog</td><td>SLA atingido = GO</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Planos e Preços do MVP</div>
+<div class="grid2">
+  ${[
+    {name:'Essencial',price:'R$197/mês',color:'var(--g)',features:['Diagnóstico + Plano IA','10 KPIs','AI Chat (20 msgs/mês)','1 usuário'],target:'MEI, solopreneurs, 2–5 pessoas'},
+    {name:'Crescimento',price:'R$397/mês',color:'var(--b)',features:['Tudo do Essencial','CRM Pipeline','Equipe até 10','AI Chat ilimitado'],target:'5–30 colaboradores'},
+    {name:'Scale',price:'R$797/mês',color:'var(--p)',features:['Tudo do Crescimento','Equipe ilimitada','API pública','Integrações + SLA'],target:'30–200 colaboradores'},
+    {name:'Enterprise',price:'Sob consulta',color:'var(--o)',features:['Customização completa','Onboarding dedicado','Contrato anual','SLA 99,9%'],target:'200+ pessoas, franquias, grupos'},
+  ].map(pl=>`
+  <div class="card" style="border-top:3px solid ${pl.color}">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="c-t" style="color:${pl.color}">${pl.name}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:${pl.color}">${pl.price}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
+      ${pl.features.map(f=>`<div style="font-size:12px;color:var(--txt)">✓ ${f}</div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--mid);font-style:italic">${pl.target}</div>
+  </div>`).join('')}
+</div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">📅</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Development Phases</div>
+    <div class="sh-title">4 Fases em 24 Meses — Do Sprint 1 ao Ecossistema</div>
+    <div class="sh-desc">16 semanas de MVP divididas em 4 sprints de 4 semanas. Cada sprint termina com demo para os betas. Fases seguintes guiadas por dados de uso — não por intuição do fundador.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Visão Geral dos 24 Meses</div>
+<div class="tw"><table><thead><tr><th>Horizonte</th><th>Meta Empresas</th><th>MRR Target</th><th>Headcount</th><th>Foco Principal</th></tr></thead><tbody>
+<tr><td><span class="badge bg">0–4 meses (MVP)</span></td><td>50 beta</td><td>R$25k</td><td>3 pessoas</td><td>Construir e validar</td></tr>
+<tr><td><span class="badge bb">4–10 meses (Plataforma)</span></td><td>500 pagas</td><td>R$150k</td><td>8 pessoas</td><td>Crescimento e produto</td></tr>
+<tr><td><span class="badge bp">10–20 meses (Ecossistema)</span></td><td>5.000 pagas</td><td>R$1,5M</td><td>22 pessoas</td><td>Escala e expansão</td></tr>
+<tr><td><span class="badge bo">20–36 meses (Internacional)</span></td><td>50.000+</td><td>R$10M+</td><td>60+ pessoas</td><td>LATAM + Série A</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fase 1 — MVP — 4 Sprints de 4 Semanas</div>
+<div class="timeline">
+${[
+  {icon:'🏗',label:'Sprint 1 — Semanas 1–4',title:'Fundação',color:'var(--g)',meta:['Infra','Auth','Diagnóstico','Banco'],items:'Setup completo Railway + Supabase + Vercel + CI/CD rodando · Auth & Onboarding M1 completo com Google OAuth · Diagnóstico M2 com 40 questões e score · 28 tabelas com RLS ativas'},
+  {icon:'🤖',label:'Sprint 2 — Semanas 5–8',title:'Core Value + IA',color:'var(--b)',meta:['AI Advisor','Plano','Dashboard','Score'],items:'Integração Claude API com SSE streaming · Plano estratégico gerado automaticamente pós-diagnóstico · Dashboard principal com insight card · Radar chart e benchmark percentil'},
+  {icon:'⚙️',label:'Sprint 3 — Semanas 9–12',title:'Execução e Operações',color:'var(--p)',meta:['Tarefas','KPIs','CRM','Notificações'],items:'Módulo de Tarefas com WebSocket ao vivo · KPIs com série temporal e alertas · CRM Kanban 5 estágios · Push + e-mail de alertas e insights semanais'},
+  {icon:'✨',label:'Sprint 4 — Semanas 13–16',title:'Polimento e Gates',color:'var(--o)',meta:['UX','Performance','Validação','Landing Page'],items:'Correções dos testes com 10 empresários · Otimização de queries e cache Redis · 3 Gates de validação com sign-off · Landing page com demo em vídeo e lista de espera'},
+].map(s=>`
+<div class="tl-item">
+  <div class="tl-dot" style="border-color:${s.color}">${s.icon}</div>
+  <div class="tl-body">
+    <div class="tl-label" style="color:${s.color}">${s.label}</div>
+    <div class="tl-title">${s.title}</div>
+    <div class="tl-meta">
+      ${s.meta.map(m=>`<span class="badge" style="background:${s.color}1A;color:${s.color}">${m}</span>`).join('')}
+    </div>
+    <div class="tl-items">${s.items.split(' · ').map(i=>`• ${i}`).join('<br>')}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Fases 2, 3 e 4 — Após o MVP</div>
+<div class="tw"><table><thead><tr><th>Fase</th><th>Período</th><th>Features Principais</th><th>Meta de Negócio</th></tr></thead><tbody>
+<tr><td><span class="badge bg">F2 — T2</span></td><td>Meses 4–6</td><td>Integrações (Google Sheets, Conta Azul, RD Station), relatório mensal automático IA</td><td>250 empresas · R$75k MRR · NPS &gt; 40</td></tr>
+<tr><td><span class="badge bg">F2 — T3</span></td><td>Meses 7–9</td><td>App mobile (React Native), automações n8n 6 workflows, benchmark setorial real</td><td>500 empresas · R$150k MRR · churn &lt; 3%</td></tr>
+<tr><td><span class="badge bb">F3</span></td><td>Meses 10–20</td><td>Marketplace de consultores, canal de parceiros, EGE para Franquias, expansão LATAM</td><td>5.000 empresas · R$1,5M MRR · 3 países</td></tr>
+<tr><td><span class="badge bo">F4</span></td><td>Meses 20–36</td><td>México + Colômbia + EUA, Série A, localização completa, parcerias com aceleradoras internacionais</td><td>50.000+ empresas · R$10M+ MRR</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">👥</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Team Structure</div>
+    <div class="sh-title">Quem Contratar e Quando — Baseado em Métricas</div>
+    <div class="sh-desc">Cada contratação resolve um gargalo real de hoje — não um problema imaginado do futuro. A regra: contratar quando a ausência da pessoa está claramente custando receita ou qualidade do produto agora.</div>
+  </div>
+</div>
+<div class="cll">"Uma pessoa excelente e alinhada com a missão vale mais do que três pessoas medianas. Cada contratação no MVP impacta toda a cultura e a velocidade da empresa."</div>
+
+<div class="blk"><div class="blk-h">Fase 1 — Time Fundador de 3 Pessoas</div>
+<div class="grid3">
+  ${[
+    {icon:'💻',name:'Fundador / CTO',color:'var(--g)',desc:'Fullstack sênior com visão de produto. Arquitetura, backend, frontend, infra, decisões técnicas, demo para clientes.',sal:'Equity + pró-labore mínimo'},
+    {icon:'📣',name:'Fundador / CEO',color:'var(--b)',desc:'Vendas + produto + operações. Recruta os 50 betas manualmente. Faz todas as demos. Valida cada feature.',sal:'Equity + pró-labore mínimo'},
+    {icon:'⚡',name:'Dev Fullstack Sênior',color:'var(--p)',desc:'React + Node.js com 4+ anos. Features de produto, integrações de IA, testes, code review. Contratação #1.',sal:'R$12k–R$16k/mês'},
+  ].map(m=>`
+  <div class="card" style="border-left:3px solid ${m.color}">
+    <div class="c-e">${m.icon}</div>
+    <div class="c-t" style="color:${m.color}">${m.name}</div>
+    <div class="c-b">${m.desc}</div>
+    <div style="margin-top:10px"><span class="badge" style="background:${m.color}1A;color:${m.color}">${m.sal}</span></div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Sequência de Contratações — Fase 2 (Meses 4 a 10)</div>
+<div class="hire-grid">
+${[
+  {month:'Mês 4',role:'Customer Success #1',color:'var(--g)',trigger:'50 clientes beta ativos — ninguém dedicado a onboarding e retenção'},
+  {month:'Mês 5',role:'Dev Fullstack #2',color:'var(--b)',trigger:'Backlog de 3+ sprints acumulado, CTO não consegue revisar PRs em tempo'},
+  {month:'Mês 6',role:'Growth / Marketing #1',color:'var(--o)',trigger:'CAC desconhecido, aquisição só por indicação, meta de 250 empresas em risco'},
+  {month:'Mês 7',role:'Dev Mobile / Fullstack #3',color:'var(--p)',trigger:'App mobile prometido para clientes Scale, sem ninguém para entregar'},
+  {month:'Mês 8',role:'AI Engineer #1',color:'var(--t)',trigger:'Qualidade dos insights caindo, custo de tokens crescendo, necessidade de fine-tuning'},
+  {month:'Mês 9',role:'Account Executive #1',color:'var(--y)',trigger:'CEO não consegue fazer todas as demos, pipeline de 500+ leads qualificados'},
+].map(h=>`
+<div class="hr">
+  <div class="hr-month" style="color:${h.color}">${h.month}</div>
+  <div class="hr-role">${h.role}</div>
+  <div class="hr-trigger">${h.trigger}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Fase 3 — Organização com 22 Pessoas</div>
+<div class="tw"><table><thead><tr><th>Área</th><th>Headcount</th><th>Papéis Principais</th></tr></thead><tbody>
+<tr><td><span class="badge bb">Engenharia</span></td><td>8</td><td>CTO · 3 devs fullstack · 1 AI engineer · 1 mobile · 1 DevOps · 1 QA</td></tr>
+<tr><td><span class="badge bp">Produto</span></td><td>3</td><td>Head of Product · 1 designer sênior · 1 product analyst</td></tr>
+<tr><td><span class="badge bo">Go-to-Market</span></td><td>5</td><td>CMO · 1 growth · 1 content/SEO · 2 AEs (inside sales)</td></tr>
+<tr><td><span class="badge bg">Customer Success</span></td><td>3</td><td>Head of CS · 2 CS specialists</td></tr>
+<tr><td><span class="badge bt">Operações</span></td><td>2</td><td>Head of Ops/Finance · 1 assistente</td></tr>
+<tr><td><span class="badge by">Liderança</span></td><td>1</td><td>CEO (fundador)</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Remuneração e Equity por Nível</div>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Salário Base</th><th>Equity (opções)</th><th>Vesting</th></tr></thead><tbody>
+<tr><td><span class="badge bp">Fundadores</span></td><td>Pró-labore até rentabilidade</td><td>20–40% cada</td><td>4 anos, 1 ano cliff</td></tr>
+<tr><td><span class="badge by">Head / VP (Fase 3+)</span></td><td>R$18k–R$28k/mês</td><td>0,5–1,5%</td><td>4 anos, 1 ano cliff</td></tr>
+<tr><td><span class="badge bb">Sênior (Eng/Produto)</span></td><td>R$14k–R$20k/mês</td><td>0,1–0,5%</td><td>4 anos, 1 ano cliff</td></tr>
+<tr><td><span class="badge bg">Pleno (Eng/CS/Growth)</span></td><td>R$8k–R$14k/mês</td><td>0,05–0,15%</td><td>4 anos, 1 ano cliff</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Technology Stack</div>
+    <div class="sh-title">Build vs. Buy — 22 Decisões Técnicas Justificadas</div>
+    <div class="sh-desc">Construir apenas o que é diferencial competitivo: motor de IA consultora, sistema de scoring, diagnóstico. Tudo que é commodity — auth, banco, e-mail, storage — compra-se. Essa decisão vale R$40k/mês em salários no MVP.</div>
+  </div>
+</div>
+<div class="cll">"Nunca construir o que pode ser comprado por menos de R$2.000/mês. O time de 3 pessoas no MVP não tem capacidade de manter 8 serviços de infra ao mesmo tempo."</div>
+
+<div class="blk"><div class="blk-h">Stack Completo por Camada</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Tecnologia</th><th>Alternativa Rejeitada</th><th>Razão da Escolha</th></tr></thead><tbody>
+${[
+  ['Frontend','Next.js 14 (React 18)','Remix, SvelteKit','Ecossistema maior, Vercel nativo, SSR+CSR híbrido'],
+  ['Estilo / UI','Tailwind CSS + Radix UI','Material UI, Chakra','Customização total, sem estética imposta'],
+  ['Estado Cliente','Zustand + React Query','Redux, SWR','Zustand para UI, React Query para server state'],
+  ['Gráficos','Recharts + Chart.js','D3, Highcharts','Open source, React-native, curva baixa'],
+  ['Backend Runtime','Node.js 20 LTS','Bun, Deno','Estabilidade, ecossistema maduro'],
+  ['ORM','Prisma 5','Drizzle, TypeORM','Type-safe, migrations automáticas, DX excelente'],
+  ['Fila de Jobs','BullMQ (Redis)','pg-boss, Temporal','Performance, Redis reutilizado, UI de monitoramento'],
+  ['Banco','PostgreSQL 15 (Supabase)','PlanetScale, Neon','RLS nativo, Auth + Storage + Realtime inclusos'],
+  ['Cache','Redis (Upstash)','Memcached','Cache + queue + pub/sub em um serviço'],
+  ['LLM','Claude API (Anthropic)','OpenAI GPT-4, Gemini','Melhor raciocínio estratégico, contexto longo'],
+  ['Embeddings','OpenAI text-embedding-3-small','Cohere, Mistral','Custo menor, qualidade suficiente'],
+  ['E-mail','Resend + React Email','SendGrid, Postmark','API moderna, DX superior, templates React'],
+  ['Deploy Frontend','Vercel','Netlify','Preview por branch, Next.js nativo'],
+  ['Deploy Backend','Railway → Kubernetes','Render, Fly.io','Railway zero config MVP, K8s para escala'],
+  ['CDN / WAF','Cloudflare Pro','AWS CloudFront','DDoS grátis, setup simples, R$110/mês'],
+  ['Monitoramento','Datadog APM + Sentry','New Relic + Rollbar','Cobertura completa, alerta automático'],
+  ['Analytics','PostHog self-hosted','Mixpanel, Amplitude','Zero custo, dados próprios, LGPD compliant'],
+  ['Automações','n8n self-hosted','Zapier, Make','Zero custo por execução, mais flexível'],
+  ['Pagamentos BR','Stripe + Iugu (PIX/boleto)','Pagar.me, Vindi','Stripe cartão internacional, Iugu métodos BR'],
+].map((r,i)=>`<tr><td><strong style="color:var(--g);font-size:10.5px">${r[0]}</strong></td><td><code style="color:var(--b);font-size:10.5px">${r[1]}</code></td><td style="color:var(--mid);font-size:11px">${r[2]}</td><td style="font-size:11.5px">${r[3]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Custo de Stack por Fase</div>
+<div class="tw"><table><thead><tr><th>Serviço</th><th>MVP (mês 1–4)</th><th>Fase 2 (mês 5–10)</th><th>Fase 3 (mês 11+)</th></tr></thead><tbody>
+<tr><td>Vercel + Railway</td><td>R$165</td><td>R$500</td><td>R$3.000 (K8s)</td></tr>
+<tr><td>Supabase</td><td>R$140</td><td>R$700</td><td>R$3.500</td></tr>
+<tr><td>Redis (Upstash)</td><td>R$50</td><td>R$300</td><td>R$1.500</td></tr>
+<tr><td>Claude API (tokens)</td><td>R$500</td><td>R$3.000</td><td>R$15.000</td></tr>
+<tr><td>Cloudflare + Sentry + Datadog</td><td>R$120</td><td>R$600</td><td>R$3.000</td></tr>
+<tr><td>Outros (Resend, Stripe, PostHog)</td><td>R$80</td><td>R$400</td><td>R$2.000</td></tr>
+<tr><td><strong>TOTAL MENSAL</strong></td><td><strong style="color:var(--g)">~R$1.055</strong></td><td><strong style="color:var(--b)">~R$5.500</strong></td><td><strong style="color:var(--p)">~R$28.000</strong></td></tr>
+</tbody></table></div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">📣</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Launch Strategy</div>
+    <div class="sh-title">Como Adquirir as Primeiras Empresas</div>
+    <div class="sh-desc">O lançamento começa 30 dias antes do produto ficar pronto. Os primeiros 50 clientes beta são recrutados manualmente. 4 canais de aquisição em paralelo. ICP específico para evitar churn precoce.</div>
+  </div>
+</div>
+<div class="cll">"Vender antes de construir a versão final. Os primeiros 50 clientes são recrutados um a um pelo CEO — cada demo é uma sessão de pesquisa, não apenas uma venda."</div>
+
+<div class="blk"><div class="blk-h">4 Canais de Aquisição em Paralelo</div>
+<div class="channel-grid">
+${[
+  {n:'1',name:'Vendas Diretas pelo Fundador',color:'var(--g)',tag:'Meses 1–6',body:'CEO faz todas as demos pessoalmente — intencionalmente não escalável. Cada demo ensina o que os clientes realmente valorizam, quais objeções surgem, quem é o comprador real. Sem isso, contratar um vendedor é desperdiçar dinheiro.<br><br><strong style="color:var(--g)">Tática:</strong> 20 cold outreaches/dia no LinkedIn → 5–8 demos/semana → 40% demo→trial → 25% trial→pago'},
+  {n:'2',name:'Conteúdo e SEO',color:'var(--b)',tag:'Meses 1–12',body:'2 artigos por semana por 12 meses criam um ativo de aquisição sem custo marginal. Temas com intenção de compra: "como montar plano estratégico", "indicadores de gestão PME", "diagnóstico empresarial".<br><br><strong style="color:var(--b)">Meta 12 meses:</strong> 500 leads orgânicos/mês via SEO · 10k seguidores LinkedIn · newsletter 5.000 inscritos'},
+  {n:'3',name:'Parcerias Estratégicas',color:'var(--p)',tag:'Meses 4–12',body:'Canais que já têm acesso ao ICP: contabilidades digitais (têm os dados financeiros dos clientes), aceleradoras (portfólio de empresas que precisam de gestão), SEBRAE (programas de capacitação com centenas de PMEs).<br><br><strong style="color:var(--p)">Comissão:</strong> 20% primeiro ano (contabilidades) · 30% MRR vitalício (consultores)'},
+  {n:'4',name:'Loops de Produto Viral',color:'var(--o)',tag:'Meses 6+',body:'O EGE tem loops de crescimento natural: benchmark público compartilhável (empresário divulga seu score percentil), relatório de ciclo em PDF com logo do EGE, convites de equipe (média 3 membros por empresa = viral coefficient > 1).<br><br><strong style="color:var(--o)">Meta:</strong> K > 1 dentro das empresas · 20% dos novos usuários via indicação'},
+].map(c=>`
+<div class="ch">
+  <div class="ch-head">
+    <div class="ch-n" style="background:${c.color}1A;color:${c.color}">${c.n}</div>
+    <div class="ch-name">${c.name}</div>
+    <span class="badge ch-tag" style="background:${c.color}1A;color:${c.color}">${c.tag}</span>
+  </div>
+  <div class="ch-body">${c.body}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Plano Semana a Semana — Do Zero ao Lançamento</div>
+<div class="tw"><table><thead><tr><th>Semana</th><th>Atividade</th><th>Entregável</th><th>Meta</th></tr></thead><tbody>
+<tr><td><span class="badge bt">S1</span></td><td>Landing page no ar + outreach LinkedIn diário</td><td>300 leads na lista de espera</td><td>300 leads</td></tr>
+<tr><td><span class="badge bt">S2–S3</span></td><td>20 entrevistas de validação com leads da lista</td><td>Deck de insights + pricing validado</td><td>10 pré-vendas verbais</td></tr>
+<tr><td><span class="badge bg">S4</span></td><td>Convite para 50 beta users — onboarding manual via Zoom</td><td>50 acessos ativos no produto</td><td>50 empresas no ar</td></tr>
+<tr><td><span class="badge bg">S5–S7</span></td><td>Iteração baseada em uso dos betas + coleta NPS</td><td>NPS &gt; 40 · 5 depoimentos em vídeo</td><td>80% dos betas ativos</td></tr>
+<tr><td><span class="badge bo">S8</span></td><td>Lançamento público: Product Hunt + LinkedIn + e-mail</td><td>Post viral com depoimentos</td><td>500 cadastros em 48h</td></tr>
+<tr><td><span class="badge bo">S9–S12</span></td><td>Follow-up dos leads do lançamento · demos · conversão</td><td>50 clientes pagantes</td><td>R$10k MRR</td></tr>
+<tr><td><span class="badge by">S13–S16</span></td><td>Ativar parcerias + primeiros conteúdos SEO no ar</td><td>2 parcerias firmadas</td><td>R$25k MRR</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Métricas de Sucesso — Mês 1, 3 e 6</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Mês 1</th><th>Mês 3</th><th>Mês 6</th></tr></thead><tbody>
+<tr><td><strong>Empresas ativas</strong></td><td>20</td><td><span class="badge bg">50</span></td><td><span class="badge bg">250</span></td></tr>
+<tr><td><strong>MRR</strong></td><td>R$5k</td><td><span class="badge bg">R$25k</span></td><td><span class="badge bg">R$75k</span></td></tr>
+<tr><td><strong>Churn mensal</strong></td><td>&lt; 10%</td><td><span class="badge by">&lt; 6%</span></td><td><span class="badge bg">&lt; 4%</span></td></tr>
+<tr><td><strong>NPS</strong></td><td>—</td><td><span class="badge by">&gt; 30</span></td><td><span class="badge bg">&gt; 45</span></td></tr>
+<tr><td><strong>CAC</strong></td><td>—</td><td><span class="badge by">&lt; R$800</span></td><td><span class="badge bg">&lt; R$600</span></td></tr>
+<tr><td><strong>LTV/CAC</strong></td><td>—</td><td><span class="badge by">&gt; 3:1</span></td><td><span class="badge bg">&gt; 5:1</span></td></tr>
+<tr><td><strong>Msgs IA/empresa/mês</strong></td><td>—</td><td><span class="badge bg">&gt; 15</span></td><td><span class="badge bg">&gt; 25</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h" style="margin-top:30px">O Próximo Passo — Hoje</div>
+<div class="card" style="border:1px solid rgba(0,192,138,.3);background:rgba(0,192,138,.04)">
+  <div class="c-e">🎯</div>
+  <div class="c-t" style="color:var(--g)">O EGE não precisa de mais planejamento — precisa de execução</div>
+  <div class="c-b" style="color:var(--txt);line-height:1.8;margin-top:10px">
+    <strong style="color:var(--g)">Semana 1:</strong> Landing page no ar + começar outreach no LinkedIn<br>
+    <strong style="color:var(--g)">Semana 2:</strong> Primeiras 10 conversas com empresários<br>
+    <strong style="color:var(--g)">Semana 3:</strong> Primeiras 3 pré-vendas — ou entender por que não fechou<br>
+    <strong style="color:var(--g)">Semana 4:</strong> Sprint 1 com clareza de quem é o cliente e o que ele precisa<br><br>
+    Cada semana sem produto no mercado é uma semana sem aprendizado real.
+  </div>
+</div></div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

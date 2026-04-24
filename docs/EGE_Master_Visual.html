@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGE — Documento Estratégico Mestre</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090F;--s1:#0C1220;--s2:#111827;--s3:#162033;
+  --g:#00C896;--b:#3B82F6;--o:#F97316;--p:#A855F7;--y:#EAB308;--r:#EF4444;
+  --t:#E2E8F0;--m:#64748B;--bd:#1E293B;
+}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,200,150,.06),transparent),
+             radial-gradient(ellipse 60% 60% at 80% 100%,rgba(59,130,246,.05),transparent);
+  pointer-events:none}
+
+.wrap{max-width:1080px;margin:0 auto;padding:48px 24px 100px;position:relative}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:64px;animation:up .9s ease both}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);color:var(--g);font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:6px 18px;border-radius:100px;margin-bottom:24px}
+.hero-eyebrow i{width:6px;height:6px;background:var(--g);border-radius:50%;animation:blink 2s infinite}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:800;line-height:1.05;margin-bottom:16px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;background:linear-gradient(120deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--m);font-size:17px;font-weight:300;max-width:540px;margin:0 auto;line-height:1.7}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:60px;animation:up .9s .1s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px;text-align:center;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat.sg::before{background:var(--g)}.stat.sb::before{background:var(--b)}.stat.so::before{background:var(--o)}.stat.sp::before{background:var(--p)}
+.stat-n{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1}
+.stat.sg .stat-n{color:var(--g)}.stat.sb .stat-n{color:var(--b)}.stat.so .stat-n{color:var(--o)}.stat.sp .stat-n{color:var(--p)}
+.stat-l{font-size:12px;color:var(--m);margin-top:4px;font-weight:500}
+
+/* PILLAR NAV */
+.pillars-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:48px;animation:up .9s .15s ease both}
+@media(max-width:700px){.pillars-nav{grid-template-columns:repeat(2,1fr)}}
+.pnav{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px;cursor:pointer;transition:all .2s;text-align:center}
+.pnav:hover,.pnav.active{border-color:var(--g);background:var(--s2)}
+.pnav-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--m);margin-bottom:4px}
+.pnav-t{font-size:11px;font-weight:600;color:var(--t);line-height:1.3}
+
+/* CONTENT */
+.content{animation:up .5s ease both}
+
+/* PILLAR HEADER */
+.pillar-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:32px;padding:28px 32px;background:var(--s1);border:1px solid var(--bd);border-radius:20px;position:relative;overflow:hidden}
+.pillar-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px}
+.ph-num{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;line-height:1;opacity:.15;position:absolute;right:24px;top:12px}
+.ph-icon{font-size:36px;flex-shrink:0}
+.ph-info{}
+.ph-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.ph-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--t);margin-bottom:8px}
+.ph-desc{font-size:14px;color:var(--m);line-height:1.6;max-width:600px}
+
+/* SECTION */
+.section{margin-bottom:28px}
+.section-title{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* CARDS GRID */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px;transition:all .2s}
+.card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+.card-icon{font-size:24px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.card-body{font-size:13px;color:var(--m);line-height:1.6}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+.tbl th{background:var(--s3);color:var(--g);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bd);font-size:12px;letter-spacing:.05em}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--bd);color:var(--t);vertical-align:top}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tbl tr:last-child td{border-bottom:none}
+
+/* FLOW */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.flow-box{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600}
+.flow-arrow{color:var(--g);font-size:20px}
+
+/* LIST */
+.list{display:flex;flex-direction:column;gap:8px}
+.list-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;font-size:13px}
+.list-item-dot{width:8px;height:8px;border-radius:50%;background:var(--g);margin-top:4px;flex-shrink:0}
+.list-item-text{color:var(--m);line-height:1.55}
+.list-item-text strong{color:var(--t);display:block;margin-bottom:2px;font-size:13px}
+
+/* PHASE */
+.phase{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
+.phase::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.phase.p1::before{background:var(--g)}.phase.p2::before{background:var(--b)}.phase.p3::before{background:var(--p)}.phase.p4::before{background:var(--y)}
+.phase-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.phase-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800}
+.phase.p1 .phase-title{color:var(--g)}.phase.p2 .phase-title{color:var(--b)}.phase.p3 .phase-title{color:var(--p)}.phase.p4 .phase-title{color:var(--y)}
+.phase-meta{font-size:12px;color:var(--m);display:flex;gap:12px}
+.phase-items{display:flex;flex-wrap:wrap;gap:6px}
+.phase-item{font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--s2);color:var(--m);border:1px solid var(--bd)}
+
+/* BADGE */
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px}
+.bg{background:rgba(0,200,150,.1);color:var(--g)}
+.bb{background:rgba(59,130,246,.1);color:var(--b)}
+.bo{background:rgba(249,115,22,.1);color:var(--o)}
+.bp{background:rgba(168,85,247,.1);color:var(--p)}
+.by{background:rgba(234,179,8,.1);color:var(--y)}
+
+/* COLORS for pillar headers */
+.c-g{color:var(--g)}.c-b{color:var(--b)}.c-o{color:var(--o)}.c-p{color:var(--p)}.c-y{color:var(--y)}
+.bdr-g::before{background:var(--g)!important}.bdr-b::before{background:var(--b)!important}
+.bdr-o::before{background:var(--o)!important}.bdr-p::before{background:var(--p)!important}
+.bdr-y::before{background:var(--y)!important}
+
+/* ANIMATIONS */
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow"><i></i>Documento Estratégico Mestre</div>
+    <h1>Enterprise Growth<br><em>Ecosystem</em></h1>
+    <p>Plataforma de Crescimento Empresarial baseada em IA — 10 Pilares Estratégicos e Técnicos</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat sg"><div class="stat-n">10</div><div class="stat-l">Pilares</div></div>
+    <div class="stat sb"><div class="stat-n">40</div><div class="stat-l">Perguntas no Diagnóstico</div></div>
+    <div class="stat so"><div class="stat-n">4</div><div class="stat-l">Fases do Roadmap</div></div>
+    <div class="stat sp"><div class="stat-n">50k+</div><div class="stat-l">Empresas (Fase 4)</div></div>
+  </div>
+
+  <div class="pillars-nav" id="pnav">
+    <div class="pnav active" onclick="show(0)"><div class="pnav-n">01</div><div class="pnav-t">Propósito</div></div>
+    <div class="pnav" onclick="show(1)"><div class="pnav-n">02</div><div class="pnav-t">Ecossistema</div></div>
+    <div class="pnav" onclick="show(2)"><div class="pnav-n">03</div><div class="pnav-t">IA Consultora</div></div>
+    <div class="pnav" onclick="show(3)"><div class="pnav-n">04</div><div class="pnav-t">Diagnóstico</div></div>
+    <div class="pnav" onclick="show(4)"><div class="pnav-n">05</div><div class="pnav-t">Planejamento</div></div>
+    <div class="pnav" onclick="show(5)"><div class="pnav-n">06</div><div class="pnav-t">KPIs</div></div>
+    <div class="pnav" onclick="show(6)"><div class="pnav-n">07</div><div class="pnav-t">Automação</div></div>
+    <div class="pnav" onclick="show(7)"><div class="pnav-n">08</div><div class="pnav-t">UX</div></div>
+    <div class="pnav" onclick="show(8)"><div class="pnav-n">09</div><div class="pnav-t">Tecnologia</div></div>
+    <div class="pnav" onclick="show(9)"><div class="pnav-n">10</div><div class="pnav-t">Roadmap</div></div>
+  </div>
+
+  <div id="content" class="content"></div>
+
+</div>
+
+<script>
+const pillars = [
+  // 0 — PROPÓSITO
+  {icon:'🎯',color:'g',title:'Definição do Propósito',desc:'Missão, problema central, público-alvo e a transformação que a plataforma gera nas empresas.',content:`
+    <div class="section"><div class="section-title c-g">Missão da Plataforma</div>
+    <div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid var(--g);border-radius:12px;padding:20px;font-size:15px;font-weight:500;line-height:1.7;color:var(--t)">
+    Transformar empresas desorganizadas em negócios previsíveis, escaláveis e orientados por dados — usando inteligência artificial como consultora estratégica permanente.
+    </div></div>
+    <div class="section"><div class="section-title c-g">Público-Alvo</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🌱</div><div class="card-title">Iniciantes</div><div class="card-body">1–10 colaboradores · Até R$500k/ano · Falta organização básica</div></div>
+      <div class="card"><div class="card-icon">📈</div><div class="card-title">Em Crescimento</div><div class="card-body">10–50 colaboradores · R$500k–5M/ano · Gestão caótica</div></div>
+      <div class="card"><div class="card-icon">🏢</div><div class="card-title">PMEs</div><div class="card-body">50–200 colaboradores · R$5M–50M/ano · Falta visibilidade estratégica</div></div>
+      <div class="card"><div class="card-icon">🚀</div><div class="card-title">Startups</div><div class="card-body">Qualquer porte · Alto crescimento · Velocidade sem estrutura</div></div>
+    </div></div>
+    <div class="section"><div class="section-title c-g">Transformação</div>
+    <table class="tbl"><thead><tr><th>Antes do EGE</th><th>Depois do EGE</th></tr></thead><tbody>
+    <tr><td>Decisões por intuição</td><td>Decisões baseadas em dados e IA</td></tr>
+    <tr><td>Processos na cabeça do dono</td><td>Processos documentados e automatizados</td></tr>
+    <tr><td>Sem metas claras</td><td>OKRs e KPIs monitorados em tempo real</td></tr>
+    <tr><td>Consultor caro e pontual</td><td>IA consultora 24/7 contextualizada</td></tr>
+    <tr><td>Crescimento imprevisível</td><td>Crescimento previsível e escalável</td></tr>
+    </tbody></table></div>`
+  },
+  // 1 — ECOSSISTEMA
+  {icon:'🌐',color:'b',title:'Arquitetura do Ecossistema',desc:'10 módulos integrados que formam o Business Operating System.',content:`
+    <div class="section"><div class="section-title c-b">10 Módulos Integrados</div>
+    <table class="tbl"><thead><tr><th>#</th><th>Módulo</th><th>Função Central</th><th>Conecta com</th></tr></thead><tbody>
+    <tr><td><span class="badge bg">01</span></td><td>IA Consultora</td><td>Cérebro da plataforma</td><td>Todos os módulos</td></tr>
+    <tr><td><span class="badge bb">02</span></td><td>Diagnóstico</td><td>Radiografia da empresa</td><td>IA, Planejamento, KPIs</td></tr>
+    <tr><td><span class="badge bo">03</span></td><td>Gestão de Processos</td><td>Mapear e melhorar fluxos</td><td>Automação, Equipes</td></tr>
+    <tr><td><span class="badge bp">04</span></td><td>Planejamento Estratégico</td><td>Metas, OKRs, planos</td><td>Diagnóstico, KPIs</td></tr>
+    <tr><td><span class="badge by">05</span></td><td>KPIs Dashboard</td><td>Indicadores em tempo real</td><td>Todos os módulos</td></tr>
+    <tr><td><span class="badge bg">06</span></td><td>Sistema de Crescimento</td><td>Estratégias de escala</td><td>IA, Mercado</td></tr>
+    <tr><td><span class="badge bb">07</span></td><td>Gestão de Equipes</td><td>Performance e cultura</td><td>Processos, KPIs</td></tr>
+    <tr><td><span class="badge bo">08</span></td><td>Intel. de Mercado</td><td>Concorrência e tendências</td><td>IA, Crescimento</td></tr>
+    <tr><td><span class="badge bp">09</span></td><td>Automação de Operações</td><td>Workflows via n8n</td><td>Processos, CRM</td></tr>
+    <tr><td><span class="badge by">10</span></td><td>Painel de Performance</td><td>Visão executiva 360°</td><td>Todos os módulos</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-b">Fluxo de Dados entre Módulos</div>
+    <div class="flow">
+      <div class="flow-box">Diagnóstico</div><div class="flow-arrow">→</div>
+      <div class="flow-box">IA analisa</div><div class="flow-arrow">→</div>
+      <div class="flow-box">Planejamento</div><div class="flow-arrow">→</div>
+      <div class="flow-box">KPIs monitoram</div><div class="flow-arrow">→</div>
+      <div class="flow-box">IA recalibra</div><div class="flow-arrow">→</div>
+      <div class="flow-box">↩ Loop</div>
+    </div></div>`
+  },
+  // 2 — IA
+  {icon:'🤖',color:'p',title:'IA Consultora Estratégica',desc:'Como a inteligência artificial analisa, interpreta e orienta cada empresa.',content:`
+    <div class="section"><div class="section-title c-p">Os 3 Papéis da IA</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🎓</div><div class="card-title">Consultora</div><div class="card-body">Analisa o estado atual. Identifica o que impede o crescimento. Prioriza intervenções por impacto e urgência.</div></div>
+      <div class="card"><div class="card-icon">🔍</div><div class="card-title">Analista</div><div class="card-body">Processa dados financeiros e operacionais. Detecta padrões e anomalias. Gera relatórios em linguagem simples.</div></div>
+      <div class="card"><div class="card-icon">♟</div><div class="card-title">Estrategista</div><div class="card-body">Transforma análises em planos concretos. Define metas e sequência de execução. Recalibra conforme resultados.</div></div>
+    </div></div>
+    <div class="section"><div class="section-title c-p">Fluxo Técnico da Análise</div>
+    <div class="list">
+      <div class="list-item"><div class="list-item-dot" style="background:var(--p)"></div><div class="list-item-text"><strong>01 — Coleta de Contexto</strong>Agrega dados de todos os módulos: métricas, diagnóstico, pipeline, tarefas, histórico.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--p)"></div><div class="list-item-text"><strong>02 — Montagem do Prompt</strong>Estrutura JSON completo com contexto empresarial enviado para Claude API (sonnet).</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--p)"></div><div class="list-item-text"><strong>03 — Análise e Síntese</strong>Processamento com temperature 0.3 para recomendações consistentes e estratégicas.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--p)"></div><div class="list-item-text"><strong>04 — Entrega</strong>Cards de insight no dashboard + notificação via n8n + email com resumo.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--p)"></div><div class="list-item-text"><strong>05 — Aprendizado</strong>Registra feedback do empresário para personalização futura.</div></div>
+    </div></div>`
+  },
+  // 3 — DIAGNÓSTICO
+  {icon:'📊',color:'g',title:'Diagnóstico Empresarial',desc:'40 perguntas em 8 dimensões que revelam a maturidade real de cada empresa.',content:`
+    <div class="section"><div class="section-title c-g">8 Dimensões Avaliadas</div>
+    <table class="tbl"><thead><tr><th>Dimensão</th><th>Perguntas</th><th>O que avalia</th></tr></thead><tbody>
+    <tr><td>🧭 Liderança</td><td>5</td><td>Visão, delegação, tomada de decisão, cultura de feedback</td></tr>
+    <tr><td>💰 Gestão Financeira</td><td>6</td><td>Fluxo de caixa, margem, DRE, planejamento financeiro</td></tr>
+    <tr><td>📣 Marketing</td><td>5</td><td>Posicionamento, geração de demanda, presença digital</td></tr>
+    <tr><td>🎯 Vendas</td><td>6</td><td>Processo comercial, pipeline, conversão, equipe</td></tr>
+    <tr><td>⚙️ Operações</td><td>5</td><td>Eficiência, qualidade, capacidade produtiva</td></tr>
+    <tr><td>📋 Processos</td><td>5</td><td>Documentação, padronização, melhoria contínua</td></tr>
+    <tr><td>👥 Cultura</td><td>4</td><td>Engajamento, valores, retenção, clima organizacional</td></tr>
+    <tr><td>🚀 Crescimento</td><td>4</td><td>Estratégia, inovação, expansão, vantagem competitiva</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>40</strong></td><td>Diagnóstico completo em ~15 minutos</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-g">5 Níveis de Maturidade</div>
+    <div class="list">
+      <div class="list-item"><div class="list-item-dot" style="background:#EF4444"></div><div class="list-item-text"><strong>Inicial (0–20)</strong>Opera no caos. Processos inexistentes. Decisões puramente intuitivas.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:#F97316"></div><div class="list-item-text"><strong>Em Formação (21–40)</strong>Consciência dos problemas. Primeiras estruturas sendo criadas.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:#EAB308"></div><div class="list-item-text"><strong>Estruturado (41–60)</strong>Processos básicos existem. Gestão funcional mas ainda reativa.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:#3B82F6"></div><div class="list-item-text"><strong>Avançado (61–80)</strong>Gestão profissional. KPIs monitorados. Estratégia clara.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--g)"></div><div class="list-item-text"><strong>Líder de Mercado (81–100)</strong>Alta maturidade. Cultura de dados. Crescimento previsível.</div></div>
+    </div></div>`
+  },
+  // 4 — PLANEJAMENTO
+  {icon:'♟',color:'b',title:'Planejamento Estratégico',desc:'Transforma o diagnóstico em plano de ação personalizado com metas, OKRs e prazos.',content:`
+    <div class="section"><div class="section-title c-b">Estrutura do Plano Gerado pela IA</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🔭</div><div class="card-title">Visão de 12 meses</div><div class="card-body">Onde a empresa deve estar ao final do período. Definida com base no setor, porte e score atual.</div></div>
+      <div class="card"><div class="card-icon">⚡</div><div class="card-title">3 Prioridades Estratégicas</div><div class="card-body">As alavancas de maior impacto identificadas pela IA com base no diagnóstico.</div></div>
+      <div class="card"><div class="card-icon">🎯</div><div class="card-title">OKRs Trimestrais</div><div class="card-body">Objectives and Key Results com metas numéricas. Revisados a cada trimestre.</div></div>
+      <div class="card"><div class="card-icon">📅</div><div class="card-title">Plano de Execução</div><div class="card-body">Ações semanais concretas com responsáveis e prazos definidos.</div></div>
+      <div class="card"><div class="card-icon">📏</div><div class="card-title">Indicadores de Sucesso</div><div class="card-body">KPIs que provam que o plano está funcionando. Monitorados automaticamente.</div></div>
+      <div class="card"><div class="card-icon">🔄</div><div class="card-title">Recalibração Automática</div><div class="card-body">A IA ajusta o plano mensalmente com base nos resultados reais.</div></div>
+    </div></div>
+    <div class="section"><div class="section-title c-b">Horizontes de Planejamento</div>
+    <table class="tbl"><thead><tr><th>Horizonte</th><th>Foco</th><th>Revisão</th></tr></thead><tbody>
+    <tr><td>90 dias</td><td>Quick wins e estruturação básica</td><td>Mensal pela IA</td></tr>
+    <tr><td>6 meses</td><td>Crescimento e otimização de processos</td><td>Bimestral com relatório</td></tr>
+    <tr><td>12 meses</td><td>Escalabilidade e expansão</td><td>Trimestral com novo diagnóstico</td></tr>
+    </tbody></table></div>`
+  },
+  // 5 — KPIs
+  {icon:'📈',color:'y',title:'Monitoramento de KPIs',desc:'Dashboard de indicadores em tempo real com alertas automáticos e insights da IA.',content:`
+    <div class="section"><div class="section-title c-y">KPIs Financeiros</div>
+    <table class="tbl"><thead><tr><th>KPI</th><th>Fórmula</th><th>Meta</th></tr></thead><tbody>
+    <tr><td>MRR</td><td>Soma das receitas do mês</td><td>Crescimento 10–20% a.m.</td></tr>
+    <tr><td>Margem de Contribuição</td><td>(Receita – CV) / Receita × 100</td><td>Acima de 40%</td></tr>
+    <tr><td>Lucro Líquido</td><td>Receita – Custos Totais</td><td>Mínimo 15% da receita</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-y">KPIs Comerciais</div>
+    <table class="tbl"><thead><tr><th>KPI</th><th>Fórmula</th><th>Meta</th></tr></thead><tbody>
+    <tr><td>Taxa de Conversão</td><td>Fechamentos / Leads × 100</td><td>Acima de 20%</td></tr>
+    <tr><td>CAC</td><td>Invest. Aquisição / Clientes Novos</td><td>CAC &lt; LTV / 3</td></tr>
+    <tr><td>Ticket Médio</td><td>Receita / Nº de Clientes</td><td>Crescimento trimestral</td></tr>
+    <tr><td>Ciclo de Vendas</td><td>Dias médios do lead ao fechamento</td><td>Redução contínua</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-y">Alertas Automáticos</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🚨</div><div class="card-title">Alerta Crítico</div><div class="card-body">KPI abaixo de 70% da meta por 2 semanas seguidas → notificação imediata + análise da IA.</div></div>
+      <div class="card"><div class="card-icon">⚠️</div><div class="card-title">Alerta de Atenção</div><div class="card-body">Tendência de queda detectada → sugestão proativa de ação corretiva.</div></div>
+      <div class="card"><div class="card-icon">✅</div><div class="card-title">Meta Atingida</div><div class="card-body">KPI superou meta → reconhecimento + próxima meta sugerida pela IA.</div></div>
+    </div></div>`
+  },
+  // 6 — AUTOMAÇÃO
+  {icon:'⚙️',color:'o',title:'Automação de Processos',desc:'Identificação, organização e automação de fluxos operacionais via n8n.',content:`
+    <div class="section"><div class="section-title c-o">Os 4 Passos da Automação</div>
+    <div class="list">
+      <div class="list-item"><div class="list-item-dot" style="background:var(--o)"></div><div class="list-item-text"><strong>1 — Identificar</strong>A IA mapeia processos repetitivos nos dados de uso e nas respostas do diagnóstico.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--o)"></div><div class="list-item-text"><strong>2 — Organizar</strong>Cria o fluxo visual do processo em formato BPMN simplificado dentro da plataforma.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--o)"></div><div class="list-item-text"><strong>3 — Sugerir</strong>Propõe melhorias e pontos de automação com estimativa de tempo economizado/mês.</div></div>
+      <div class="list-item"><div class="list-item-dot" style="background:var(--o)"></div><div class="list-item-text"><strong>4 — Automatizar</strong>Gera o workflow no n8n com um clique, conectado às ferramentas que a empresa já usa.</div></div>
+    </div></div>
+    <div class="section"><div class="section-title c-o">6 Workflows Essenciais do MVP</div>
+    <table class="tbl"><thead><tr><th>Workflow</th><th>Trigger</th><th>Tempo Economizado</th></tr></thead><tbody>
+    <tr><td>Boas-vindas</td><td>Novo cadastro</td><td>~30 min/usuário</td></tr>
+    <tr><td>Lead sem follow-up</td><td>7 dias sem contato</td><td>~2h/semana</td></tr>
+    <tr><td>Diagnóstico concluído</td><td>Submissão do form</td><td>~3h/empresa</td></tr>
+    <tr><td>Task vencida</td><td>Data limite passada</td><td>~1h/semana</td></tr>
+    <tr><td>Relatório semanal</td><td>Toda segunda, 8h</td><td>~2h/semana</td></tr>
+    <tr><td>Alerta de KPI</td><td>KPI abaixo da meta</td><td>Decisão mais rápida</td></tr>
+    </tbody></table></div>`
+  },
+  // 7 — UX
+  {icon:'🎨',color:'p',title:'Experiência do Usuário',desc:'Jornada simples, intuitiva e orientada a resultados desde o primeiro acesso.',content:`
+    <div class="section"><div class="section-title c-p">Jornada Completa</div>
+    <table class="tbl"><thead><tr><th>Etapa</th><th>Ação</th><th>Entrega da Plataforma</th></tr></thead><tbody>
+    <tr><td>1 — Chegada</td><td>Acessa e se cadastra</td><td>Landing clara + cadastro em 60 segundos</td></tr>
+    <tr><td>2 — Empresa</td><td>Perfil da empresa</td><td>Formulário inteligente com 6 campos</td></tr>
+    <tr><td>3 — Diagnóstico</td><td>Responde 40 perguntas</td><td>Interface gamificada, progresso visual, ~15 min</td></tr>
+    <tr><td>4 — Resultado</td><td>Vê relatório de maturidade</td><td>Radar chart + score + top 3 gargalos</td></tr>
+    <tr><td>5 — Dashboard</td><td>Painel principal</td><td>KPIs + pipeline + 1º insight da IA</td></tr>
+    <tr><td>6 — Rotina</td><td>Uso diário</td><td>IA envia recomendação semanal + alertas</td></tr>
+    <tr><td>7 — Crescimento</td><td>Evolui o score</td><td>Novo diagnóstico trimestral + plano recalibrado</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-p">5 Princípios de Design</div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">⚡</div><div class="card-title">Resultado primeiro</div><div class="card-body">O empresário vê valor na primeira sessão, antes de qualquer configuração complexa.</div></div>
+      <div class="card"><div class="card-icon">🧠</div><div class="card-title">Zero curva</div><div class="card-body">Se precisa de manual, o design está errado. Tudo deve ser autoexplicativo.</div></div>
+      <div class="card"><div class="card-icon">📱</div><div class="card-title">Mobile first</div><div class="card-body">70% dos empresários acessam pelo celular. A interface prioriza esse contexto.</div></div>
+      <div class="card"><div class="card-icon">💬</div><div class="card-title">IA fala como gente</div><div class="card-body">Linguagem clara, direta e sem jargão técnico em todas as recomendações.</div></div>
+    </div></div>`
+  },
+  // 8 — TECNOLOGIA
+  {icon:'🔧',color:'b',title:'Arquitetura Tecnológica',desc:'Stack moderno, escalável e pronto para milhares de empresas simultaneamente.',content:`
+    <div class="section"><div class="section-title c-b">Stack Tecnológico</div>
+    <table class="tbl"><thead><tr><th>Camada</th><th>Tecnologia</th><th>Por que</th></tr></thead><tbody>
+    <tr><td>Frontend</td><td>React 18 + Tailwind</td><td>Ecossistema maduro, performance, componentes</td></tr>
+    <tr><td>Gráficos</td><td>Recharts + D3.js</td><td>Radar chart + dashboards interativos</td></tr>
+    <tr><td>Backend</td><td>Node.js + Express</td><td>Alta performance, assíncrono, npm rico</td></tr>
+    <tr><td>BaaS</td><td>Supabase</td><td>Auth + DB + Realtime + Storage prontos</td></tr>
+    <tr><td>Banco</td><td>PostgreSQL 15</td><td>ACID, JSON nativo, Row Level Security</td></tr>
+    <tr><td>IA Principal</td><td>Claude API</td><td>Melhor para raciocínio estratégico</td></tr>
+    <tr><td>IA Suporte</td><td>OpenAI API</td><td>Embeddings, busca semântica</td></tr>
+    <tr><td>Automação</td><td>n8n self-hosted</td><td>400+ integrações, custo zero</td></tr>
+    <tr><td>Deploy</td><td>Railway / Render</td><td>Auto-scale, custo progressivo</td></tr>
+    <tr><td>Monitoramento</td><td>Sentry + Datadog</td><td>Erros + métricas de infra</td></tr>
+    </tbody></table></div>
+    <div class="section"><div class="section-title c-b">Escalabilidade para 50k+ Empresas</div>
+    <div class="list">
+      <div class="list-item"><div class="list-item-dot"></div><div class="list-item-text"><strong>Row Level Security</strong>Isolamento total entre empresas no nível do banco. Sem bancos separados.</div></div>
+      <div class="list-item"><div class="list-item-dot"></div><div class="list-item-text"><strong>Connection Pooling (PgBouncer)</strong>Suporta 10.000+ conexões simultâneas sem degradação.</div></div>
+      <div class="list-item"><div class="list-item-dot"></div><div class="list-item-text"><strong>Redis Cache</strong>Cache de queries frequentes e sessões. Reduz carga no banco em 70%.</div></div>
+      <div class="list-item"><div class="list-item-dot"></div><div class="list-item-text"><strong>Queue de Jobs (Bull)</strong>Análises de IA processadas de forma assíncrona sem travar o servidor.</div></div>
+      <div class="list-item"><div class="list-item-dot"></div><div class="list-item-text"><strong>Horizontal Scaling</strong>Múltiplas instâncias do backend atrás de load balancer.</div></div>
+    </div></div>`
+  },
+  // 9 — ROADMAP
+  {icon:'🗺',color:'g',title:'Roadmap — 4 Fases',desc:'Do MVP à escala internacional em 4 etapas progressivas.',content:`
+    <div class="phase p1">
+      <div class="phase-header">
+        <div class="phase-title">Fase 1 — MVP</div>
+        <div class="phase-meta"><span>⏱ 0–3 meses</span><span>🏢 50 empresas beta</span></div>
+      </div>
+      <div class="phase-items">
+        <span class="phase-item">Autenticação</span><span class="phase-item">Perfil da Empresa</span><span class="phase-item">Diagnóstico 40q</span><span class="phase-item">IA Consultora</span><span class="phase-item">Dashboard</span><span class="phase-item">CRM Kanban</span><span class="phase-item">Tarefas</span><span class="phase-item">6 Workflows n8n</span>
+      </div>
+    </div>
+    <div class="phase p2">
+      <div class="phase-header">
+        <div class="phase-title">Fase 2 — Plataforma Funcional</div>
+        <div class="phase-meta"><span>⏱ 3–8 meses</span><span>🏢 500 empresas · R$150k MRR</span></div>
+      </div>
+      <div class="phase-items">
+        <span class="phase-item">Planejamento OKR</span><span class="phase-item">Módulo Financeiro</span><span class="phase-item">Gestão de Equipes</span><span class="phase-item">Relatórios PDF</span><span class="phase-item">App Mobile</span><span class="phase-item">Planos de Assinatura</span>
+      </div>
+    </div>
+    <div class="phase p3">
+      <div class="phase-header">
+        <div class="phase-title">Fase 3 — Ecossistema Completo</div>
+        <div class="phase-meta"><span>⏱ 8–18 meses</span><span>🏢 5.000 empresas · R$1.5M MRR</span></div>
+      </div>
+      <div class="phase-items">
+        <span class="phase-item">Marketplace</span><span class="phase-item">Intel. de Mercado</span><span class="phase-item">Marketing Automation</span><span class="phase-item">Comunidade</span><span class="phase-item">Educação</span><span class="phase-item">API Pública</span>
+      </div>
+    </div>
+    <div class="phase p4">
+      <div class="phase-header">
+        <div class="phase-title">Fase 4 — Escala Internacional</div>
+        <div class="phase-meta"><span>⏱ 18+ meses</span><span>🌎 50k+ empresas · US$5M+ MRR</span></div>
+      </div>
+      <div class="phase-items">
+        <span class="phase-item">EN / ES / PT</span><span class="phase-item">GDPR + SOC2</span><span class="phase-item">Parcerias Estratégicas</span><span class="phase-item">Enterprise B2B</span><span class="phase-item">IA por Setor</span>
+      </div>
+    </div>`
+  },
+];
+
+const colors = {g:'var(--g)',b:'var(--b)',o:'var(--o)',p:'var(--p)',y:'var(--y)'};
+const borderClasses = {g:'bdr-g',b:'bdr-b',o:'bdr-o',p:'bdr-p',y:'bdr-y'};
+
+function show(i) {
+  const p = pillars[i];
+  document.querySelectorAll('.pnav').forEach((el,j) => el.classList.toggle('active', j===i));
+  const c = document.getElementById('content');
+  c.style.opacity = 0;
+  setTimeout(() => {
+    c.innerHTML = `
+      <div class="pillar-header ${borderClasses[p.color]}">
+        <div class="ph-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ph-icon">${p.icon}</div>
+        <div class="ph-info">
+          <div class="ph-label c-${p.color}">Pilar ${i+1} de 10</div>
+          <div class="ph-title">${p.title}</div>
+          <div class="ph-desc">${p.desc}</div>
+        </div>
+      </div>
+      ${p.content}
+    `;
+    c.style.transition = 'opacity .35s';
+    c.style.opacity = 1;
+  }, 150);
+}
+
+show(0);
+</script>
+</body>
+</html>

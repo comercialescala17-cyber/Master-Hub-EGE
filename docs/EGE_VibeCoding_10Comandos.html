@@ -1,0 +1,697 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGE — Sistema de Vibe Coding · 10 Comandos</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070E1C;--s1:#0C1526;--s2:#111E35;--s3:#172440;
+  --g:#00D4AA;--o:#FF6B35;--b:#4A9EFF;--p:#A855F7;--y:#F59E0B;--r:#EF4444;
+  --txt:#E8F4FD;--muted:#5A7090;--border:#1A2D47;
+}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 0% 0%,rgba(0,212,170,.06) 0%,transparent 40%),
+             radial-gradient(ellipse at 100% 100%,rgba(74,158,255,.05) 0%,transparent 40%);
+  pointer-events:none}
+
+/* ─── HEADER ─── */
+.hero{text-align:center;padding:52px 24px 40px;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);color:var(--g);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:18px}
+.pulse{width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 2s infinite}
+.hero h1{font-size:clamp(28px,5vw,54px);font-weight:800;line-height:1.05;margin-bottom:8px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--g) 0%,var(--b) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:16px;font-weight:300;max-width:520px;margin:0 auto 32px}
+
+/* ─── STATS ROW ─── */
+.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:14px 22px;text-align:center;min-width:110px}
+.stat-n{font-size:28px;font-weight:800;line-height:1}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+.c-g .stat-n{color:var(--g)}
+.c-b .stat-n{color:var(--b)}
+.c-o .stat-n{color:var(--o)}
+.c-p .stat-n{color:var(--p)}
+.c-y .stat-n{color:var(--y)}
+
+/* ─── MAIN LAYOUT ─── */
+.shell{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:calc(100vh - 320px);position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px 80px}
+
+/* ─── SIDEBAR ─── */
+.sidebar{background:var(--s1);border:1px solid var(--border);border-radius:16px 0 0 16px;border-right:none;padding:16px 0;position:sticky;top:20px;height:fit-content}
+.sidebar-title{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:0 20px 12px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 20px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.03);color:var(--txt)}
+.nav-item.active{background:rgba(0,212,170,.06);border-left-color:var(--g)}
+.nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;min-width:22px;color:var(--muted)}
+.nav-item.active .nav-num{color:var(--g)}
+.nav-label{font-size:12px;font-weight:600;color:var(--muted);line-height:1.3}
+.nav-item.active .nav-label{color:var(--txt)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);margin-left:auto;flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--g)}
+
+/* ─── CONTENT ─── */
+.content{background:var(--s1);border:1px solid var(--border);border-radius:0 16px 16px 0;padding:32px;overflow:hidden}
+.cmd-panel{display:none;animation:fadeUp .4s ease both}
+.cmd-panel.active{display:block}
+
+/* ─── CMD HEADER ─── */
+.cmd-header{margin-bottom:28px}
+.cmd-tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--g);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.cmd-tag::before{content:'';width:18px;height:2px;background:var(--g);border-radius:1px}
+.cmd-title{font-size:clamp(20px,3vw,30px);font-weight:800;color:var(--txt);margin-bottom:6px;line-height:1.2}
+.cmd-sub{font-size:14px;color:var(--muted);font-weight:300;line-height:1.6}
+
+/* ─── SECTION ─── */
+.sec{margin-bottom:28px}
+.sec-title{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sec-title span{width:3px;height:14px;background:var(--g);border-radius:2px;display:inline-block}
+
+/* ─── LAYER CARDS ─── */
+.layers{display:flex;flex-direction:column;gap:8px}
+.layer{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all .25s;border-left:3px solid var(--border)}
+.layer:hover{border-color:rgba(255,255,255,.15);transform:translateX(3px)}
+.layer.lg{border-left-color:var(--g)}
+.layer.lb{border-left-color:var(--b)}
+.layer.lo{border-left-color:var(--o)}
+.layer.lp{border-left-color:var(--p)}
+.layer.ly{border-left-color:var(--y)}
+.layer.lr{border-left-color:var(--r)}
+.layer-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:24px}
+.layer-lbl{font-size:12px;font-weight:700;min-width:110px}
+.layer.lg .layer-lbl{color:var(--g)}
+.layer.lb .layer-lbl{color:var(--b)}
+.layer.lo .layer-lbl{color:var(--o)}
+.layer.lp .layer-lbl{color:var(--p)}
+.layer.ly .layer-lbl{color:var(--y)}
+.layer.lr .layer-lbl{color:var(--r)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.chip{font-size:11px;padding:3px 8px;border-radius:5px;background:var(--s3);color:var(--muted);border:1px solid var(--border);font-weight:500}
+
+/* ─── TABLE ─── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+.tbl th{background:rgba(0,0,0,.3);color:var(--g);font-weight:700;text-align:left;padding:9px 12px;border:1px solid var(--border);font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.tbl td{padding:8px 12px;border:1px solid var(--border);color:var(--txt);vertical-align:top}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tbl tr:hover td{background:rgba(0,212,170,.03)}
+.method{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block}
+.mg{background:rgba(0,212,170,.15);color:var(--g)}
+.mp{background:rgba(255,107,53,.15);color:var(--o)}
+.mu{background:rgba(74,158,255,.15);color:var(--b)}
+.mpa{background:rgba(245,158,11,.15);color:var(--y)}
+.md{background:rgba(239,68,68,.15);color:var(--r)}
+
+/* ─── CODE ─── */
+.code-block{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#7DD3BA;overflow-x:auto;margin:8px 0}
+.code-block .k{color:#FF79C6}
+.code-block .s{color:#F1FA8C}
+.code-block .c{color:var(--muted)}
+
+/* ─── MODULES GRID ─── */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.mcard{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px;transition:all .25s}
+.mcard:hover{border-color:rgba(0,212,170,.3);transform:translateY(-2px)}
+.mcard-icon{font-size:24px;margin-bottom:10px;display:block}
+.mcard-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.mcard-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:10px}
+.mcard-tags{display:flex;flex-wrap:wrap;gap:5px}
+.mtag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.tg{background:rgba(0,212,170,.1);color:var(--g)}
+.tb{background:rgba(74,158,255,.1);color:var(--b)}
+.to{background:rgba(255,107,53,.1);color:var(--o)}
+.tp{background:rgba(168,85,247,.1);color:var(--p)}
+
+/* ─── FLOW ─── */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:12px 0}
+.fstep{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--txt);text-align:center}
+.farr{color:var(--g);font-size:16px;font-weight:300}
+
+/* ─── AI STEPS ─── */
+.ai-steps{display:flex;flex-direction:column;gap:10px}
+.ai-step{display:flex;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:all .25s}
+.ai-step:hover{border-color:rgba(0,212,170,.25)}
+.ai-sn{min-width:30px;height:30px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--g);flex-shrink:0}
+.ai-st{font-size:13px;font-weight:700;margin-bottom:3px}
+.ai-sd{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ─── ROADMAP ─── */
+.roadmap{display:flex;flex-direction:column;gap:12px}
+.rphase{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.rphase-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.rphase-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px}
+.ph1{background:rgba(0,212,170,.15);color:var(--g)}
+.ph2{background:rgba(74,158,255,.15);color:var(--b)}
+.ph3{background:rgba(255,107,53,.15);color:var(--o)}
+.ph4{background:rgba(168,85,247,.15);color:var(--p)}
+.rphase-title{font-size:15px;font-weight:700}
+.rphase-weeks{font-size:11px;color:var(--muted);margin-left:auto}
+.rphase-items{display:flex;flex-wrap:wrap;gap:6px}
+.ritem{font-size:11px;font-weight:500;padding:3px 8px;border-radius:5px;background:var(--s3);color:var(--muted);border:1px solid var(--border)}
+
+/* ─── TIMELINE ─── */
+.timeline{display:flex;flex-direction:column;gap:8px}
+.tl-item{display:flex;gap:14px;align-items:flex-start}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--g);flex-shrink:0;margin-top:5px;position:relative}
+.tl-dot::after{content:'';position:absolute;left:50%;top:10px;width:1px;height:calc(100% + 18px);background:var(--border);transform:translateX(-50%)}
+.tl-item:last-child .tl-dot::after{display:none}
+.tl-period{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);min-width:90px;margin-top:3px}
+.tl-content{}
+.tl-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.tl-items{display:flex;flex-wrap:wrap;gap:5px}
+.tl-tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--s3);color:var(--muted);border:1px solid var(--border)}
+
+/* ─── UX STEPS ─── */
+.ux-phases{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ux-phase{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.ux-phase-title{font-size:12px;font-weight:700;color:var(--g);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.ux-step{display:flex;gap:8px;margin-bottom:7px;font-size:12px;color:var(--muted);line-height:1.4;align-items:flex-start}
+.ux-n{min-width:18px;height:18px;border-radius:4px;background:rgba(0,212,170,.1);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--g);flex-shrink:0;margin-top:1px}
+
+/* ─── INFRA TABLE ─── */
+.infra-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.infra-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.infra-icon{font-size:20px;flex-shrink:0}
+.infra-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.infra-cost{font-size:11px;color:var(--g);font-weight:600}
+.infra-tool{font-size:11px;color:var(--muted)}
+
+/* ─── SCALE TABLE ─── */
+.scale-grid{display:flex;flex-direction:column;gap:8px}
+.scale-row{display:grid;grid-template-columns:100px 120px 1fr 1fr;gap:12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;align-items:center;font-size:12px}
+.scale-row.header{background:rgba(0,0,0,.3);font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.06em}
+.scale-phase{font-weight:700;color:var(--g)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(0.8)}}
+
+@media(max-width:700px){
+  .shell{grid-template-columns:1fr;padding:0 16px 60px}
+  .sidebar{border-radius:12px;border-right:1px solid var(--border);margin-bottom:12px;position:static}
+  .content{border-radius:12px}
+  .ux-phases{grid-template-columns:1fr}
+  .mgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge"><div class="pulse"></div>Sistema de Vibe Coding</div>
+  <h1>Enterprise Growth<br><em>Ecosystem</em></h1>
+  <p>Blueprint técnico completo — 10 comandos do MVP ao ecossistema nacional</p>
+</div>
+
+<div class="stats">
+  <div class="stat c-g"><div class="stat-n">10</div><div class="stat-l">Comandos</div></div>
+  <div class="stat c-b"><div class="stat-n">863</div><div class="stat-l">Parágrafos doc</div></div>
+  <div class="stat c-o"><div class="stat-n">34</div><div class="stat-l">Endpoints API</div></div>
+  <div class="stat c-p"><div class="stat-n">12</div><div class="stat-l">Tabelas DB</div></div>
+  <div class="stat c-y"><div class="stat-n">90d</div><div class="stat-l">MVP Launch</div></div>
+</div>
+
+<div class="shell">
+  <div class="sidebar">
+    <div class="sidebar-title">Navegação</div>
+    <div class="nav-item active" onclick="show(1,this)"><span class="nav-num">01</span><span class="nav-label">Arquitetura do Sistema</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(2,this)"><span class="nav-num">02</span><span class="nav-label">Banco de Dados</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(3,this)"><span class="nav-num">03</span><span class="nav-label">Design de APIs</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(4,this)"><span class="nav-num">04</span><span class="nav-label">Arquitetura Backend</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(5,this)"><span class="nav-num">05</span><span class="nav-label">Arquitetura Frontend</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(6,this)"><span class="nav-num">06</span><span class="nav-label">Dashboard</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(7,this)"><span class="nav-num">07</span><span class="nav-label">AI Business Advisor</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(8,this)"><span class="nav-num">08</span><span class="nav-label">UX Flow</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(9,this)"><span class="nav-num">09</span><span class="nav-label">Roadmap</span><span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="show(10,this)"><span class="nav-num">10</span><span class="nav-label">MVP Launch Plan</span><span class="nav-dot"></span></div>
+  </div>
+
+  <div class="content">
+
+    <!-- CMD 01 -->
+    <div class="cmd-panel active" id="p1">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 01</div>
+        <div class="cmd-title">Arquitetura do Sistema</div>
+        <div class="cmd-sub">Como os 6 componentes interagem e como a plataforma escala para milhares de empresas</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>6 Camadas da Plataforma</div>
+        <div class="layers">
+          <div class="layer lr"><span class="layer-n">06</span><span class="layer-lbl">Usuário</span><div class="chips"><span class="chip">Browser</span><span class="chip">Mobile Web</span><span class="chip">App Responsivo</span></div></div>
+          <div class="layer ly"><span class="layer-n">05</span><span class="layer-lbl">Frontend</span><div class="chips"><span class="chip">React 18</span><span class="chip">Tailwind</span><span class="chip">Recharts</span><span class="chip">React Query</span><span class="chip">Zustand</span></div></div>
+          <div class="layer lo"><span class="layer-n">04</span><span class="layer-lbl">API Gateway</span><div class="chips"><span class="chip">Node.js</span><span class="chip">Express</span><span class="chip">JWT Auth</span><span class="chip">Rate Limit</span><span class="chip">Zod Validation</span></div></div>
+          <div class="layer lp"><span class="layer-n">03</span><span class="layer-lbl">Serviços</span><div class="chips"><span class="chip">AuthService</span><span class="chip">CRMService</span><span class="chip">DiagnosticService</span><span class="chip">AIService</span><span class="chip">MetricsService</span></div></div>
+          <div class="layer lb"><span class="layer-n">02</span><span class="layer-lbl">Dados</span><div class="chips"><span class="chip">PostgreSQL 15</span><span class="chip">Supabase</span><span class="chip">Redis Cache</span><span class="chip">Row Level Security</span></div></div>
+          <div class="layer lg"><span class="layer-n">01</span><span class="layer-lbl">IA & Automação</span><div class="chips"><span class="chip">Claude API</span><span class="chip">OpenAI</span><span class="chip">n8n Workflows</span><span class="chip">Bull Queue</span></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Fluxo de Dados Principal</div>
+        <div class="flow">
+          <div class="fstep">Usuário</div><div class="farr">→</div>
+          <div class="fstep">React SPA</div><div class="farr">→</div>
+          <div class="fstep">API Gateway</div><div class="farr">→</div>
+          <div class="fstep">Services</div><div class="farr">→</div>
+          <div class="fstep">PostgreSQL</div><div class="farr">→</div>
+          <div class="fstep">Claude API</div><div class="farr">→</div>
+          <div class="fstep">Resposta</div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Estratégia de Escala</div>
+        <div class="scale-grid">
+          <div class="scale-row header"><span>Fase</span><span>Empresas</span><span>Arquitetura</span><span>Infra</span></div>
+          <div class="scale-row"><span class="scale-phase">MVP</span><span>1 – 500</span><span>Monolito modular</span><span>Railway + Supabase Free</span></div>
+          <div class="scale-row"><span class="scale-phase">Growth</span><span>500 – 5k</span><span>Separar AI Service</span><span>Railway Pro + Redis</span></div>
+          <div class="scale-row"><span class="scale-phase">Scale</span><span>5k – 50k</span><span>Microserviços por domínio</span><span>AWS ECS + RDS</span></div>
+          <div class="scale-row"><span class="scale-phase">Enterprise</span><span>50k+</span><span>Multi-region + Edge</span><span>AWS Multi-AZ + CloudFront</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CMD 02 -->
+    <div class="cmd-panel" id="p2">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 02</div>
+        <div class="cmd-title">Banco de Dados PostgreSQL</div>
+        <div class="cmd-sub">Schema multi-tenant com RLS, índices estratégicos e isolamento por empresa</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Princípios do Schema</div>
+        <div class="mgrid">
+          <div class="mcard"><div class="mcard-title">🔑 UUID como PK</div><div class="mcard-desc">Evita enumeração de registros e facilita sharding horizontal futuro.</div></div>
+          <div class="mcard"><div class="mcard-title">🏢 company_id universal</div><div class="mcard-desc">Presente em todas as tabelas de negócio — chave principal de isolamento multi-tenant.</div></div>
+          <div class="mcard"><div class="mcard-title">🔒 RLS nativo</div><div class="mcard-desc">Row Level Security no PostgreSQL garante que cada empresa só acessa seus dados, mesmo sem validação no código.</div></div>
+          <div class="mcard"><div class="mcard-title">🗑 Soft Delete</div><div class="mcard-desc">Campo deleted_at em todas tabelas — preserva histórico e permite recuperação de dados.</div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Tabelas Principais</div>
+        <table class="tbl">
+          <thead><tr><th>Tabela</th><th>Registros principais</th><th>Chave de isolamento</th><th>Índice crítico</th></tr></thead>
+          <tbody>
+            <tr><td><code>users</code></td><td>id, email, role, password_hash</td><td>—</td><td>idx_users_email</td></tr>
+            <tr><td><code>companies</code></td><td>company_name, slug, plan, cnpj</td><td>—</td><td>idx_companies_slug</td></tr>
+            <tr><td><code>company_users</code></td><td>role, joined_at</td><td>company_id</td><td>idx_cu_company, idx_cu_user</td></tr>
+            <tr><td><code>diagnostics</code></td><td>scores por área, overall_score, maturity_level</td><td>company_id</td><td>idx_diag_company</td></tr>
+            <tr><td><code>crm_leads</code></td><td>name, stage, value, assigned_to, tags</td><td>company_id</td><td>idx_leads_company_stage</td></tr>
+            <tr><td><code>tasks</code></td><td>title, status, priority, due_date</td><td>company_id</td><td>idx_tasks_company_status</td></tr>
+            <tr><td><code>business_metrics</code></td><td>revenue, expenses, profit (GENERATED)</td><td>company_id</td><td>idx_metrics_company_month</td></tr>
+            <tr><td><code>ai_recommendations</code></td><td>type, content, priority, action_items[]</td><td>company_id</td><td>idx_ai_recs_company</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Exemplo RLS</div>
+        <div class="code-block"><span class="c">-- Ativar isolamento na tabela crm_leads</span>
+ALTER TABLE crm_leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY company_isolation ON crm_leads
+  FOR ALL USING (
+    company_id = current_setting(<span class="s">'app.company_id'</span>)::UUID
+  );</div>
+      </div>
+    </div>
+
+    <!-- CMD 03 -->
+    <div class="cmd-panel" id="p3">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 03</div>
+        <div class="cmd-title">Design de APIs REST</div>
+        <div class="cmd-sub">34 endpoints organizados por domínio com autenticação, papéis e contrato padrão</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Contrato Padrão</div>
+        <div class="code-block"><span class="c">// Sucesso</span>
+{ <span class="s">"success"</span>: true, <span class="s">"data"</span>: { ... }, <span class="s">"meta"</span>: { <span class="s">"total"</span>: 42 } }
+
+<span class="c">// Erro</span>
+{ <span class="s">"success"</span>: false, <span class="s">"error"</span>: { <span class="s">"code"</span>: <span class="s">"LEAD_NOT_FOUND"</span>, <span class="s">"message"</span>: <span class="s">"..."</span> } }</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Endpoints por Domínio</div>
+        <table class="tbl">
+          <thead><tr><th>Método</th><th>Endpoint</th><th>Acesso</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method mp">POST</span></td><td>/api/auth/register</td><td>Público</td><td>Cadastro + email de verificação</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/auth/login</td><td>Público</td><td>Login + JWT + refresh token</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/auth/me</td><td>JWT</td><td>Dados do usuário autenticado</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/company</td><td>JWT</td><td>Criar empresa</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/company/:id</td><td>Membro</td><td>Dados da empresa</td></tr>
+            <tr><td><span class="method mu">PUT</span></td><td>/api/company/:id</td><td>Admin</td><td>Atualizar empresa</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/diagnostic/questions</td><td>Membro</td><td>30 perguntas por categoria</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/diagnostic/submit</td><td>Membro</td><td>Enviar e calcular scores</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/diagnostic/results/:id</td><td>Membro</td><td>Resultado + Radar Chart data</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/crm/leads</td><td>Membro</td><td>Listar com filtros e paginação</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/crm/leads</td><td>Membro</td><td>Criar lead</td></tr>
+            <tr><td><span class="method mpa">PATCH</span></td><td>/api/crm/leads/:id/stage</td><td>Membro</td><td>Mover no pipeline Kanban</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/crm/pipeline</td><td>Membro</td><td>Leads agrupados por estágio</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/tasks</td><td>Membro</td><td>Tarefas com filtro status/prioridade</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/tasks</td><td>Membro</td><td>Criar + notificar responsável</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/metrics/summary</td><td>Membro</td><td>KPIs mês atual vs anterior</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/metrics/trends</td><td>Membro</td><td>Histórico 12 meses</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/ai/analyze</td><td>Admin</td><td>Análise completa pela IA</td></tr>
+            <tr><td><span class="method mg">GET</span></td><td>/api/ai/recommendations</td><td>Membro</td><td>Recomendações ativas priorizadas</td></tr>
+            <tr><td><span class="method mp">POST</span></td><td>/api/ai/chat</td><td>Membro</td><td>Chat contextualizado com dados</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CMD 04 -->
+    <div class="cmd-panel" id="p4">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 04</div>
+        <div class="cmd-title">Arquitetura Backend</div>
+        <div class="cmd-sub">Node.js modular com separação clara: routes → controller → service → database</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Estrutura de Pastas</div>
+        <div class="code-block">ege-backend/
+├── src/
+│   ├── <span class="k">config</span>/          <span class="c"># env, db, redis, logger</span>
+│   ├── <span class="k">middleware</span>/       <span class="c"># auth, validation, rateLimit, error</span>
+│   ├── <span class="k">modules</span>/
+│   │   ├── auth/         <span class="c"># controller · service · routes · dto</span>
+│   │   ├── company/      <span class="c"># controller · service · routes · dto</span>
+│   │   ├── diagnostic/   <span class="c"># controller · service · routes · dto</span>
+│   │   ├── crm/          <span class="c"># controller · service · routes · dto</span>
+│   │   ├── tasks/        <span class="c"># controller · service · routes · dto</span>
+│   │   ├── metrics/      <span class="c"># controller · service · routes · dto</span>
+│   │   └── ai/           <span class="c"># controller · service · promptBuilder</span>
+│   ├── <span class="k">shared</span>/
+│   │   ├── database/     <span class="c"># connection · migrations · queryBuilder</span>
+│   │   ├── cache/        <span class="c"># Redis client + helpers</span>
+│   │   ├── queue/        <span class="c"># Bull jobs async</span>
+│   │   └── email/        <span class="c"># templates + Resend sender</span>
+│   └── app.ts
+└── tests/                <span class="c"># unit · integration · e2e</span></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Padrão de Módulo (Exemplo CRM)</div>
+        <div class="code-block"><span class="c">// routes.ts</span>
+router.<span class="k">get</span>(<span class="s">'/'</span>, authMiddleware, crmController.listLeads);
+router.<span class="k">post</span>(<span class="s">'/'</span>, authMiddleware, validate(createLeadDto), crmController.createLead);
+router.<span class="k">patch</span>(<span class="s">'/:id/stage'</span>, authMiddleware, crmController.updateStage);
+
+<span class="c">// controller.ts — só recebe HTTP e chama service</span>
+<span class="k">async</span> listLeads(req, res) {
+  <span class="k">const</span> leads = <span class="k">await</span> crmService.getLeads(req.companyId, req.query);
+  res.json({ success: <span class="k">true</span>, data: leads });
+}
+
+<span class="c">// service.ts — toda a lógica de negócio aqui</span>
+<span class="k">async</span> getLeads(companyId, filters) {
+  <span class="k">return</span> db.query(
+    <span class="s">'SELECT * FROM crm_leads WHERE company_id = $1'</span>,
+    [companyId]
+  );
+}</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Auth Middleware + RLS Injection</div>
+        <div class="code-block"><span class="k">export const</span> authMiddleware = <span class="k">async</span> (req, res, next) => {
+  <span class="k">const</span> token = req.headers.authorization?.split(<span class="s">' '</span>)[1];
+  <span class="k">if</span> (!token) <span class="k">return</span> res.status(401).json({ error: <span class="s">'Unauthorized'</span> });
+  
+  <span class="k">const</span> payload = verifyJWT(token);
+  req.userId = payload.userId;
+  req.companyId = payload.companyId;
+  
+  <span class="c">// Injeta company_id no PostgreSQL para ativar RLS</span>
+  <span class="k">await</span> db.query(<span class="s">`SET app.company_id = '${payload.companyId}'`</span>);
+  next();
+};</div>
+      </div>
+    </div>
+
+    <!-- CMD 05 -->
+    <div class="cmd-panel" id="p5">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 05</div>
+        <div class="cmd-title">Arquitetura Frontend</div>
+        <div class="cmd-sub">React SPA com rotas protegidas, design system e layout modular por página</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Estrutura de Pastas</div>
+        <div class="code-block">ege-frontend/
+├── src/
+│   ├── <span class="k">components</span>/
+│   │   ├── ui/       <span class="c"># Button, Input, Card, Modal, Badge</span>
+│   │   ├── charts/   <span class="c"># RadarChart, LineChart, KPICard</span>
+│   │   └── layout/   <span class="c"># Sidebar, TopBar, PageLayout</span>
+│   ├── <span class="k">pages</span>/
+│   │   ├── auth/       <span class="c"># Login, Register, ForgotPassword</span>
+│   │   ├── onboarding/ <span class="c"># Step1, Step2, Step3, Welcome</span>
+│   │   ├── dashboard/  <span class="c"># Dashboard principal</span>
+│   │   ├── diagnostic/ <span class="c"># Form, Result, History</span>
+│   │   ├── crm/        <span class="c"># LeadsList, PipelineKanban</span>
+│   │   ├── tasks/      <span class="c"># TasksList, TaskDetail</span>
+│   │   ├── analytics/  <span class="c"># MetricsDashboard</span>
+│   │   └── ai/         <span class="c"># Recommendations, Chat</span>
+│   ├── <span class="k">hooks</span>/      <span class="c"># useAuth, useLeads, useTasks, useAI</span>
+│   ├── <span class="k">services</span>/   <span class="c"># api.ts + serviço por módulo</span>
+│   └── <span class="k">store</span>/      <span class="c"># Zustand: authStore, companyStore</span></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Navegação Principal</div>
+        <table class="tbl">
+          <thead><tr><th>Módulo</th><th>Rota</th><th>Acesso</th><th>Componente chave</th></tr></thead>
+          <tbody>
+            <tr><td>🏠 Dashboard</td><td>/dashboard</td><td>Todos</td><td>KPICards + PipelineMini + AIInsights</td></tr>
+            <tr><td>📊 Diagnóstico</td><td>/diagnostic</td><td>Todos</td><td>DiagnosticForm + RadarChart</td></tr>
+            <tr><td>🎯 CRM</td><td>/crm</td><td>Todos</td><td>PipelineKanban (drag & drop)</td></tr>
+            <tr><td>✅ Tarefas</td><td>/tasks</td><td>Todos</td><td>TasksList + filtros de status</td></tr>
+            <tr><td>📈 Analytics</td><td>/analytics</td><td>Admin+</td><td>LineChart + BarChart + export</td></tr>
+            <tr><td>🤖 AI Advisor</td><td>/ai</td><td>Todos</td><td>RecommendationCards + Chat</td></tr>
+            <tr><td>⚙️ Settings</td><td>/settings</td><td>Admin+</td><td>CompanyForm + TeamManager</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CMD 06 -->
+    <div class="cmd-panel" id="p6">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 06</div>
+        <div class="cmd-title">Dashboard de Negócios</div>
+        <div class="cmd-sub">Painel central com KPIs, pipeline resumido, IA insights e tarefas críticas em grid de 12 colunas</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Layout Grid 12 Colunas</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+          <div style="background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:var(--g)">💰 Receita<br><span style="font-size:10px;color:var(--muted);font-weight:400">R$ mês atual</span></div>
+          <div style="background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:var(--b)">💎 Lucro<br><span style="font-size:10px;color:var(--muted);font-weight:400">margem %</span></div>
+          <div style="background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:var(--o)">🎯 Leads<br><span style="font-size:10px;color:var(--muted);font-weight:400">pipeline ativo</span></div>
+          <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:var(--p)">🧠 Score IA<br><span style="font-size:10px;color:var(--muted);font-weight:400">maturidade</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:8px">
+          <div style="background:rgba(0,212,170,.05);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;font-weight:700;color:var(--g)">📡 Radar Chart<br><span style="font-size:10px;color:var(--muted);font-weight:400">6 áreas de maturidade</span></div>
+          <div style="background:rgba(255,107,53,.05);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;font-weight:700;color:var(--o)">🎯 Pipeline Resumido — 5 estágios com totais<br><span style="font-size:10px;color:var(--muted);font-weight:400">leads parados + valor por estágio</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div style="background:rgba(168,85,247,.05);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;font-weight:700;color:var(--p)">🤖 AI Insights<br><span style="font-size:10px;color:var(--muted);font-weight:400">3 recomendações priorizadas</span></div>
+          <div style="background:rgba(245,158,11,.05);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;font-weight:700;color:var(--y)">✅ Tarefas Críticas<br><span style="font-size:10px;color:var(--muted);font-weight:400">vencidas + check rápido</span></div>
+        </div>
+        <div style="background:rgba(74,158,255,.05);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;font-weight:700;color:var(--b)">📈 Gráfico de Tendências — 12 meses (linha + barras)</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Widgets em Detalhe</div>
+        <table class="tbl">
+          <thead><tr><th>Widget</th><th>Dados exibidos</th><th>Comparativo</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td>KPI Receita</td><td>Valor R$ mês atual</td><td>↑↓ vs mês anterior</td><td>Clicar → Analytics</td></tr>
+            <tr><td>Pipeline Mini</td><td>Leads por estágio + R$</td><td>Alertas de parado</td><td>Clicar → CRM Kanban</td></tr>
+            <tr><td>AI Insights</td><td>Top 3 recomendações</td><td>Prioridade badge</td><td>Implementar / Ignorar</td></tr>
+            <tr><td>Tarefas Críticas</td><td>Vencidas + hoje</td><td>Cor por urgência</td><td>Check direto</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CMD 07 -->
+    <div class="cmd-panel" id="p7">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 07</div>
+        <div class="cmd-title">AI Business Advisor</div>
+        <div class="cmd-sub">Como a IA analisa dados reais e gera planos de crescimento acionáveis para cada empresa</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Fluxo de Análise (7 Etapas)</div>
+        <div class="ai-steps">
+          <div class="ai-step"><div class="ai-sn">01</div><div><div class="ai-st">Evento Disparador</div><div class="ai-sd">Diagnóstico concluído / nova métrica / lead parado 7d+ / solicitação manual</div></div></div>
+          <div class="ai-step"><div class="ai-sn">02</div><div><div class="ai-st">Coleta de Contexto</div><div class="ai-sd">Busca no PostgreSQL: empresa, diagnóstico, pipeline, métricas 6 meses, tarefas, recomendações anteriores</div></div></div>
+          <div class="ai-step"><div class="ai-sn">03</div><div><div class="ai-st">Montagem do Prompt</div><div class="ai-sd">JSON estruturado com todo contexto + system prompt de consultor sênior especializado no setor</div></div></div>
+          <div class="ai-step"><div class="ai-sn">04</div><div><div class="ai-st">Chamada Claude API</div><div class="ai-sd">claude-sonnet-4-20250514 · max_tokens: 2048 · temperature: 0.3 · resposta em JSON estruturado</div></div></div>
+          <div class="ai-step"><div class="ai-sn">05</div><div><div class="ai-st">Parse e Classificação</div><div class="ai-sd">Extrai type, title, content, priority, action_items[] da resposta JSON da IA</div></div></div>
+          <div class="ai-step"><div class="ai-sn">06</div><div><div class="ai-st">Persistência</div><div class="ai-sd">Salva em ai_recommendations com status "active", vinculada à empresa e ao evento de origem</div></div></div>
+          <div class="ai-step"><div class="ai-sn">07</div><div><div class="ai-st">Notificação</div><div class="ai-sd">n8n dispara alerta no dashboard (realtime) + email com resumo das recomendações geradas</div></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Tipos de Análise</div>
+        <table class="tbl">
+          <thead><tr><th>Tipo</th><th>Trigger</th><th>Output</th></tr></thead>
+          <tbody>
+            <tr><td>🔍 Diagnóstico</td><td>Questionário concluído</td><td>Análise de gaps + plano de ação 90 dias</td></tr>
+            <tr><td>🎯 Pipeline</td><td>Lead parado 7+ dias</td><td>Sugestão de follow-up + análise de perda</td></tr>
+            <tr><td>💰 Financeiro</td><td>Métricas mensais lançadas</td><td>Análise de rentabilidade + alertas de custo</td></tr>
+            <tr><td>✅ Produtividade</td><td>3+ tarefas vencidas</td><td>Priorização + sugestão de delegação</td></tr>
+            <tr><td>💬 Chat Livre</td><td>Pergunta do usuário</td><td>Resposta com dados reais + ação sugerida</td></tr>
+            <tr><td>📋 Semanal</td><td>Domingo 20h (n8n)</td><td>Relatório executivo + 3 prioridades da semana</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CMD 08 -->
+    <div class="cmd-panel" id="p8">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 08</div>
+        <div class="cmd-title">Fluxo de Experiência (UX)</div>
+        <div class="cmd-sub">Jornada completa do primeiro acesso ao uso recorrente como sistema de gestão diária</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Princípios UX</div>
+        <div class="mgrid">
+          <div class="mcard"><div class="mcard-title">⚡ Time to Value</div><div class="mcard-desc">Primeiro insight da IA em menos de 15 minutos após o cadastro.</div></div>
+          <div class="mcard"><div class="mcard-title">🎯 Progressive Disclosure</div><div class="mcard-desc">Funcionalidades avançadas aparecem conforme o usuário avança no onboarding.</div></div>
+          <div class="mcard"><div class="mcard-title">📱 Mobile First</div><div class="mcard-desc">100% funcional no celular — empresário acessa em trânsito.</div></div>
+          <div class="mcard"><div class="mcard-title">🚫 Zero Estado Vazio</div><div class="mcard-desc">Toda tela vazia tem CTA claro e sugestão do próximo passo.</div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Jornada Completa</div>
+        <div class="ux-phases">
+          <div class="ux-phase">
+            <div class="ux-phase-title">🚀 Fase 1 — Registro</div>
+            <div class="ux-step"><div class="ux-n">1</div>Acessa landing page e se cadastra</div>
+            <div class="ux-step"><div class="ux-n">2</div>Email de boas-vindas automático (n8n)</div>
+            <div class="ux-step"><div class="ux-n">3</div>Redirecionado para wizard de onboarding</div>
+          </div>
+          <div class="ux-phase">
+            <div class="ux-phase-title">🏢 Fase 2 — Onboarding</div>
+            <div class="ux-step"><div class="ux-n">1</div>Criar empresa (nome, setor, porte)</div>
+            <div class="ux-step"><div class="ux-n">2</div>Convidar equipe (opcional)</div>
+            <div class="ux-step"><div class="ux-n">3</div>Diagnóstico 30 perguntas (~8min)</div>
+            <div class="ux-step"><div class="ux-n">4</div>Primeiro insight da IA no dashboard</div>
+          </div>
+          <div class="ux-phase">
+            <div class="ux-phase-title">📊 Fase 3 — Dashboard</div>
+            <div class="ux-step"><div class="ux-n">1</div>Vê KPIs + pipeline + insights IA</div>
+            <div class="ux-step"><div class="ux-n">2</div>Clica no Radar para ver diagnóstico</div>
+            <div class="ux-step"><div class="ux-n">3</div>Notificação de recomendação nova</div>
+          </div>
+          <div class="ux-phase">
+            <div class="ux-phase-title">🔄 Fase 4 — Recorrente</div>
+            <div class="ux-step"><div class="ux-n">1</div>Toda segunda: relatório semanal email</div>
+            <div class="ux-step"><div class="ux-n">2</div>Todo dia: tarefas + alertas no dash</div>
+            <div class="ux-step"><div class="ux-n">3</div>Todo mês: métricas + análise IA</div>
+            <div class="ux-step"><div class="ux-n">4</div>90 dias: rediagnóstico + evolução</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CMD 09 -->
+    <div class="cmd-panel" id="p9">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 09</div>
+        <div class="cmd-title">Roadmap de Desenvolvimento</div>
+        <div class="cmd-sub">4 fases com prioridades técnicas claras — do MVP ao ecossistema nacional</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>4 Fases do Projeto</div>
+        <div class="roadmap">
+          <div class="rphase">
+            <div class="rphase-header">
+              <span class="rphase-badge ph1">Fase 1</span>
+              <span class="rphase-title">Plataforma Core</span>
+              <span class="rphase-weeks">Semanas 1–4</span>
+            </div>
+            <div class="rphase-items">
+              <span class="ritem">Setup Infra + CI/CD</span><span class="ritem">Auth Service</span><span class="ritem">Company Service + RLS</span><span class="ritem">Diagnostic Service</span><span class="ritem">Radar Chart</span><span class="ritem">Wizard Onboarding</span>
+            </div>
+          </div>
+          <div class="rphase">
+            <div class="rphase-header">
+              <span class="rphase-badge ph2">Fase 2</span>
+              <span class="rphase-title">CRM e Gestão</span>
+              <span class="rphase-weeks">Semanas 5–8</span>
+            </div>
+            <div class="rphase-items">
+              <span class="ritem">CRM Service + Kanban</span><span class="ritem">Tasks Service</span><span class="ritem">Metrics Service</span><span class="ritem">Dashboard Principal</span><span class="ritem">Drag & Drop Pipeline</span><span class="ritem">Analytics</span>
+            </div>
+          </div>
+          <div class="rphase">
+            <div class="rphase-header">
+              <span class="rphase-badge ph3">Fase 3</span>
+              <span class="rphase-title">IA e Automações</span>
+              <span class="rphase-weeks">Semanas 9–12</span>
+            </div>
+            <div class="rphase-items">
+              <span class="ritem">AI Service + Claude API</span><span class="ritem">Prompt Builder</span><span class="ritem">Bull Queue</span><span class="ritem">6 Workflows n8n</span><span class="ritem">AI Advisor UI</span><span class="ritem">Plano 90 dias</span>
+            </div>
+          </div>
+          <div class="rphase">
+            <div class="rphase-header">
+              <span class="rphase-badge ph4">Fase 4</span>
+              <span class="rphase-title">Ecossistema Nacional</span>
+              <span class="rphase-weeks">Sprint 13+</span>
+            </div>
+            <div class="rphase-items">
+              <span class="ritem">Módulo Financeiro</span><span class="ritem">Marketing Automation</span><span class="ritem">Marketplace</span><span class="ritem">Comunidade</span><span class="ritem">Educação</span><span class="ritem">Mobile App</span><span class="ritem">Enterprise / White-label</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CMD 10 -->
+    <div class="cmd-panel" id="p10">
+      <div class="cmd-header">
+        <div class="cmd-tag">Comando 10</div>
+        <div class="cmd-title">Plano de Lançamento MVP</div>
+        <div class="cmd-sub">60 a 90 dias do zero ao primeiro cliente pagante — milestones, infra e estratégia de beta</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Timeline de 90 Dias</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 1–7</div><div class="tl-content"><div class="tl-title">Setup e Fundação</div><div class="tl-items"><span class="tl-tag">Repos GitHub</span><span class="tl-tag">CI/CD Actions</span><span class="tl-tag">Supabase</span><span class="tl-tag">Railway</span><span class="tl-tag">Design System</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 8–21</div><div class="tl-content"><div class="tl-title">Core — Auth + Empresa + Diagnóstico</div><div class="tl-items"><span class="tl-tag">Register/Login</span><span class="tl-tag">JWT Auth</span><span class="tl-tag">Company CRUD</span><span class="tl-tag">Diagnóstico + Radar</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 22–42</div><div class="tl-content"><div class="tl-title">Operação — Dashboard + CRM + Tarefas</div><div class="tl-items"><span class="tl-tag">Dashboard KPIs</span><span class="tl-tag">Pipeline Kanban</span><span class="tl-tag">Task Manager</span><span class="tl-tag">Analytics</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 43–60</div><div class="tl-content"><div class="tl-title">Inteligência — IA + n8n + Automações</div><div class="tl-items"><span class="tl-tag">Claude API</span><span class="tl-tag">AI Advisor</span><span class="tl-tag">6 Workflows</span><span class="tl-tag">Notificações</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 61–75</div><div class="tl-content"><div class="tl-title">Polimento e Performance</div><div class="tl-items"><span class="tl-tag">Testes E2E</span><span class="tl-tag">Bug fixes</span><span class="tl-tag">Mobile responsivo</span><span class="tl-tag">Lighthouse 90+</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-period">Dias 76–90</div><div class="tl-content"><div class="tl-title">🚀 Beta + Lançamento</div><div class="tl-items"><span class="tl-tag">10 betas</span><span class="tl-tag">Feedback</span><span class="tl-tag">Ajustes</span><span class="tl-tag">Primeiro cliente pagante</span></div></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><span></span>Infraestrutura e Custos</div>
+        <div class="infra-grid">
+          <div class="infra-card"><span class="infra-icon">▲</span><div><div class="infra-name">Vercel Pro</div><div class="infra-tool">Frontend Deploy</div><div class="infra-cost">US$ 20/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">🚂</span><div><div class="infra-name">Railway Starter</div><div class="infra-tool">Backend Node.js</div><div class="infra-cost">US$ 20/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">⚡</span><div><div class="infra-name">Supabase Pro</div><div class="infra-tool">PostgreSQL + Auth</div><div class="infra-cost">US$ 25/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">🔴</span><div><div class="infra-name">Upstash Redis</div><div class="infra-tool">Cache + Filas</div><div class="infra-cost">US$ 10/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">📧</span><div><div class="infra-name">Resend</div><div class="infra-tool">Email transacional</div><div class="infra-cost">US$ 0–20/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">🔄</span><div><div class="infra-name">n8n Cloud</div><div class="infra-tool">Automações</div><div class="infra-cost">US$ 20/mês</div></div></div>
+          <div class="infra-card"><span class="infra-icon">🧠</span><div><div class="infra-name">Claude API</div><div class="infra-tool">IA Advisor</div><div class="infra-cost">~US$ 0.003/análise</div></div></div>
+          <div class="infra-card" style="border-color:var(--g)"><span class="infra-icon">💚</span><div><div class="infra-name">TOTAL MVP</div><div class="infra-tool">Infraestrutura completa</div><div class="infra-cost" style="font-size:13px">~US$ 115–135/mês</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(n, el) {
+  document.querySelectorAll('.cmd-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('p' + n).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

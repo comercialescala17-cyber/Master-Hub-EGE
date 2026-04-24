@@ -1,0 +1,613 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Data Intelligence Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 5% 5%,rgba(0,192,138,.07),transparent),radial-gradient(ellipse 50% 50% at 96% 94%,rgba(19,84,204,.06),transparent)}
+.wrap{max-width:1120px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up .9s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.28);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(26px,5.5vw,56px);font-weight:900;line-height:1.04;letter-spacing:-.028em;margin-bottom:14px}
+h1 em{font-style:normal;background:linear-gradient(130deg,var(--g) 0%,var(--t) 50%,var(--b) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:13.5px;color:var(--mid);max-width:700px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:36px}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:11px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.n5::after{background:var(--r)}.n6::after{background:var(--y)}.n7::after{background:var(--g)}.n8::after{background:var(--p)}.n9::after{background:var(--b)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--mid);margin-bottom:4px}
+.nb-t{font-size:10.5px;font-weight:700;line-height:1.25}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:34px;flex-shrink:0}.sh-tag{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:20px;font-weight:800;margin-bottom:6px}.sh-desc{font-size:13px;color:var(--mid);line-height:1.7;max-width:720px}
+.blk{margin-bottom:28px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{border-left:4px solid var(--g);background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left-width:4px;border-radius:0 12px 12px 0;padding:13px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+.cll-b{border-left-color:var(--b)!important;border-color:rgba(19,84,204,.18)!important;background:rgba(19,84,204,.04)!important}
+.cll-o{border-left-color:var(--o)!important;border-color:rgba(217,90,8,.18)!important;background:rgba(217,90,8,.04)!important}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);letter-spacing:.1em;border-bottom:1px solid var(--bd)}
+.code-body{padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.st{color:var(--g)}.nm{color:var(--o)}.cm{color:var(--mid);font-style:italic}
+/* pipeline stages */
+.pipe{display:flex;gap:0;margin-bottom:16px;overflow-x:auto}
+.ps{background:var(--s1);border:1px solid var(--bd);border-radius:0;padding:14px 16px;flex:1;min-width:130px;position:relative;text-align:center}
+.ps:first-child{border-radius:12px 0 0 12px}.ps:last-child{border-radius:0 12px 12px 0}
+.ps::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--mid);font-size:14px;z-index:2;background:var(--bg);padding:0 2px}
+.ps:last-child::after{display:none}
+.ps-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;margin-bottom:6px}
+.ps-t{font-size:11px;font-weight:700;margin-bottom:4px}
+.ps-tech{font-size:9.5px;color:var(--mid)}
+/* arch layers */
+.arch{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.arch-layer{border-bottom:1px solid var(--bd);padding:14px 20px;position:relative}
+.arch-layer:last-child{border-bottom:none}
+.arch-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.arch-label{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;min-width:72px}
+.arch-title{font-size:14px;font-weight:800}
+.arch-boxes{display:flex;gap:8px;flex-wrap:wrap}
+.arch-box{background:var(--s3);border:1px solid var(--bd2);border-radius:8px;padding:7px 12px;font-size:11px;line-height:1.4}
+/* bench table */
+.bench-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:600px){.bench-grid{grid-template-columns:1fr}}
+.bc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.bc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.b0::after{background:var(--g)}.b1::after{background:var(--b)}.b2::after{background:var(--t)}
+.bc-title{font-size:11px;font-weight:700;margin-bottom:8px}
+.bc-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid var(--bd);font-size:11px}
+.bc-row:last-child{border-bottom:none}
+.bc-kpi{color:var(--mid)}
+.bc-vals{font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;gap:8px}
+/* model cards */
+.model-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ml{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;display:flex;gap:14px}
+.ml-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;min-width:28px;padding-top:2px}
+.ml-body{flex:1}
+.ml-title{font-size:14px;font-weight:800;margin-bottom:4px}
+.ml-desc{font-size:12px;color:var(--mid);line-height:1.6}
+/* privacy */
+.priv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.pc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.p0::after{background:var(--g)}.p1::after{background:var(--b)}.p2::after{background:var(--t)}.p3::after{background:var(--r)}.p4::after{background:var(--p)}
+.pc-title{font-size:13px;font-weight:800;margin-bottom:6px}
+.pc-desc{font-size:12px;color:var(--mid);line-height:1.6}
+/* value cards */
+.val-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.vc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;border-left:3px solid}
+.vc-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.vc-desc{font-size:12px;color:var(--mid);line-height:1.6}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Data Intelligence Engine · EGE Business Data Platform</div>
+  <h1>Data Intelligence<br><em>Engine (DIE)</em></h1>
+  <p class="sub">A camada cognitiva da plataforma EGE. Transforma dados operacionais de milhares de empresas em inteligência estratégica — benchmarks precisos, padrões preditivos e insights impossíveis de gerar com dados individuais isolados.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">7</div><div class="sl">Fontes de dados</div></div>
+  <div class="st sb"><div class="sv">5</div><div class="sl">Estágios no pipeline</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Modelos preditivos</div></div>
+  <div class="st so"><div class="sv">7</div><div class="sl">Camadas de arquitetura</div></div>
+  <div class="st st2"><div class="sv">765</div><div class="sl">Parágrafos técnicos</div></div>
+</div>
+<div class="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">🎯 Purpose</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">📡 Data Sources</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">⚙️ Pipeline</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">📊 Analytics</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">📐 Benchmark</div></div>
+  <div class="nb n5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">🔮 Predictive</div></div>
+  <div class="nb n6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">🤖 AI Integration</div></div>
+  <div class="nb n7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">🔒 Privacy</div></div>
+  <div class="nb n8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">💎 Business Value</div></div>
+  <div class="nb n9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">🏗 Architecture</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const C={g:'var(--g)',b:'var(--b)',p:'var(--p)',o:'var(--o)',t:'var(--t)',r:'var(--r)',y:'var(--y)'};
+
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 01 — Purpose</div>
+    <div class="sh-title">O Propósito do Data Intelligence Engine</div>
+    <div class="sh-desc">A camada cognitiva da plataforma EGE — sistema nervoso distribuído onde cada empresa é um sensor, e o DIE é o cérebro que processa todos os sinais em paralelo, identifica padrões impossíveis de ver individualmente, e distribui inteligência de volta para cada empresa.</div>
+  </div>
+</div>
+<div class="cll">"A diferença entre dado e inteligência é o contexto. Saber que o churn foi de 4% é um dado. Saber que a mediana do setor é 2.7% e que empresas similares que chegaram a 5% reagiram com X em 34 dias é inteligência. O contexto exige volume que nenhuma empresa individual acumula sozinha."</div>
+
+<div class="blk"><div class="blk-h">Os 4 Trabalhos do DIE</div>
+<div class="tw"><table><thead><tr><th>Trabalho</th><th>O que o DIE Faz</th><th>Como o DIE Faz</th><th>Resultado</th></tr></thead><tbody>
+${[
+  ['Compreensão de Performance','Transforma KPIs em contexto estratégico real','Análise causal + benchmark setorial + tendência histórica','Clareza sobre o que está funcionando'],
+  ['Benchmarking Real','Compara com pares reais do mesmo setor, porte e estágio','Mediana + percentis + benchmark dinâmico da base EGE','Saber se está bem ou mal vs. quem importa'],
+  ['Identificação de Tendências','Detecta mudanças na trajetória antes que virem problemas','Séries temporais + change point detection','Agir antes, não reativo depois'],
+  ['Decisão Estratégica','Fornece embasamento analítico para decisões de alto impacto','Modelos preditivos + cenários + evidências populacionais','Decisões com confiança, não com instinto'],
+].map((r,i)=>`<tr><td style="font-weight:700;color:${[C.g,C.b,C.t,C.o][i]}">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Stack Técnico — Visão Geral</div>
+<div class="grid3">
+${[
+  {e:'📨',t:'Ingestão',c:C.g,d:'Apache Kafka — 50k+ eventos/seg, 7 topics, 3x replicação em 3 zonas de disponibilidade'},
+  {e:'⚙️',t:'Processamento',c:C.b,d:'Apache Flink (stream) + dbt + Airflow (batch) — separados por criticidade e latência'},
+  {e:'🗄',t:'Armazenamento',c:C.p,d:'PostgreSQL 15 + TimescaleDB (OLTP) e ClickHouse (OLAP analítico) — workloads separados'},
+  {e:'📊',t:'Analytics',c:C.t,d:'dbt + ClickHouse Materialized Views — benchmarks p25/50/75/90 atualizados diariamente'},
+  {e:'🧠',t:'Inteligência',c:C.o,d:'scikit-learn + Claude API + pgvector — modelos ML + LLM + busca semântica'},
+  {e:'🚀',t:'Entrega',c:C.y,d:'FastAPI REST + SSE streaming + Socket.IO WebSocket — latência < 3s total end-to-end'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">SLAs de Performance por Camada</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>SLA de Latência</th><th>Throughput Alvo</th></tr></thead><tbody>
+<tr><td>Kafka ingestion</td><td><span class="badge bg">&lt; 100ms</span></td><td>50k events/sec</td></tr>
+<tr><td>Redis context cache</td><td><span class="badge bg">&lt; 5ms P99</span></td><td>100k reads/sec</td></tr>
+<tr><td>ClickHouse benchmark lookup</td><td><span class="badge bb">&lt; 50ms P99</span></td><td>10k queries/sec</td></tr>
+<tr><td>AI Brain context package</td><td><span class="badge bt">&lt; 50ms P99</span></td><td>500 req/sec</td></tr>
+<tr><td>ML model inference</td><td><span class="badge bo">&lt; 500ms P99</span></td><td>200 req/sec</td></tr>
+</tbody></table></div></div>`}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">📡</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 02 — Data Sources</div>
+    <div class="sh-title">As 7 Fontes de Dados — Domínios do DIE</div>
+    <div class="sh-desc">Cada fonte contribui com uma dimensão diferente da inteligência gerada. A riqueza do DIE é proporcional à diversidade e qualidade dessas fontes — a combinação das 7 cria uma visão multidimensional do negócio impossível de obter com fontes individuais.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 7 Fontes — Volume, Latência e Valor Primário</div>
+<div class="tw"><table><thead><tr><th>#</th><th>Fonte</th><th>Volume (10k empresas)</th><th>Latência</th><th>Valor Primário</th></tr></thead><tbody>
+${[
+  ['F1','Business Diagnostics','40k registros/trimestre','< 1h batch','Segmentação e benchmark de maturidade'],
+  ['F2','KPI Monitoring','3M+ eventos/mês','< 5 min streaming','Detecção de anomalia e previsão'],
+  ['F3','Sales Pipeline','500k eventos/mês','< 10 min streaming','Padrões comerciais e previsão de receita'],
+  ['F4','Operational Metrics','2M eventos/mês','< 15 min streaming','Capacidade organizacional e progresso'],
+  ['F5','Market Intelligence','10k artigos/semana','< 4h batch','Contexto externo e sazonalidade'],
+  ['F6','User Interactions','5M eventos/mês','< 1 min streaming','Aprendizado e personalização da IA'],
+  ['F7','Community & Partnership','200k eventos/mês','< 30 min batch','Padrões de necessidade e qualidade de serviço'],
+].map((r,i)=>`<tr><td><span class="badge ${['bg','bb','bp','bt','bo','by','br'][i]}">${r[0]}</span></td><td style="font-weight:600">${r[1]}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px">${r[2]}</td><td><span class="badge ${['bg','bg','bg','bb','bo','bt','by'][i]}">${r[3]}</span></td><td>${r[4]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fonte 1 — Business Diagnostics — Campos Ingeridos</div>
+<div class="tw"><table><thead><tr><th>Dado</th><th>Tipo</th><th>Frequência</th><th>Uso no DIE</th></tr></thead><tbody>
+<tr><td>Score total e por dimensão</td><td><span class="badge bg">Numérico</span></td><td>Por ciclo (12 semanas)</td><td>Benchmark de maturidade + evolução temporal</td></tr>
+<tr><td>Nível de maturidade 1–5</td><td><span class="badge bb">Categórico</span></td><td>Por ciclo</td><td>Segmentação para análises comparativas</td></tr>
+<tr><td>Respostas por pergunta</td><td><span class="badge bp">Semi-estruturado</span></td><td>Por ciclo</td><td>Embedding semântico para análise qualitativa</td></tr>
+<tr><td>Percentil setorial calculado</td><td><span class="badge bt">Derivado</span></td><td>Por ciclo</td><td>Posicionamento relativo no mercado</td></tr>
+<tr><td>Delta de score entre ciclos</td><td><span class="badge bt">Derivado</span></td><td>Por ciclo</td><td>Velocidade de evolução + preditores de estagnação</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fonte 2 — KPI Monitoring — Categorias de KPIs</div>
+<div class="grid2">
+${[
+  {t:'KPIs Financeiros',c:C.g,items:['MRR e variação MoM','Runway de caixa','Margem de contribuição','Burn rate e LTV/CAC']},
+  {t:'KPIs Comerciais',c:C.b,items:['Win rate por canal','Sales cycle time','Ticket médio e pipeline','Lead velocity rate']},
+  {t:'KPIs Operacionais',c:C.p,items:['Throughput de tarefas','Progresso de iniciativas','SLA de atendimento','NPS e eNPS']},
+  {t:'KPIs de Produto',c:C.t,items:['NPS de produto','Bugs críticos abertos','Feature adoption rate','Time-to-first-value']},
+].map(g=>`<div class="card" style="border-left:3px solid ${g.c}"><div class="c-t" style="color:${g.c}">${g.t}</div><ul style="list-style:none;margin-top:6px">${g.items.map(i=>`<li style="font-size:12px;color:var(--mid);padding:2px 0;display:flex;gap:6px"><span style="color:${g.c}">→</span>${i}</li>`).join('')}</ul></div>`).join('')}
+</div></div>`}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 03 — Data Processing Pipeline</div>
+    <div class="sh-title">Pipeline de 5 Estágios — Do Dado Bruto à Inteligência</div>
+    <div class="sh-desc">O design fundamental é a separação OLTP (PostgreSQL) / OLAP (ClickHouse). Workloads opostos — misturá-los degrada ambos. A separação permite processar bilhões de linhas analíticas sem impactar a performance do produto operacional.</div>
+  </div>
+</div>
+<div class="cll cll-b">"Princípio de design: OLTP tem muitas escritas pequenas + leituras por chave primária + ACID. OLAP tem poucas escritas em lote + leituras agregadas de milhões de linhas + sem transações. Separar os dois é o que permite que o DIE processe bilhões de linhas sem impactar a performance do produto."</div>
+
+<div class="blk"><div class="blk-h">Os 5 Estágios do Pipeline</div>
+<div class="pipe">
+${[
+  {n:'E1',t:'Ingestão',tech:'Apache Kafka',c:C.g},
+  {n:'E2',t:'Validação',tech:'Avro + Flink',c:C.b},
+  {n:'E3',t:'Normalização',tech:'Flink + dbt',c:C.p},
+  {n:'E4',t:'Agregação',tech:'dbt + ClickHouse',c:C.t},
+  {n:'E5',t:'Inteligência',tech:'ML + Claude API',c:C.o},
+].map(s=>`<div class="ps" style="border-top:3px solid ${s.c}"><div class="ps-n" style="color:${s.c}">${s.n}</div><div class="ps-t">${s.t}</div><div class="ps-tech">${s.tech}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Estágio 1 — Kafka Topics e Configuração</div>
+<div class="code-block"><div class="code-head">Apache Kafka — Topics e Configuração</div>
+<div class="code-body"><span class="cm">// Topics principais</span>
+kpi.values.raw          <span class="cm">-- inserts de KPI em tempo real</span>
+diagnostic.completed    <span class="cm">-- ciclo de diagnóstico concluído</span>
+initiative.events       <span class="cm">-- criação, progresso, conclusão</span>
+pipeline.deal.events    <span class="cm">-- moves, closes, losses no CRM</span>
+user.interaction.events <span class="cm">-- clicks, views, accepts, rejects</span>
+
+<span class="cm">// Configuração</span>
+retention.ms: <span class="nm">604800000</span>  <span class="cm">// 7 dias de retenção</span>
+partitions:   <span class="nm">12</span>         <span class="cm">// por company_id mod 12</span>
+replication:  <span class="nm">3</span>          <span class="cm">// HA em 3 zonas de disponibilidade</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Estágio 2 — Schema de Validação (Avro)</div>
+<div class="code-block"><div class="code-head">kpi_value_schema — Validação e Enriquecimento</div>
+<div class="code-body">kpi_value_schema = {
+  company_id:  <span class="st">UUID</span>  (required, must exist in companies),
+  kpi_id:      <span class="st">UUID</span>  (required, must exist in kpi_configs),
+  value:       <span class="nm">float</span> (required, within reasonable range),
+  recorded_at: <span class="st">timestamp</span> (not future, not &gt; 90d old),
+  source:      <span class="kw">enum</span>(manual, api, calculated, imported)
+}
+<span class="cm">// Enriquecimento automático após validação</span>
++ company_sector, company_size_band, maturity_level
++ kpi_category, kpi_unit, kpi_direction</div></div></div>
+
+<div class="blk"><div class="blk-h">Estágio 3 — Tipos de Normalização</div>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>Problema Resolvido</th><th>Método</th><th>Exemplo</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Unidade</span></td><td>Empresas reportam em R$, USD ou %</td><td>Conversão para unidade canônica</td><td>CAC sempre em R$ corrigido pelo IPCA</td></tr>
+<tr><td><span class="badge bb">Frequência</span></td><td>Diário vs. semanal vs. mensal</td><td>Interpolação ou agregação canônica</td><td>KPIs financeiros normalizados para MoM</td></tr>
+<tr><td><span class="badge bp">Escala</span></td><td>R$50k vs R$5M — absolutos incomparáveis</td><td>Percentil, z-score ou razão</td><td>Crescimento MoM como percentual</td></tr>
+<tr><td><span class="badge bt">Definição</span></td><td>NPS com amostras diferentes</td><td>Ajuste por tamanho de amostra + IC</td><td>NPS com margem de erro implícita</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Estágio 4 — dbt Model: Benchmark por Setor e Porte</div>
+<div class="code-block"><div class="code-head">dbt — benchmark_by_sector_size (atualizado diariamente)</div>
+<div class="code-body"><span class="kw">WITH</span> base <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    sector, size_band, maturity_level, kpi_id,
+    PERCENTILE_CONT(<span class="nm">0.25</span>) OVER w <span class="kw">AS</span> p25,
+    PERCENTILE_CONT(<span class="nm">0.50</span>) OVER w <span class="kw">AS</span> median,
+    PERCENTILE_CONT(<span class="nm">0.75</span>) OVER w <span class="kw">AS</span> p75,
+    AVG(value_normalized)    OVER w <span class="kw">AS</span> mean,
+    COUNT(*)                 OVER w <span class="kw">AS</span> sample_size
+  <span class="kw">FROM</span> kpi_values_normalized
+  <span class="kw">WHERE</span> recorded_at >= NOW() - <span class="st">INTERVAL '90 days'</span>
+  WINDOW w <span class="kw">AS</span> (PARTITION <span class="kw">BY</span> sector, size_band, maturity_level, kpi_id)
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> base <span class="kw">WHERE</span> sample_size >= <span class="nm">30</span></div></div></div>`}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">📊</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 04 — Business Analytics System</div>
+    <div class="sh-title">A Camada de Análise — 4 Capacidades Analíticas</div>
+    <div class="sh-desc">Não é um sistema de BI estático com dashboards pré-configurados — é um sistema de análise ativo que combina análise quantitativa automatizada com interpretação inteligente via Claude API. Análises estatisticamente rigorosas E contextualizadas e acionáveis.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Capacidade 1 — Benchmark Analysis Output</div>
+<div class="code-block"><div class="code-head">Benchmark Analysis — Estrutura Completa do Output</div>
+<div class="code-body">benchmark_analysis = {
+  kpi:           <span class="st">'monthly_churn'</span>,
+  company_value:  <span class="nm">0.041</span>,   <span class="cm">// 4.1% atual</span>
+  benchmark: {
+    sector:         <span class="st">'SaaS B2B'</span>,
+    size_band:      <span class="st">'10-50 employees'</span>,
+    maturity_level:  <span class="nm">3</span>,
+    p25:  <span class="nm">0.015</span>, median: <span class="nm">0.027</span>, p75: <span class="nm">0.048</span>, p90: <span class="nm">0.068</span>,
+    sample_size: <span class="nm">847</span>
+  },
+  position:  { percentile: <span class="nm">68</span>, band: <span class="st">'above_median'</span> },
+  trend:     { direction: <span class="st">'worsening'</span>, rate: <span class="st">'+0.8pp/month'</span> },
+  risk_level: <span class="st">'yellow'</span>, <span class="cm">// approaching p75</span>
+  ai_interpretation: <span class="st">'...'</span> <span class="cm">// gerado por Claude API</span>
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">Capacidade 2 — Métodos de Detecção de Tendência</div>
+<div class="tw"><table><thead><tr><th>Método</th><th>O que Detecta</th><th>Janela</th><th>Sensibilidade</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Moving Average Convergence</span></td><td>Cruzamento de médias — mudança de tendência</td><td>21d vs 63d</td><td>Média — poucos falsos positivos</td></tr>
+<tr><td><span class="badge bb">Change Point Detection PELT</span></td><td>Quebra estrutural permanente na série</td><td>Toda a série histórica</td><td>Alta — detecta quebras reais</td></tr>
+<tr><td><span class="badge bp">Linear Regression Window</span></td><td>Inclinação da tendência recente vs benchmark</td><td>30d / 90d / 180d</td><td>Configurável por KPI</td></tr>
+<tr><td><span class="badge bt">Seasonal Decomposition STL</span></td><td>Tendência real separada da sazonalidade</td><td>12 meses mínimo</td><td>Alta — requer histórico</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Capacidade 3 — Decomposição de Crescimento de Receita</div>
+<div class="code-block"><div class="code-head">Growth Decomposition — Output Exemplo</div>
+<div class="code-body">revenue_growth_decomposition = {
+  total_mrr_change: <span class="nm">+R$45.000</span> (<span class="nm">+8.2%</span> MoM),
+  components: {
+    new_customers:     <span class="st">+R$62.000</span>  <span class="cm">// +13.5% acima do benchmark</span>
+    expansion_revenue: <span class="st">+R$18.000</span>  <span class="cm">// +4.1%  em linha com setor</span>
+    churn_impact:      <span class="st">-R$31.000</span>  <span class="cm">// -7.1%  ALERTA: 2x benchmark</span>
+    contraction:       <span class="st">-R$ 4.000</span>  <span class="cm">// -0.9%  normal</span>
+  },
+  insight: <span class="st">'Empresa adquire bem mas retém mal.'</span>
+  action:  <span class="st">'Prioridade: diagnóstico de retenção imediato.'</span>
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">Capacidade 4 — Predictive Insights — Como São Entregues</div>
+<div class="grid2">
+${[
+  {e:'📉',t:'Projeção de Cenário',c:C.g,d:'O que acontece se a trajetória atual continuar — com intervalo de confiança explícito e premissas transparentes. Quantitativo, não narrativo.'},
+  {e:'🔄',t:'Análise Contrafactual',c:C.b,d:'"Se você reduzir o churn para 2%, o MRR projetado em 90 dias sobe R$42k" — impacto de intervenções antes de executá-las.'},
+  {e:'⚡',t:'Timing de Ação',c:C.p,d:'Janela de oportunidade ou de risco: quando agir. "Esta semana" vs "próximo ciclo" — senso de urgência calibrado por dados.'},
+  {e:'📋',t:'Evidência Populacional',c:C.o,d:'"78% das empresas similares que resolveram este padrão usaram X" — não frameworks genéricos, mas dados reais da base EGE.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">📐</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 05 — Benchmarking Engine</div>
+    <div class="sh-title">Benchmark em Tempo Real — 5 Eixos de Comparação</div>
+    <div class="sh-desc">Com 10.000 empresas ativas, o EGE tem o benchmark de KPIs de PMEs brasileiras mais rico e atual disponível — atualizado mensalmente com dados reais, não com surveys anuais declaratórios. Precisão comparável a pesquisas de consultoria de primeira linha.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">5 Eixos de Segmentação do Benchmark</div>
+<div class="tw"><table><thead><tr><th>Eixo</th><th>Segmentação</th><th>KPIs Cobertos</th><th>Mínimo Estatístico</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Setor Principal</span></td><td>18 setores macro (SaaS, Varejo, Saúde, etc.)</td><td>Todos os 40+ KPIs da plataforma</td><td>n ≥ 50</td></tr>
+<tr><td><span class="badge bb">Sub-setor + Porte</span></td><td>Setor × faixa de colaboradores</td><td>Top 20 KPIs por categoria</td><td>n ≥ 30</td></tr>
+<tr><td><span class="badge bp">Nível de Maturidade</span></td><td>1 a 5, derivado do score EGE</td><td>Score por dimensão + KPIs correlacionados</td><td>n ≥ 30</td></tr>
+<tr><td><span class="badge bt">Modelo de Negócio</span></td><td>B2B, B2C, D2C, marketplace, etc.</td><td>KPIs específicos do modelo</td><td>n ≥ 30</td></tr>
+<tr><td><span class="badge bo">Estágio de Crescimento</span></td><td>Pre-receita, early, growth, scale</td><td>Velocity KPIs e eficiência de capital</td><td>n ≥ 20</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Benchmarks de Referência — Valores Reais da Base EGE</div>
+<div class="bench-grid">
+  <div class="bc b0">
+    <div class="bc-title" style="color:var(--g)">💰 Financeiros — SaaS B2B</div>
+    ${[['MRR Growth MoM','1.8%','4.2%','8.5%'],['Margem Contrib.','28%','38%','52%'],['LTV/CAC Ratio','1.8x','3.1x','5.4x'],['Churn Mensal','0.8%','2.1%','4.3%'],['Runway (meses)','3.2','6.8','14.5']].map(r=>`<div class="bc-row"><span class="bc-kpi">${r[0]}</span><span class="bc-vals"><span style="color:var(--r)">${r[1]}</span><span style="color:var(--g)">${r[2]}</span><span style="color:var(--b)">${r[3]}</span></span></div>`).join('')}
+    <div style="font-size:9px;color:var(--mid);margin-top:6px;font-family:'JetBrains Mono',monospace">p25 · mediana · p75</div>
+  </div>
+  <div class="bc b1">
+    <div class="bc-title" style="color:var(--b)">🎯 Comerciais</div>
+    ${[['Win Rate','14%','22%','31%'],['Sales Cycle (d)','18d','31d','52d'],['Lead-to-Demo','8%','14%','22%'],['Net Rev. Retention','88%','104%','118%']].map(r=>`<div class="bc-row"><span class="bc-kpi">${r[0]}</span><span class="bc-vals"><span style="color:var(--r)">${r[1]}</span><span style="color:var(--g)">${r[2]}</span><span style="color:var(--b)">${r[3]}</span></span></div>`).join('')}
+    <div style="font-size:9px;color:var(--mid);margin-top:6px;font-family:'JetBrains Mono',monospace">p25 · mediana · p75</div>
+  </div>
+  <div class="bc b2">
+    <div class="bc-title" style="color:var(--t)">⚙️ Operacionais</div>
+    ${[['NPS','18','38','55'],['Task Completion','62%','74%','84%'],['Time-to-Value (d)','7d','14d','28d'],['Score EGE','28','44','61']].map(r=>`<div class="bc-row"><span class="bc-kpi">${r[0]}</span><span class="bc-vals"><span style="color:var(--r)">${r[1]}</span><span style="color:var(--g)">${r[2]}</span><span style="color:var(--b)">${r[3]}</span></span></div>`).join('')}
+    <div style="font-size:9px;color:var(--mid);margin-top:6px;font-family:'JetBrains Mono',monospace">p25 · mediana · p75</div>
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Benchmark de Velocidade de Evolução</div>
+<div class="code-block"><div class="code-head">Quanto tempo leva para avançar de nível — dados reais</div>
+<div class="code-body">evolution_benchmark = {
+  from_level: <span class="nm">2</span>, to_level: <span class="nm">3</span>,
+  sector:    <span class="st">'SaaS B2B'</span>, size_band: <span class="st">'10-30 employees'</span>,
+  typical_cycles: { p25: <span class="nm">3</span>, median: <span class="nm">4</span>, p75: <span class="nm">6</span> },
+  key_initiatives_in_successful_companies: [
+    <span class="st">'implement_sales_playbook'</span>,    <span class="cm">// 78% das empresas</span>
+    <span class="st">'structured_weekly_cadence'</span>,  <span class="cm">// 71% das empresas</span>
+    <span class="st">'kpi_dashboard_live'</span>,         <span class="cm">// 69% das empresas</span>
+  ]
+}</div></div></div>`}
+
+function p5(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">🔮</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 06 — Predictive Intelligence</div>
+    <div class="sh-title">5 Modelos Preditivos em Produção</div>
+    <div class="sh-desc">Modelos treinados continuamente com dados históricos da base EGE e aplicados individualmente a cada empresa. Filosofia: modelos interpretáveis > caixas-pretas. O empresário precisa entender o raciocínio para confiar — e para agir.</div>
+  </div>
+</div>
+<div class="cll">"Preferimos modelos interpretáveis a caixas-pretas. Um modelo de regressão logística com features explicáveis é preferível a um deep learning que gera a mesma acurácia mas não consegue explicar por que fez a previsão. A explicabilidade não é concessão — é requisito."</div>
+
+<div class="blk"><div class="blk-h">Os 5 Modelos Preditivos</div>
+<div class="model-list">
+${[
+  {n:'M1',t:'Revenue Forecast — Previsão de Receita 90 dias',c:C.g,d:'Previsão de MRR para os próximos 3 meses com IC de 80%. Usa série temporal histórica + benchmarks de sazonalidade + leading indicators (pipeline, win rate, churn recente).'},
+  {n:'M2',t:'Churn Risk Prediction — Risco de Cancelamento',c:C.b,d:'Identifica clientes em risco 30–60 dias antes do cancelamento usando 12 features de comportamento. Features mais preditivas: queda no login rate (0.68), não atingiu first value (0.71).'},
+  {n:'M3',t:'Operational Risk Detector — Crises Sistêmicas',c:C.r,d:'Identifica empresas em configurações multivariadas que historicamente precedem crises — caixa, stagnação, overload, concentração. 81% de acurácia para crise de caixa em 90 dias.'},
+  {n:'M4',t:'Market Opportunity Scanner — Janelas de Crescimento',c:C.p,d:'Identifica janelas de crescimento baseado em superioridade relativa vs benchmark + padrões de demanda crescente + capacidade de execução disponível na empresa.'},
+  {n:'M5',t:'BOS Maturity Trajectory Predictor — Evolução de Score',c:C.o,d:'Prevê como o score de maturidade vai evoluir dado o conjunto atual de iniciativas — e simula o impacto de diferentes combinações para identificar o roadmap de maior ROI.'},
+].map(m=>`<div class="ml" style="border-left:3px solid ${m.c}"><div class="ml-num" style="color:${m.c}">${m.n}</div><div class="ml-body"><div class="ml-title" style="color:${m.c}">${m.t}</div><div class="ml-desc">${m.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Modelo 1 — Revenue Forecast Output</div>
+<div class="code-block"><div class="code-head">Revenue Forecast 90 dias — Estrutura Completa</div>
+<div class="code-body">revenue_forecast_90d = {
+  current_mrr: <span class="nm">280000</span>,
+  forecast: {
+    month_1: { point: <span class="nm">295000</span>, ci80: [<span class="nm">281000</span>, <span class="nm">309000</span>] },
+    month_2: { point: <span class="nm">308000</span>, ci80: [<span class="nm">285000</span>, <span class="nm">331000</span>] },
+    month_3: { point: <span class="nm">319000</span>, ci80: [<span class="nm">286000</span>, <span class="nm">352000</span>] },
+  },
+  key_assumptions: [
+    <span class="st">'Churn mantido no nível atual de 3.2%'</span>,
+    <span class="st">'Pipeline R$420k com win rate histórico 22%'</span>,
+    <span class="st">'Sem sazonalidade significativa para o setor Q2'</span>
+  ],
+  downside_scenario: { trigger: <span class="st">'churn &gt; 5%'</span>, mrr_impact: <span class="nm">-28000</span> }
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">Modelo 2 — Churn Risk Features por Correlação</div>
+<div class="tw"><table><thead><tr><th>Feature de Risco</th><th>Correlação</th><th>Janela</th><th>Ação Recomendada</th></tr></thead><tbody>
+<tr><td>Queda no login rate &gt; 40%</td><td><span class="badge bo">0.68</span></td><td>14–30 dias</td><td>CS proativo: health check call</td></tr>
+<tr><td>Não atingiu first value milestone</td><td><span class="badge br">0.71</span></td><td>21–45 dias</td><td>Onboarding rescue plan</td></tr>
+<tr><td>Tickets sem resolução &gt; 7 dias</td><td><span class="badge bo">0.61</span></td><td>7–21 dias</td><td>Escalação imediata + root cause</td></tr>
+<tr><td>NPS &lt; 6 — detrator</td><td><span class="badge by">0.55</span></td><td>Imediato</td><td>Save conversation na semana</td></tr>
+<tr><td>Uso de feature core abaixo do benchmark</td><td><span class="badge bt">0.48</span></td><td>30–60 dias</td><td>Training proativo + check-in</td></tr>
+</tbody></table></div></div>`}
+
+function p6(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.y}"></div>
+  <div class="sh-icon">🤖</div>
+  <div><div class="sh-tag" style="color:${C.y}">Seção 07 — AI Integration</div>
+    <div class="sh-title">Como o DIE Alimenta o AI Brain — 4 Canais</div>
+    <div class="sh-desc">O AI Brain é o front-end inteligente do DIE — transforma outputs do engine em linguagem natural, recomendações específicas e conversas estratégicas. A qualidade das respostas do AI Brain é diretamente limitada pela qualidade dos dados que o DIE fornece.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Canais de Integração DIE → AI Brain</div>
+<div class="grid2">
+${[
+  {n:'C1',e:'📦',t:'Context Package',c:C.g,sync:'Síncrono < 50ms',d:'Estado completo do negócio em uma fotografia — carregado do Redis (TTL 3min) e injetado no system prompt de cada chamada ao Claude API. ~15–20KB por request.'},
+  {n:'C2',e:'📊',t:'Benchmark Lookup',c:C.b,sync:'Síncrono < 30ms',d:'AI Brain pode solicitar benchmarks específicos durante conversa. Resposta de ClickHouse Materialized Views — sem recalcular, só consultar o cache pre-computado.'},
+  {n:'C3',e:'🔄',t:'Pattern Feed',c:C.p,sync:'Assíncrono semanal',d:'Batch semanal envia feed de padrões novos, tendências emergentes e atualizações de modelos. Atualiza o few-shot bank do AI Brain com exemplos frescos.'},
+  {n:'C4',e:'🚨',t:'Alert Enrichment',c:C.o,sync:'Assíncrono < 5min',d:'Quando Monitor detecta anomalia, DIE enriquece o alerta com análise de causa, benchmark comparativo e 3 opções de ação baseadas em casos similares.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${m.c}">${m.n}</span><span class="badge" style="background:${m.c}1A;color:${m.c};font-size:9px">${m.sync}</span></div><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Context Package — Estrutura Completa</div>
+<div class="code-block"><div class="code-head">Context Package — Injetado no System Prompt a cada Requisição</div>
+<div class="code-body">context_package = {
+  company:      { id, sector, size, maturity_level, score },
+  kpi_snapshot: { <span class="cm">top 10 KPIs com status vs benchmark</span> },
+  active_cycle: { objectives, initiatives, progress, week },
+  risk_flags:   [ <span class="cm">active P0/P1 alerts com análise DIE</span> ],
+  opportunities:[ <span class="cm">top 3 do opportunity scanner</span> ],
+  benchmarks:   { <span class="cm">sector benchmarks relevantes em cache</span> },
+  history:      { <span class="cm">últimas 3 conversas resumidas</span> },
+  patterns:     { <span class="cm">pattern matches da última análise batch</span> }
+}  <span class="cm">// Total: ~15-20KB por request via Redis</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Impacto do DIE na Qualidade do AI Brain</div>
+<div class="tw"><table><thead><tr><th>Capacidade</th><th>Sem DIE</th><th>Com DIE</th></tr></thead><tbody>
+<tr><td style="font-weight:600">Benchmark</td><td style="color:var(--r)">"No geral, esse churn está alto"</td><td style="color:var(--g)">"Você está no percentil 72 — acima da mediana mas abaixo de P75 para SaaS B2B nesse porte"</td></tr>
+<tr><td style="font-weight:600">Previsão</td><td style="color:var(--r)">"Se o churn continuar assim..."</td><td style="color:var(--g)">"Em 90 dias o MRR cai R$28k com IC de 80% — janela de ação: esta semana"</td></tr>
+<tr><td style="font-weight:600">Recomendação</td><td style="color:var(--r)">"Considere melhorar o processo de CS"</td><td style="color:var(--g)">"78% das empresas similares que resolveram esse padrão usaram onboarding rescue em 21 dias"</td></tr>
+<tr><td style="font-weight:600">Detecção de risco</td><td style="color:var(--r)">"Me avise se o churn subir"</td><td style="color:var(--g)">"Detectei configuração X que precede crise em 81% dos casos — agir antes do threshold"</td></tr>
+</tbody></table></div></div>`}
+
+function p7(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">🔒</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 08 — Privacy & Data Protection</div>
+    <div class="sh-title">Privacidade como Arquitetura — 5 Mecanismos</div>
+    <div class="sh-desc">Privacy by Design — não uma camada de compliance adicionada depois. Os dados individuais de uma empresa nunca são expostos para análise cross-company direta. Toda inteligência coletiva é gerada a partir de dados agregados e anonimizados.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 5 Mecanismos de Proteção</div>
+<div class="priv-grid">
+${[
+  {cls:'p0',t:'Row Level Security',c:C.g,d:'Toda tabela tem RLS ativo com company_id = current_setting(). Isolamento enforced no nível do banco — impossível bypassar via bug na aplicação. Uma empresa nunca lê dados de outra.'},
+  {cls:'p1',t:'Anonymization Layer',c:C.b,d:'Antes de qualquer dado entrar no pipeline analítico cross-company, o Anonymization Layer remove todos os identificadores diretos e indiretos. company_id é removido. Valores absolutos são convertidos em faixas.'},
+  {cls:'p2',t:'k-Anonymity nos Benchmarks',c:C.t,d:'Benchmarks com amostra < 30 não são publicados. Entre 30–100 empresas, adição de ruído ±5%. Acima de 100, ±1%. Nenhuma empresa pode ser re-identificada a partir do benchmark.'},
+  {cls:'p3',t:'LGPD Compliance',c:C.r,d:'Consentimento granular por tipo de processamento. Portabilidade em 24h. Direito ao esquecimento em 72h. DPA formalizado com AWS, Supabase, OpenAI e Anthropic.'},
+  {cls:'p4',t:'Segurança Técnica',c:C.p,d:'TLS 1.3 em trânsito. AES-256 em repouso. Audit log imutável com 2 anos de retenção. Pentest semestral + bug bounty contínuo.'},
+].map(m=>`<div class="pc ${m.cls}"><div class="pc-title" style="color:${m.c}">${m.t}</div><div class="pc-desc">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Isolamento por Tenant — Row Level Security</div>
+<div class="code-block"><div class="code-head">PostgreSQL RLS — Política Aplicada em Todas as Tabelas</div>
+<div class="code-body"><span class="cm">-- RLS policy em kpi_values</span>
+<span class="kw">CREATE POLICY</span> company_isolation <span class="kw">ON</span> kpi_values
+  <span class="kw">USING</span> (company_id =
+    current_setting(<span class="st">'app.current_company_id'</span>)::<span class="kw">uuid</span>);
+
+<span class="cm">-- Aplicada em TODAS as tabelas com dados de empresa</span>
+<span class="cm">-- Impossível bypassar sem acesso direto ao PostgreSQL</span>
+<span class="cm">-- Verificada em todos os endpoints via middleware</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Dados Originais vs. Dados Anonimizados</div>
+<div class="tw"><table><thead><tr><th>Dado Original</th><th>Após Anonimização</th><th>Nível de Proteção</th></tr></thead><tbody>
+<tr><td>company_id UUID</td><td>Removido — apenas metadados anônimos</td><td><span class="badge bg">Identificação direta impossível</span></td></tr>
+<tr><td>Valores de MRR absolutos</td><td>Faixas discretas (R$50k–R$100k)</td><td><span class="badge bb">Identificação por porte dificultada</span></td></tr>
+<tr><td>Nomes de clientes no CRM</td><td>Nunca ingeridos — apenas métricas agregadas</td><td><span class="badge bg">Dados de clientes nunca saem do tenant</span></td></tr>
+<tr><td>Conteúdo de textos e comentários</td><td>Processado localmente para extração de features</td><td><span class="badge bt">Dados qualitativos protegidos</span></td></tr>
+</tbody></table></div></div>`}
+
+function p8(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">💎</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 09 — Business Value</div>
+    <div class="sh-title">Como o DIE Cria Valor Concreto — 5 Mecanismos</div>
+    <div class="sh-desc">Não é "melhores insights" — são impactos específicos em KPIs de negócio que se traduzem em resultado financeiro. Decisões com 4x mais frequência e 65% maior taxa de acerto. Detecção de risco em média 47 dias antes do threshold.</div>
+  </div>
+</div>
+<div class="cll cll-o">"Dado observado: empresas que recebem e agem sobre insights do DIE tomam decisões estratégicas relevantes com 4x mais frequência do que a baseline — e com 65% maior taxa de acerto nos resultados esperados, medido por impacto em KPIs 90 dias após a decisão."</div>
+
+<div class="blk"><div class="blk-h">Os 5 Mecanismos de Criação de Valor</div>
+<div class="val-list">
+${[
+  {t:'Decisões Estratégicas Mais Rápidas e Assertivas',c:C.g,d:'O maior custo oculto das PMEs não é ineficiência operacional — é o custo de oportunidade das decisões lentas e erradas. O DIE diagnostica em 3 minutos o que levaria 3 semanas. Resultado: 4x mais decisões, 65% maior acerto.'},
+  {t:'Detecção Precoce de Riscos — Média de 47 Dias',c:C.r,d:'O modelo de risco operacional identifica configurações de risco 47 dias antes de qualquer threshold ser violado. Em 47 dias, a empresa tem tempo para resposta ordenada. Depois do threshold, é reação de emergência.'},
+  {t:'Crescimento Acelerado por Aprendizado Setorial',c:C.b,d:'Empresas que acessam benchmarks setoriais do DIE identificam oportunidades de crescimento 2.3x mais rápido — porque sabem exatamente onde têm vantagem relativa e onde estão perdendo para a mediana.'},
+  {t:'Eliminação do Ruído na Interpretação de Dados',c:C.p,d:'Sem benchmark, qualquer variação pode ser boa ou ruim. Com o DIE: "seu churn de 4.1% está no percentil 68 — acima da mediana mas ainda dentro da zona normal para seu setor e porte." O contexto muda a ação.'},
+  {t:'Eficiência nas Revisões Estratégicas — 40% Mais Curtas',c:C.o,d:'Reuniões de revisão nas empresas que usam o DIE têm duração 40% menor e produzem 65% mais decisões acionáveis — porque os dados estão preparados, contextualizados e interpretados antes de começar.'},
+].map(m=>`<div class="vc" style="border-left-color:${m.c}"><div class="vc-title" style="color:${m.c}">${m.t}</div><div class="vc-desc">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Valor por Tipo de Risco — Antecedência de Detecção</div>
+<div class="tw"><table><thead><tr><th>Tipo de Risco</th><th>Antecedência Média</th><th>Se Detectado Cedo</th><th>Se Detectado Tarde</th></tr></thead><tbody>
+<tr><td>Crise de caixa</td><td><span class="badge bg">47 dias</span></td><td>Runway estendido com ações proativas</td><td>Decisões de emergência, possível insolvência</td></tr>
+<tr><td>Aceleração de churn</td><td><span class="badge bb">34 dias</span></td><td>Campanha de retenção com resultado</td><td>Receita perdida irrecuperável</td></tr>
+<tr><td>Estagnação de crescimento</td><td><span class="badge bt">62 dias</span></td><td>Mudança de abordagem antes do plateau</td><td>Perda de momentum e motivação da equipe</td></tr>
+<tr><td>Overload de equipe</td><td><span class="badge bo">28 dias</span></td><td>Redistribuição antes do burnout</td><td>Turnover e perda de conhecimento crítico</td></tr>
+</tbody></table></div></div>`}
+
+function p9(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 10 — Final Architecture</div>
+    <div class="sh-title">Arquitetura Técnica Completa — 7 Camadas</div>
+    <div class="sh-desc">Ingestão → Processamento → Armazenamento → Analytics & Intelligence → AI Integration → Delivery → Privacy & Security. Cada camada tem SLA de latência, tecnologia principal e integração com os sistemas EGE.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 7 Camadas da Arquitetura DIE</div>
+<div class="arch">
+${[
+  {label:'LAYER 1',title:'Data Ingestion',color:C.g,boxes:['Apache Kafka (50k events/sec)','7 Topics particionados por company_id','3x replicação — HA multi-AZ','Retention 7 dias — SLA de consumidores']},
+  {label:'LAYER 2',title:'Data Processing',color:C.b,boxes:['Stream: Apache Flink — validação, enriquecimento, anomalia real-time','Batch: dbt + Airflow — benchmarks diários, ML semanal, retraining mensal','Normalização: unidade, frequência, escala, definição']},
+  {label:'LAYER 3',title:'Data Storage',color:C.p,boxes:['OLTP: PostgreSQL 15 + TimescaleDB (séries temporais)','OLAP: ClickHouse (queries analíticas < 50ms)','pgvector: embeddings semânticos (busca por similaridade)','Row Level Security: isolamento total por tenant']},
+  {label:'LAYER 4',title:'Analytics & Intelligence',color:C.t,boxes:['Benchmark Engine: p25/50/75/90 por 5 eixos','Trend Engine: change point, seasonal decomp, growth decomp','Predictive Models: Revenue, Churn, OpRisk, Opportunity, Maturity','Pattern Intelligence: preditores cross-company anonimizados']},
+  {label:'LAYER 5',title:'AI Integration',color:C.o,boxes:['Context Package: Redis cache TTL 3min — < 50ms','Benchmark Lookup: ClickHouse MV — < 30ms','Pattern Feed: batch semanal → few-shot bank do AI Brain','Alert Enrichment: anomalia → causa + benchmark + ações']},
+  {label:'LAYER 6',title:'Delivery',color:C.g,boxes:['REST API: FastAPI — requests síncronos','SSE Streaming: first token < 3s — responses longas','WebSocket: Socket.IO — alertas e updates em tempo real','Dashboard Data API: Metabase + PostHog integrados']},
+  {label:'LAYER 7',title:'Privacy & Security',color:C.r,boxes:['Row Level Security — isolamento no nível do banco','Anonymization Layer — antes de qualquer análise cross-company','k-Anonymity — benchmarks com n < 30 não publicados','LGPD: consentimento, portabilidade, esquecimento, DPA']},
+].map(l=>`<div class="arch-layer" style="border-left:3px solid ${l.color}"><div class="arch-row"><div class="arch-label" style="color:${l.color}">${l.label}</div><div class="arch-title" style="color:${l.color}">${l.title}</div></div><div class="arch-boxes">${l.boxes.map(b=>`<div class="arch-box">${b}</div>`).join('')}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Integração com os Sistemas da Plataforma EGE</div>
+<div class="tw"><table><thead><tr><th>Sistema EGE</th><th>Como o DIE se Integra</th><th>Fluxo</th></tr></thead><tbody>
+<tr><td><span class="badge bg">BOS</span></td><td>Fornece benchmarks para calibrar metas e KPIs; recebe KPIs semanais como input</td><td>BOS KPIs → DIE → Benchmarks → BOS dashboard</td></tr>
+<tr><td><span class="badge bb">AI Brain</span></td><td>Context package + benchmark lookup + pattern feed + alert enrichment</td><td>DIE context → AI Brain → recomendações</td></tr>
+<tr><td><span class="badge bp">Growth Engine</span></td><td>Padrões de crescimento e trajectory models para planejamento de ciclo</td><td>DIE models → Growth Engine → roadmap</td></tr>
+<tr><td><span class="badge bt">Performance Monitor</span></td><td>Recebe dados do Monitor e enriquece alertas com análise e contexto comparativo</td><td>Monitor alerts → DIE enrichment → notificação</td></tr>
+<tr><td><span class="badge bo">Network Effect System</span></td><td>Benchmark de ecossistema e dados de parceria para matching e comunidade</td><td>DIE ecosystem → NE System → matching</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O DIE como Ativo Estratégico Irreplicável</div>
+<div class="cll cll-b">"O Data Intelligence Engine não é um sistema que se constrói de uma vez — é um sistema que fica mais poderoso com o tempo. Em 3 anos com 50.000 empresas ativas: bilhões de eventos de dados de PMEs brasileiras, modelos preditivos calibrados por dados reais, benchmarks com precisão impossível de obter por outros meios. Funcionalidades podem ser copiadas. Dados históricos, não."</div>
+<div style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;font-size:11px;color:var(--mid);font-family:'JetBrains Mono',monospace;line-height:2">
+EGE Data Intelligence Engine · Technical Architecture Document · v1.0 · Março 2026<br>
+765 parágrafos · 10 seções · 7 fontes de dados · 5 estágios de pipeline · 5 modelos preditivos · 7 camadas de arquitetura
+</div></div>`}
+
+const panels=[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

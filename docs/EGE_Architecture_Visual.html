@@ -1,0 +1,467 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Growth Ecosystem — Arquitetura</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080E1A;--surface:#0F1829;--surface2:#161F33;--surface3:#1C2840;
+  --accent:#00D4AA;--accent2:#FF6B35;--blue:#4A9EFF;--purple:#A855F7;
+  --text:#E8F0FE;--muted:#6B7A99;--border:#1E2D47;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* BACKGROUND */
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 10% 10%,rgba(0,212,170,.07) 0%,transparent 50%),
+             radial-gradient(ellipse at 90% 80%,rgba(74,158,255,.06) 0%,transparent 50%),
+             radial-gradient(ellipse at 50% 50%,rgba(168,85,247,.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+
+.wrap{max-width:1100px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:56px;animation:fadeUp .8s ease both}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:20px}
+.badge::before{content:'';width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
+h1{font-family:'Outfit',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.1;margin-bottom:12px}
+h1 span{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--muted);font-size:16px;font-weight:300;max-width:560px;margin:0 auto}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:40px;animation:fadeUp .8s .1s ease both;flex-wrap:wrap}
+.tab{flex:1;min-width:120px;padding:10px 16px;border:none;background:transparent;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;transition:all .25s;white-space:nowrap;text-align:center}
+.tab.active{background:var(--surface3);color:var(--text);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.tab:hover:not(.active){color:var(--text)}
+
+/* PANELS */
+.panel{display:none;animation:fadeUp .5s ease both}
+.panel.active{display:block}
+
+/* ARCH LAYERS */
+.layers{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.layer{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 24px;display:flex;align-items:center;gap:20px;transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.layer::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.layer.l1::before{background:var(--accent)}
+.layer.l2::before{background:var(--blue)}
+.layer.l3::before{background:var(--accent2)}
+.layer.l4::before{background:var(--purple)}
+.layer.l5::before{background:#F59E0B}
+.layer.l6::before{background:#EC4899}
+.layer:hover{border-color:rgba(255,255,255,.15);transform:translateX(4px)}
+.layer-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);min-width:28px}
+.layer-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;min-width:120px}
+.l1 .layer-label{color:var(--accent)}
+.l2 .layer-label{color:var(--blue)}
+.l3 .layer-label{color:var(--accent2)}
+.l4 .layer-label{color:var(--purple)}
+.l5 .layer-label{color:#F59E0B}
+.l6 .layer-label{color:#EC4899}
+.layer-tech{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.chip{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;margin:24px 0;gap:4px}
+.flow-step{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;font-weight:600;color:var(--text);text-align:center;min-width:100px}
+.flow-arrow{color:var(--accent);font-size:18px;font-weight:300}
+
+/* MODULES GRID */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.module-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.module-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,.02));pointer-events:none}
+.module-card:hover{border-color:var(--accent);box-shadow:0 0 32px rgba(0,212,170,.08);transform:translateY(-2px)}
+.module-icon{font-size:28px;margin-bottom:12px;display:block}
+.module-title{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.module-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.module-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px}
+.tag-green{background:rgba(0,212,170,.1);color:var(--accent)}
+.tag-blue{background:rgba(74,158,255,.1);color:var(--blue)}
+.tag-orange{background:rgba(255,107,53,.1);color:var(--accent2)}
+.tag-purple{background:rgba(168,85,247,.1);color:var(--purple)}
+
+/* DB SCHEMA */
+.schema-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table-header{background:var(--surface2);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.table-icon{font-size:16px}
+.table-name{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)}
+.table-body{padding:12px 16px}
+.field{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.field:last-child{border-bottom:none}
+.field-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);min-width:110px}
+.field-type{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.pk{color:#F59E0B;font-size:10px;font-weight:700}
+.fk{color:var(--blue);font-size:10px;font-weight:700}
+
+/* API */
+.api-group{margin-bottom:28px}
+.api-group-title{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.api-route{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.method{font-weight:700;min-width:48px;font-size:11px;text-align:center;padding:2px 6px;border-radius:4px}
+.m-get{background:rgba(0,212,170,.15);color:var(--accent)}
+.m-post{background:rgba(255,107,53,.15);color:var(--accent2)}
+.m-put{background:rgba(74,158,255,.15);color:var(--blue)}
+.m-patch{background:rgba(245,158,11,.15);color:#F59E0B}
+.m-delete{background:rgba(239,68,68,.15);color:#EF4444}
+.route-path{color:var(--text)}
+.route-desc{color:var(--muted);font-size:11px;margin-left:auto}
+
+/* ROADMAP */
+.roadmap{display:flex;flex-direction:column;gap:0}
+.sprint{display:flex;gap:0;position:relative}
+.sprint::before{content:'';position:absolute;left:59px;top:32px;bottom:-20px;width:2px;background:var(--border);z-index:0}
+.sprint:last-child::before{display:none}
+.sprint-num{min-width:120px;padding-top:8px;z-index:1}
+.sprint-circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);margin-left:48px;z-index:1;position:relative}
+.sprint-circle.done{border-color:var(--accent);color:var(--accent);background:rgba(0,212,170,.1)}
+.sprint-circle.active{border-color:var(--blue);color:var(--blue);background:rgba(74,158,255,.1);box-shadow:0 0 12px rgba(74,158,255,.3)}
+.sprint-content{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-left:16px;margin-bottom:16px}
+.sprint-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sprint-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px}
+.sprint-items{display:flex;flex-wrap:wrap;gap:6px}
+.sprint-item{font-size:11px;font-weight:500;padding:3px 8px;border-radius:5px;background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+
+/* AI FLOW */
+.ai-steps{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.ai-step{display:flex;align-items:flex-start;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;transition:all .3s}
+.ai-step:hover{border-color:rgba(0,212,170,.3)}
+.ai-step-num{min-width:32px;height:32px;border-radius:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0}
+.ai-step-info{}
+.ai-step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ai-step-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* STATS ROW */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-val{font-family:'Outfit',sans-serif;font-size:32px;font-weight:800;line-height:1}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+.stat-green .stat-val{color:var(--accent)}
+.stat-blue .stat-val{color:var(--blue)}
+.stat-orange .stat-val{color:var(--accent2)}
+.stat-purple .stat-val{color:var(--purple)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* SECTION TITLE */
+.section-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.section-title span{width:4px;height:20px;background:var(--accent);border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">Business Operating System</div>
+    <h1>Enterprise Growth<br><span>Ecosystem</span></h1>
+    <p class="subtitle">Arquitetura técnica completa da plataforma — MVP v1.0</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat stat-green"><div class="stat-val">8</div><div class="stat-label">Módulos MVP</div></div>
+    <div class="stat stat-blue"><div class="stat-val">12</div><div class="stat-label">Tabelas no Banco</div></div>
+    <div class="stat stat-orange"><div class="stat-val">34</div><div class="stat-label">Endpoints API</div></div>
+    <div class="stat stat-purple"><div class="stat-val">284h</div><div class="stat-label">Estimativa MVP</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('arch')">🏗 Arquitetura</button>
+    <button class="tab" onclick="showTab('modules')">📦 Módulos</button>
+    <button class="tab" onclick="showTab('db')">🗄 Database</button>
+    <button class="tab" onclick="showTab('api')">⚡ APIs</button>
+    <button class="tab" onclick="showTab('ai')">🤖 IA</button>
+    <button class="tab" onclick="showTab('roadmap')">🗺 Roadmap</button>
+  </div>
+
+  <!-- ARCH -->
+  <div class="panel active" id="panel-arch">
+    <div class="section-title"><span></span>Stack por Camadas</div>
+    <div class="layers">
+      <div class="layer l6">
+        <div class="layer-num">06</div>
+        <div class="layer-label">Usuário</div>
+        <div class="layer-tech"><div class="chip">Browser</div><div class="chip">App Web Responsivo</div><div class="chip">Mobile Ready</div></div>
+      </div>
+      <div class="layer l5">
+        <div class="layer-num">05</div>
+        <div class="layer-label">Frontend</div>
+        <div class="layer-tech"><div class="chip">React 18</div><div class="chip">Tailwind CSS</div><div class="chip">Recharts</div><div class="chip">React Query</div><div class="chip">Zustand</div></div>
+      </div>
+      <div class="layer l4">
+        <div class="layer-num">04</div>
+        <div class="layer-label">API Gateway</div>
+        <div class="layer-tech"><div class="chip">Node.js</div><div class="chip">Express</div><div class="chip">JWT Middleware</div><div class="chip">Rate Limiting</div><div class="chip">CORS</div></div>
+      </div>
+      <div class="layer l3">
+        <div class="layer-num">03</div>
+        <div class="layer-label">Serviços</div>
+        <div class="layer-tech"><div class="chip">Auth Service</div><div class="chip">CRM Service</div><div class="chip">Diagnostic Service</div><div class="chip">AI Service</div><div class="chip">Analytics Service</div></div>
+      </div>
+      <div class="layer l2">
+        <div class="layer-num">02</div>
+        <div class="layer-label">Dados</div>
+        <div class="layer-tech"><div class="chip">PostgreSQL 15</div><div class="chip">Supabase</div><div class="chip">Redis Cache</div><div class="chip">Row Level Security</div><div class="chip">File Storage</div></div>
+      </div>
+      <div class="layer l1">
+        <div class="layer-num">01</div>
+        <div class="layer-label">IA & Automação</div>
+        <div class="layer-tech"><div class="chip">Claude API</div><div class="chip">OpenAI API</div><div class="chip">n8n Workflows</div><div class="chip">Webhooks</div><div class="chip">Email Service</div></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:36px"><span></span>Fluxo Principal de Dados</div>
+    <div class="flow">
+      <div class="flow-step">Usuário</div><div class="flow-arrow">→</div>
+      <div class="flow-step">React App</div><div class="flow-arrow">→</div>
+      <div class="flow-step">API Gateway</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Serviços</div><div class="flow-arrow">→</div>
+      <div class="flow-step">PostgreSQL</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Claude API</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Resposta</div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="panel" id="panel-modules">
+    <div class="section-title"><span></span>8 Módulos do MVP</div>
+    <div class="modules-grid">
+      <div class="module-card">
+        <span class="module-icon">🔐</span>
+        <div class="module-title">M1 — Autenticação & Onboarding</div>
+        <div class="module-desc">Registro, login, recuperação de senha e wizard guiado de onboarding em 4 etapas.</div>
+        <div class="module-tags"><span class="tag tag-green">JWT</span><span class="tag tag-blue">OAuth Google</span><span class="tag tag-orange">Wizard</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">📊</span>
+        <div class="module-title">M2 — Diagnóstico de Maturidade</div>
+        <div class="module-desc">30 perguntas em 6 áreas. Score ponderado + Radar Chart + nível de maturidade empresarial.</div>
+        <div class="module-tags"><span class="tag tag-green">Radar Chart</span><span class="tag tag-purple">5 Níveis</span><span class="tag tag-blue">6 Áreas</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">🖥</span>
+        <div class="module-title">M3 — Dashboard Principal</div>
+        <div class="module-desc">Visão consolidada: KPIs, pipeline resumido, tarefas críticas e insights da IA em tempo real.</div>
+        <div class="module-tags"><span class="tag tag-blue">KPIs</span><span class="tag tag-green">AI Insights</span><span class="tag tag-orange">Realtime</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">🎯</span>
+        <div class="module-title">M4 — CRM & Pipeline Kanban</div>
+        <div class="module-desc">Board drag-and-drop com 5 estágios. Gestão de leads, contatos e métricas de conversão.</div>
+        <div class="module-tags"><span class="tag tag-orange">Kanban</span><span class="tag tag-green">5 Estágios</span><span class="tag tag-blue">Drag & Drop</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">✅</span>
+        <div class="module-title">M5 — Gestão de Tarefas</div>
+        <div class="module-desc">Criar, atribuir e acompanhar tarefas. Vinculada ao CRM. Alertas de prazo e prioridade crítica.</div>
+        <div class="module-tags"><span class="tag tag-purple">4 Prioridades</span><span class="tag tag-blue">CRM Link</span><span class="tag tag-orange">Alertas</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">📈</span>
+        <div class="module-title">M6 — Business Analytics</div>
+        <div class="module-desc">Lançamento mensal de métricas. MRR, CAC, Ticket Médio, Taxa de Conversão. Export CSV.</div>
+        <div class="module-tags"><span class="tag tag-green">MRR</span><span class="tag tag-blue">Tendências</span><span class="tag tag-orange">Export</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">🤖</span>
+        <div class="module-title">M7 — AI Business Advisor</div>
+        <div class="module-desc">Claude analisa diagnóstico + pipeline + métricas e gera recomendações estratégicas priorizadas.</div>
+        <div class="module-tags"><span class="tag tag-purple">Claude API</span><span class="tag tag-green">Insights</span><span class="tag tag-blue">Chat</span></div>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">⚙️</span>
+        <div class="module-title">M8 — Automações n8n</div>
+        <div class="module-desc">6 workflows: boas-vindas, diagnóstico, follow-up de leads, tarefas vencidas, relatório semanal, AI alerts.</div>
+        <div class="module-tags"><span class="tag tag-orange">n8n</span><span class="tag tag-green">6 Flows</span><span class="tag tag-blue">Email</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DB -->
+  <div class="panel" id="panel-db">
+    <div class="section-title"><span></span>Schema PostgreSQL</div>
+    <div class="schema-grid">
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">👤</span><span class="table-name">users</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">name</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">email</span><span class="field-type">VARCHAR UNIQUE</span></div>
+          <div class="field"><span class="field-name">phone</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">role</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">created_at</span><span class="field-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">🏢</span><span class="table-name">companies</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_name</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">cnpj</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">industry</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">employees</span><span class="field-type">INTEGER</span></div>
+          <div class="field"><span class="field-name">plan</span><span class="field-type">ENUM</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">📊</span><span class="table-name">diagnostics</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">score_management</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">score_sales</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">overall_score</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">maturity_level</span><span class="field-type">ENUM</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">🎯</span><span class="table-name">crm_leads</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">name</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">stage</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">value</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">assigned_to</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">✅</span><span class="table-name">tasks</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">title</span><span class="field-type">VARCHAR</span></div>
+          <div class="field"><span class="field-name">status</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">priority</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">due_date</span><span class="field-type">DATE</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">📈</span><span class="table-name">business_metrics</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">month</span><span class="field-type">DATE</span></div>
+          <div class="field"><span class="field-name">revenue</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">expenses</span><span class="field-type">DECIMAL</span></div>
+          <div class="field"><span class="field-name">profit</span><span class="field-type">GENERATED</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">🤖</span><span class="table-name">ai_recommendations</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">id</span><span class="field-type">UUID</span><span class="pk">PK</span></div>
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">type</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">content</span><span class="field-type">TEXT</span></div>
+          <div class="field"><span class="field-name">priority</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">status</span><span class="field-type">ENUM</span></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><span class="table-icon">👥</span><span class="table-name">company_users</span></div>
+        <div class="table-body">
+          <div class="field"><span class="field-name">company_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">user_id</span><span class="field-type">UUID</span><span class="fk">FK</span></div>
+          <div class="field"><span class="field-name">role</span><span class="field-type">ENUM</span></div>
+          <div class="field"><span class="field-name">joined_at</span><span class="field-type">TIMESTAMPTZ</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API -->
+  <div class="panel" id="panel-api">
+    <div class="section-title"><span></span>34 Endpoints REST</div>
+    <div class="api-group">
+      <div class="api-group-title">🔐 Auth</div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/auth/register</span><span class="route-desc">Cadastro</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/auth/login</span><span class="route-desc">Login + JWT</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/auth/refresh</span><span class="route-desc">Renovar token</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/auth/forgot-password</span><span class="route-desc">Recuperar senha</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">🏢 Company</div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/company</span><span class="route-desc">Criar empresa</span></div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/company/:id</span><span class="route-desc">Dados da empresa</span></div>
+      <div class="api-route"><span class="method m-put">PUT</span><span class="route-path">/api/company/:id</span><span class="route-desc">Atualizar</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/company/:id/invite</span><span class="route-desc">Convidar membro</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">📊 Diagnostic</div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/diagnostic/questions</span><span class="route-desc">Perguntas</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/diagnostic/submit</span><span class="route-desc">Enviar respostas</span></div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/diagnostic/results/:id</span><span class="route-desc">Resultado + scores</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">🎯 CRM</div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/crm/leads</span><span class="route-desc">Listar leads</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/crm/leads</span><span class="route-desc">Criar lead</span></div>
+      <div class="api-route"><span class="method m-put">PUT</span><span class="route-path">/api/crm/leads/:id</span><span class="route-desc">Atualizar</span></div>
+      <div class="api-route"><span class="method m-patch">PATCH</span><span class="route-path">/api/crm/leads/:id/stage</span><span class="route-desc">Mover no pipeline</span></div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/crm/pipeline</span><span class="route-desc">Pipeline por estágio</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">✅ Tasks</div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/tasks</span><span class="route-desc">Listar tarefas</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/tasks</span><span class="route-desc">Criar tarefa</span></div>
+      <div class="api-route"><span class="method m-patch">PATCH</span><span class="route-path">/api/tasks/:id/status</span><span class="route-desc">Mudar status</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">📈 Analytics</div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/metrics/summary</span><span class="route-desc">Resumo dashboard</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/metrics</span><span class="route-desc">Registrar métrica</span></div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/metrics/trends</span><span class="route-desc">Tendências 6 meses</span></div>
+    </div>
+    <div class="api-group">
+      <div class="api-group-title">🤖 AI Advisor</div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/ai/analyze</span><span class="route-desc">Análise completa</span></div>
+      <div class="api-route"><span class="method m-get">GET</span><span class="route-path">/api/ai/recommendations</span><span class="route-desc">Recomendações ativas</span></div>
+      <div class="api-route"><span class="method m-post">POST</span><span class="route-path">/api/ai/chat</span><span class="route-desc">Chat com AI</span></div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="panel" id="panel-ai">
+    <div class="section-title"><span></span>Fluxo de Inteligência Artificial</div>
+    <div class="ai-steps">
+      <div class="ai-step"><div class="ai-step-num">01</div><div class="ai-step-info"><div class="ai-step-title">Evento Disparador</div><div class="ai-step-desc">Diagnóstico concluído, nova métrica lançada, lead parado há 7+ dias, ou solicitação manual do usuário.</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">02</div><div class="ai-step-info"><div class="ai-step-title">Coleta de Contexto</div><div class="ai-step-desc">Busca no PostgreSQL: dados da empresa, histórico de diagnósticos, pipeline atual, métricas dos últimos 6 meses, tarefas em aberto.</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">03</div><div class="ai-step-info"><div class="ai-step-title">Montagem do Prompt</div><div class="ai-step-desc">Estrutura JSON com todo o contexto. System prompt especializado em consultoria empresarial. Instrução para retornar JSON estruturado com type, title, content, priority, action_items.</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">04</div><div class="ai-step-info"><div class="ai-step-title">Chamada Claude API</div><div class="ai-step-desc">Modelo: claude-sonnet-4-20250514. Max tokens: 2048. Temperature: 0.3 (respostas consistentes e estratégicas).</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">05</div><div class="ai-step-info"><div class="ai-step-title">Parse e Validação</div><div class="ai-step-desc">Extrai recomendações estruturadas do JSON. Valida campos obrigatórios. Classifica por tipo: insight, problema, recomendação, oportunidade.</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">06</div><div class="ai-step-info"><div class="ai-step-title">Persistência</div><div class="ai-step-desc">Salva em ai_recommendations com prioridade calculada, categoria e status "active". Vincula à empresa e ao diagnóstico correspondente.</div></div></div>
+      <div class="ai-step"><div class="ai-step-num">07</div><div class="ai-step-info"><div class="ai-step-title">Notificação ao Usuário</div><div class="ai-step-desc">n8n dispara alerta no dashboard em tempo real + email com resumo das recomendações geradas.</div></div></div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="panel" id="panel-roadmap">
+    <div class="section-title"><span></span>Roadmap — 12 Sprints</div>
+    <div class="roadmap">
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle active">S1</div></div><div class="sprint-content"><div class="sprint-label">Semanas 1–2  ·  MVP 1</div><div class="sprint-title">Autenticação & Onboarding</div><div class="sprint-items"><span class="sprint-item">Register / Login</span><span class="sprint-item">JWT Auth</span><span class="sprint-item">Perfil da Empresa</span><span class="sprint-item">Wizard Onboarding</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">S2</div></div><div class="sprint-content"><div class="sprint-label">Semanas 3–4  ·  MVP 1</div><div class="sprint-title">Diagnóstico de Maturidade</div><div class="sprint-items"><span class="sprint-item">30 Perguntas</span><span class="sprint-item">Score por Área</span><span class="sprint-item">Radar Chart</span><span class="sprint-item">Nível de Maturidade</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">S3</div></div><div class="sprint-content"><div class="sprint-label">Semanas 5–6  ·  MVP 1</div><div class="sprint-title">Dashboard + CRM Kanban</div><div class="sprint-items"><span class="sprint-item">KPIs Dashboard</span><span class="sprint-item">Pipeline Kanban</span><span class="sprint-item">Drag & Drop</span><span class="sprint-item">Gestão de Leads</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">S4</div></div><div class="sprint-content"><div class="sprint-label">Semanas 7–8  ·  MVP 1</div><div class="sprint-title">Tarefas + Analytics + AI Advisor</div><div class="sprint-items"><span class="sprint-item">Task Manager</span><span class="sprint-item">Métricas Mensais</span><span class="sprint-item">Claude API</span><span class="sprint-item">AI Recommendations</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">S5</div></div><div class="sprint-content"><div class="sprint-label">Semanas 9–10  ·  MVP 2</div><div class="sprint-title">Automações n8n + Notificações</div><div class="sprint-items"><span class="sprint-item">6 Workflows</span><span class="sprint-item">Email Service</span><span class="sprint-item">Follow-up Automático</span><span class="sprint-item">Alertas</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">S6</div></div><div class="sprint-content"><div class="sprint-label">Semanas 11–12  ·  MVP 2</div><div class="sprint-title">Relatórios + Mobile + Launch</div><div class="sprint-items"><span class="sprint-item">Export CSV</span><span class="sprint-item">Responsivo Mobile</span><span class="sprint-item">Testes E2E</span><span class="sprint-item">Deploy Produção</span></div></div></div>
+      <div class="sprint"><div class="sprint-num"><div class="sprint-circle">V2</div></div><div class="sprint-content"><div class="sprint-label">Sprint 13+  ·  Expansão</div><div class="sprint-title">Ecossistema Completo</div><div class="sprint-items"><span class="sprint-item">Módulo Financeiro</span><span class="sprint-item">Marketing Automation</span><span class="sprint-item">Marketplace</span><span class="sprint-item">Comunidade</span><span class="sprint-item">Educação</span></div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>

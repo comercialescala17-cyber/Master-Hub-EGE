@@ -1,0 +1,272 @@
+{
+  "name": "EGE Platform — Monitor KPI Diário",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 24 }]
+        },
+        "triggerAtHour": 8,
+        "triggerAtMinute": 0
+      },
+      "id": "b1c2d3e4-0001-4001-8001-100000000001",
+      "name": "Cron: Todo dia às 08h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 300]
+    },
+
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.EGE_API_URL }}/kpis/summary",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer {{ $env.EGE_API_KEY }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1c2d3e4-0002-4002-8002-100000000002",
+      "name": "EGE: Buscar KPIs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [220, 300]
+    },
+
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.moskit.com.br/v1/deals?stage_id=1&created_after={{ new Date(Date.now() - 86400000).toISOString().split('T')[0] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0003-4003-8003-100000000003",
+      "name": "Moskit: Novos Leads 24h",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [440, 200],
+      "credentials": {
+        "httpHeaderAuth": { "id": "cred-moskit", "name": "Moskit API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.moskit.com.br/v1/deals?stage_id=5&won=true&closed_after={{ new Date(Date.now() - 86400000).toISOString().split('T')[0] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0004-4004-8004-100000000004",
+      "name": "Moskit: Negócios Fechados 24h",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [440, 400],
+      "credentials": {
+        "httpHeaderAuth": { "id": "cred-moskit", "name": "Moskit API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "k1",
+              "name": "novos_leads",
+              "value": "={{ $('Moskit: Novos Leads 24h').item.json.total || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k2",
+              "name": "negocios_fechados",
+              "value": "={{ $('Moskit: Negócios Fechados 24h').item.json.total || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k3",
+              "name": "mrr_atual",
+              "value": "={{ $('EGE: Buscar KPIs').item.json.mrr || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k4",
+              "name": "clientes_ativos",
+              "value": "={{ $('EGE: Buscar KPIs').item.json.active_clients || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k5",
+              "name": "churn_rate",
+              "value": "={{ $('EGE: Buscar KPIs').item.json.churn_rate || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k6",
+              "name": "nps",
+              "value": "={{ $('EGE: Buscar KPIs').item.json.nps || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "k7",
+              "name": "data_relatorio",
+              "value": "={{ new Date().toLocaleDateString('pt-BR') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1c2d3e4-0005-4005-8005-100000000005",
+      "name": "Consolidar KPIs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.novos_leads + $json.negocios_fechados }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "b1c2d3e4-0006-4006-8006-100000000006",
+      "name": "Há Atividade Hoje?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#kpis-diarios",
+        "text": "=📊 *EGE Platform — Relatório Diário* · {{ $json.data_relatorio }}\n\n*Funil de Vendas (últimas 24h)*\n• 🔥 Novos Leads: *{{ $json.novos_leads }}*\n• ✅ Negócios Fechados: *{{ $json.negocios_fechados }}*\n\n*Métricas de Saúde*\n• 💰 MRR Atual: *R$ {{ $json.mrr_atual.toLocaleString('pt-BR') }}*\n• 👥 Clientes Ativos: *{{ $json.clientes_ativos }}*\n• 📉 Churn Rate: *{{ $json.churn_rate }}%*\n• ⭐ NPS: *{{ $json.nps }}*\n\n_Meta MRR 36m: R$ 15.000.000 — {{ Math.round(($json.mrr_atual / 15000000) * 100) }}% atingido_",
+        "otherOptions": {}
+      },
+      "id": "b1c2d3e4-0007-4007-8007-100000000007",
+      "name": "Slack: Relatório KPIs",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1120, 220],
+      "credentials": {
+        "slackApi": { "id": "cred-slack", "name": "Slack EGE" }
+      }
+    },
+
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.EVOLUTION_API_URL }}/message/sendText/{{ $env.EVOLUTION_INSTANCE }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.EVOLUTION_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $env.MANAGER_PHONE }}\",\n  \"text\": \"📊 *EGE — Relatório Diário* ({{ $json.data_relatorio }})\\n\\n🔥 Novos Leads: *{{ $json.novos_leads }}*\\n✅ Fechamentos: *{{ $json.negocios_fechados }}*\\n💰 MRR: *R$ {{ $json.mrr_atual.toLocaleString('pt-BR') }}*\\n👥 Ativos: *{{ $json.clientes_ativos }}*\"\n}",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0008-4008-8008-100000000008",
+      "name": "WhatsApp: Resumo Gestor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1120, 400]
+    },
+
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "#kpis-diarios",
+        "text": "=😴 *EGE Platform — {{ $('Consolidar KPIs').item.json.data_relatorio }}*\nNenhuma atividade registrada nas últimas 24h.",
+        "otherOptions": {}
+      },
+      "id": "b1c2d3e4-0009-4009-8009-100000000009",
+      "name": "Slack: Sem Atividade",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1120, 600],
+      "credentials": {
+        "slackApi": { "id": "cred-slack", "name": "Slack EGE" }
+      }
+    }
+  ],
+
+  "connections": {
+    "Cron: Todo dia às 08h": {
+      "main": [
+        [
+          { "node": "EGE: Buscar KPIs",              "type": "main", "index": 0 },
+          { "node": "Moskit: Novos Leads 24h",        "type": "main", "index": 0 },
+          { "node": "Moskit: Negócios Fechados 24h",  "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "EGE: Buscar KPIs": {
+      "main": [
+        [{ "node": "Consolidar KPIs", "type": "main", "index": 0 }]
+      ]
+    },
+    "Moskit: Novos Leads 24h": {
+      "main": [
+        [{ "node": "Consolidar KPIs", "type": "main", "index": 1 }]
+      ]
+    },
+    "Moskit: Negócios Fechados 24h": {
+      "main": [
+        [{ "node": "Consolidar KPIs", "type": "main", "index": 2 }]
+      ]
+    },
+    "Consolidar KPIs": {
+      "main": [
+        [{ "node": "Há Atividade Hoje?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Há Atividade Hoje?": {
+      "main": [
+        [
+          { "node": "Slack: Relatório KPIs",   "type": "main", "index": 0 },
+          { "node": "WhatsApp: Resumo Gestor", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Slack: Sem Atividade", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none"
+  },
+  "staticData": null,
+  "meta": { "instanceId": "ege-platform-n8n" },
+  "id": "ege-kpi-cron-002",
+  "tags": [
+    { "id": "tag-ege-001",  "name": "EGE Platform" },
+    { "id": "tag-kpi-001",  "name": "KPI Monitor" },
+    { "id": "tag-cron-001", "name": "Cron" }
+  ],
+  "versionId": "v1-2026-04-24",
+  "active": false
+}

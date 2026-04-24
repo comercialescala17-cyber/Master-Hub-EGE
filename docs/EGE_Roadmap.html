@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Roadmap de Construção da Plataforma</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--t),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:600px;margin:0 auto;line-height:1.8}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--o)}.n4::after{background:var(--t)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.tl-item{display:flex;gap:16px;position:relative}
+.tl-item::before{content:'';position:absolute;left:15px;top:38px;bottom:-6px;width:2px;background:var(--bd)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:4px}
+.tl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:14px 18px;margin-bottom:10px}
+.tl-label{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.tl-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.tl-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+.tl-tags{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+
+/* Flow steps */
+.flow-num{display:flex;flex-direction:column;gap:8px}
+.fn-item{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:11px}
+.fn-n{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  flex-shrink:0;margin-top:1px}
+.fn-body{flex:1}
+.fn-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fn-desc{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* Module grid */
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+@media(max-width:700px){.mod-grid{grid-template-columns:repeat(2,1fr)}}
+.mod-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.mod-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.mc-g::before{background:var(--g)}.mc-b::before{background:var(--b)}.mc-p::before{background:var(--p)}.mc-t::before{background:var(--t)}.mc-o::before{background:var(--o)}
+.mod-pri{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:5px}
+.mod-name{font-size:13px;font-weight:800;margin-bottom:4px}
+.mod-desc{font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:8px}
+.mod-est{font-size:10px;color:var(--mid)}
+
+/* Org chart */
+.org-wrap{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.org-area{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.org-head{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.org-e{font-size:20px}
+.org-name{font-size:13px;font-weight:800}
+.org-count{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;margin-left:auto}
+.org-roles{padding:12px 18px;display:flex;flex-wrap:wrap;gap:7px}
+.org-role{font-size:11px;padding:4px 10px;border-radius:6px;font-weight:600}
+
+/* Phase roadmap visual */
+.phase-track{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:16px 0;
+  border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+@media(max-width:700px){.phase-track{grid-template-columns:1fr}}
+.ph{padding:22px 20px;position:relative;border-right:1px solid var(--bd)}
+.ph:last-child{border-right:none}
+@media(max-width:700px){.ph{border-right:none;border-bottom:1px solid var(--bd)}}
+@media(max-width:700px){.ph:last-child{border-bottom:none}}
+.ph::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ph0::before{background:var(--g)}.ph1::before{background:var(--b)}.ph2::before{background:var(--p)}.ph3::before{background:var(--o)}
+.ph-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:8px}
+.ph-t{font-size:14px;font-weight:800;margin-bottom:4px}
+.ph-period{font-size:10.5px;color:var(--mid);margin-bottom:10px}
+.ph-kpi{font-size:11px;margin-bottom:4px}
+.ph-kpi strong{font-weight:800}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Arquitetura de Produto</div>
+  <h1>Roadmap de<br><span>Construção da Plataforma</span></h1>
+  <p class="sub">4 fases, da validação à escala global. Cada fase tem objetivo claro, critérios de saída e equipe dimensionada — nenhuma funcionalidade é construída antes de a anterior ser validada em produção.</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">4</div><div class="sl">Fases de desenvolvimento</div></div>
+  <div class="st sb"><div class="sv">20</div><div class="sl">Meses para ecossistema</div></div>
+  <div class="st sp"><div class="sv">8</div><div class="sl">Módulos no MVP</div></div>
+  <div class="st so"><div class="sv">50k</div><div class="sl">Empresas na escala</div></div>
+  <div class="st st2"><div class="sv">R$10M</div><div class="sl">MRR alvo Fase 4</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">FASE 01</div><div class="nb-t">🚀 MVP</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">FASE 02</div><div class="nb-t">⚙️ Plataforma</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">FASE 03</div><div class="nb-t">🌐 Ecossistema</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">FASE 04</div><div class="nb-t">📈 Escala</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">👥 Equipe</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🚀</div>
+  <div><div class="sh-tag" style="color:var(--g)">Fase 01 — MVP</div>
+    <div class="sh-title">Produto Mínimo Viável — Meses 0 a 4</div>
+    <div class="sh-desc">O MVP não é uma versão incompleta — é a versão mais focada possível. Cada funcionalidade responde a uma pergunta: isso vai fazer o empresário entender melhor o próprio negócio ou tomar uma decisão melhor?</div>
+  </div>
+</div>
+<div class="cll">"O MVP não tem o objetivo de impressionar. Tem o objetivo de aprender. Cada funcionalidade é um experimento — e o sucesso é medido pela mudança de comportamento do empresário, não pela complexidade técnica."</div>
+
+<div class="blk"><div class="blk-h">Visão Geral das 4 Fases</div>
+<div class="phase-track">
+  <div class="ph ph0">
+    <div class="ph-n">FASE 01</div>
+    <div class="ph-t">MVP</div>
+    <div class="ph-period">Meses 0–4</div>
+    <div class="ph-kpi"><strong style="color:var(--g)">50</strong> empresas beta</div>
+    <div class="ph-kpi"><strong style="color:var(--g)">R$25k</strong> MRR</div>
+    <div class="ph-kpi"><strong style="color:var(--g)">8</strong> módulos</div>
+  </div>
+  <div class="ph ph1">
+    <div class="ph-n">FASE 02</div>
+    <div class="ph-t">Plataforma</div>
+    <div class="ph-period">Meses 4–10</div>
+    <div class="ph-kpi"><strong style="color:var(--b)">500</strong> empresas</div>
+    <div class="ph-kpi"><strong style="color:var(--b)">R$150k</strong> MRR</div>
+    <div class="ph-kpi"><strong style="color:var(--b)">+8</strong> sistemas</div>
+  </div>
+  <div class="ph ph2">
+    <div class="ph-n">FASE 03</div>
+    <div class="ph-t">Ecossistema</div>
+    <div class="ph-period">Meses 10–20</div>
+    <div class="ph-kpi"><strong style="color:var(--p)">5.000</strong> empresas</div>
+    <div class="ph-kpi"><strong style="color:var(--p)">R$1,5M</strong> MRR</div>
+    <div class="ph-kpi"><strong style="color:var(--p)">10</strong> módulos</div>
+  </div>
+  <div class="ph ph3">
+    <div class="ph-n">FASE 04</div>
+    <div class="ph-t">Escala</div>
+    <div class="ph-period">Mês 20+</div>
+    <div class="ph-kpi"><strong style="color:var(--o)">50k+</strong> empresas</div>
+    <div class="ph-kpi"><strong style="color:var(--o)">R$10M+</strong> MRR</div>
+    <div class="ph-kpi"><strong style="color:var(--o)">LATAM</strong> expansão</div>
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Os 8 Módulos do MVP</div>
+<div class="mod-grid">
+  ${[
+    {pri:'🔴 P0',name:'M1 — Autenticação e Onboarding',desc:'Cadastro Google, wizard 4 etapas, perfil inicial, segmentação setor/porte',est:'2 semanas',c:'mc-g'},
+    {pri:'🔴 P0',name:'M2 — Diagnóstico de Maturidade',desc:'40 perguntas, 9 dimensões, score automático, radar chart, top 3 gargalos',est:'3 semanas',c:'mc-g'},
+    {pri:'🔴 P0',name:'M3 — Dashboard Principal',desc:'Score atual, 6 KPIs, pipeline resumido, 3 insights da IA, alertas críticos',est:'3 semanas',c:'mc-g'},
+    {pri:'🔴 P0',name:'M7 — AI Business Advisor',desc:'Chat com Claude API, contexto de diagnóstico e KPIs, 3 modos, histórico',est:'3 semanas',c:'mc-g'},
+    {pri:'🟡 P1',name:'M4 — CRM e Pipeline Kanban',desc:'Board drag-and-drop 5 estágios, cards de deal, histórico de atividades',est:'3 semanas',c:'mc-b'},
+    {pri:'🟡 P1',name:'M5 — Gestão de Tarefas',desc:'Tarefas vinculadas ao plano, prioridades, prazos, responsáveis, notificações',est:'2 semanas',c:'mc-b'},
+    {pri:'🟡 P1',name:'M6 — Business Analytics',desc:'MRR, CAC, ticket médio, conversão — gráficos de evolução, export CSV',est:'2 semanas',c:'mc-b'},
+    {pri:'🟡 P1',name:'M8 — Automações Essenciais',desc:'6 workflows via n8n: follow-up, cobrança, NPS, onboarding de cliente',est:'2 semanas',c:'mc-b'},
+  ].map(m=>`
+  <div class="mod-card ${m.c}">
+    <div class="mod-pri" style="color:${m.c==='mc-g'?'var(--g)':'var(--b)'}">${m.pri}</div>
+    <div class="mod-name">${m.name}</div>
+    <div class="mod-desc">${m.desc}</div>
+    <div class="mod-est">⏱ ${m.est}</div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Stack Técnico do MVP</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Tecnologia</th><th>Justificativa</th></tr></thead><tbody>
+<tr><td>Frontend</td><td>React 18 + Tailwind CSS + Recharts + Zustand</td><td>Velocidade de desenvolvimento, ecossistema maduro, fácil de encontrar devs</td></tr>
+<tr><td>Backend</td><td>Node.js + Express</td><td>Mesma linguagem no stack, rápido para APIs REST, vasta comunidade</td></tr>
+<tr><td>Banco de Dados</td><td>Supabase + PostgreSQL 15</td><td>BaaS com Row Level Security nativo — multi-tenant sem infraestrutura complexa</td></tr>
+<tr><td>IA Principal</td><td>Claude API (claude-sonnet, temp 0.3)</td><td>Melhor performance em raciocínio estratégico e contexto longo</td></tr>
+<tr><td>IA Embeddings</td><td>OpenAI API (text-embedding-3-small)</td><td>Custo-benefício para busca semântica e personalização</td></tr>
+<tr><td>Automação</td><td>n8n self-hosted</td><td>Open-source, flexível, integra com qualquer API, custo zero de plataforma</td></tr>
+<tr><td>Deploy</td><td>Railway + GitHub Actions CI/CD</td><td>Deploy em minutos, auto-scaling básico, custo baixo para MVP</td></tr>
+<tr><td>Monitoramento</td><td>Sentry + Datadog</td><td>Error tracking e APM desde o dia 1 — erros em produção visíveis em tempo real</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Cronograma — 16 Semanas</div>
+<div class="tw"><table><thead><tr><th>Semanas</th><th>Sprint</th><th>Entregáveis</th><th>Marco</th></tr></thead><tbody>
+<tr><td>1–2</td><td>Setup e Fundação</td><td>Repositório, CI/CD, banco de dados, auth básica, design system</td><td>Ambiente de dev funcional</td></tr>
+<tr><td>3–5</td><td>Core MVP</td><td>M1 (onboarding) + M2 (diagnóstico) completos — os 2 módulos mais críticos primeiro</td><td>Primeiro diagnóstico gerado</td></tr>
+<tr><td>6–8</td><td>Dashboard e IA</td><td>M3 (dashboard) + M7 (AI Advisor) — o coração da proposta de valor diária</td><td>Dashboard com IA funcional</td></tr>
+<tr><td>9–11</td><td>CRM e Tarefas</td><td>M4 (CRM/pipeline) + M5 (tarefas) — execução conectada ao plano</td><td>Plano com tarefas ativas</td></tr>
+<tr><td>12–13</td><td>Analytics e Automações</td><td>M6 (analytics) + M8 (workflows n8n)</td><td>6 workflows em produção</td></tr>
+<tr><td>14–15</td><td>Beta Fechado</td><td>Deploy para 10 empresas reais — feedback intenso, bugfixes diários</td><td>10 empresas em produção</td></tr>
+<tr><td>16</td><td>Lançamento MVP</td><td>Ajustes do beta, performance, polish final, 50 empresas</td><td><strong style="color:var(--g)">MVP lançado ✓</strong></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Critérios de Saída da Fase 1 — O que Precisa ser Verdade para Avançar</div>
+<div class="tw"><table><thead><tr><th>Critério</th><th>Meta</th><th>Como é Medido</th></tr></thead><tbody>
+<tr><td>Retenção 60 dias</td><td><span class="badge bg">≥ 70%</span></td><td>% de usuários beta ainda ativos após 60 dias do cadastro</td></tr>
+<tr><td>Completion do diagnóstico</td><td><span class="badge bg">≥ 75%</span></td><td>% que completam o diagnóstico na primeira sessão</td></tr>
+<tr><td>Uso da IA</td><td><span class="badge bg">≥ 60%</span></td><td>% com pelo menos 3 conversas com a IA consultora</td></tr>
+<tr><td>NPS do MVP</td><td><span class="badge bg">≥ 50</span></td><td>Survey in-app no dia 30 e no dia 60</td></tr>
+<tr><td>Uptime</td><td><span class="badge bg">≥ 99,5%</span></td><td>Status page monitorada por 30 dias consecutivos</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:var(--b)">Fase 02 — Plataforma Funcional</div>
+    <div class="sh-title">De 50 para 500 Empresas — Meses 4 a 10</div>
+    <div class="sh-desc">A Fase 2 começa quando os critérios de saída da Fase 1 são atingidos. O produto deixa de ser experimento e começa a ser plataforma. Foco em robustez, confiabilidade e os sistemas que a Fase 1 não comportava.</div>
+  </div>
+</div>
+<div class="cll">"A Fase 2 é onde o produto vira plataforma. A diferença não é técnica — é de confiabilidade. 500 empresas pagando exigem SLA real, suporte estruturado e atualizações sem downtime."</div>
+
+<div class="blk"><div class="blk-h">8 Sistemas Adicionados na Fase 2</div>
+<div class="timeline">
+${[
+  {icon:'📊',label:'Sistema de Score Completo',desc:'Score dinâmico com atualização automática via KPIs + diagnóstico periódico + histórico de evolução gráfico por dimensão.',dep:'M2 validado na Fase 1',est:'4 semanas',c:'var(--g)'},
+  {icon:'📋',label:'Planejamento Automático',desc:'Geração automática de planos trimestrais, OKRs vinculados ao score, ajuste dinâmico de prioridades a cada ciclo.',dep:'Sistema de Score',est:'5 semanas',c:'var(--b)'},
+  {icon:'📡',label:'Monitoramento em Tempo Real',desc:'KPI tracker com alertas P0/P1/P2, threshold inteligente por setor, histórico de desvios, relatório semanal automático.',dep:'M3 + Analytics',est:'4 semanas',c:'var(--p)'},
+  {icon:'👥',label:'Portal da Equipe',desc:'Multi-usuário por empresa, perfis com permissões (admin/gestor/operador), feed de atividades, gestão de acesso.',dep:'Auth M1',est:'3 semanas',c:'var(--t)'},
+  {icon:'🔗',label:'Integrações Nativas',desc:'Zapier, Google Workspace, WhatsApp Business, Stripe, PipeRun, RD Station, Asaas — integrações mais solicitadas pelos clientes beta.',dep:'M8 automações',est:'5 semanas',c:'var(--o)'},
+  {icon:'📄',label:'Relatórios Automáticos',desc:'Relatório semanal, mensal e de ciclo gerados automaticamente — PDF + e-mail + dashboard. Zero trabalho manual.',dep:'Monitoramento',est:'3 semanas',c:'var(--g)'},
+  {icon:'🔔',label:'Sistema de Notificações',desc:'Push web, e-mail transacional, WhatsApp — centralized notification engine com preferências por usuário e empresa.',dep:'Portal da Equipe',est:'2 semanas',c:'var(--b)'},
+  {icon:'🏗️',label:'Infraestrutura Multi-tenant',desc:'Row Level Security aprimorado, isolamento de dados por tenant, rate limiting por plano, auditoria de acesso completa.',dep:'Banco de dados',est:'3 semanas',c:'var(--p)'},
+].map((t,i)=>`
+<div class="tl-item">
+  <div class="tl-dot" style="border-color:${t.c};color:${t.c}">${t.icon}</div>
+  <div class="tl-body">
+    <div class="tl-label" style="color:${t.c}">Sistema ${String(i+1).padStart(2,'0')}</div>
+    <div class="tl-title">${t.label}</div>
+    <div class="tl-desc">${t.desc}</div>
+    <div class="tl-tags">
+      <span class="badge" style="background:${t.c}1A;color:${t.c}">Depende: ${t.dep}</span>
+      <span class="badge by">⏱ ${t.est}</span>
+    </div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Evolução da IA na Fase 2</div>
+<div class="grid2">
+  <div class="card"><div class="c-e">🧠</div><div class="c-t">Memória de Longo Prazo</div><div class="c-b">A IA mantém histórico completo de conversas, marcos e decisões. O contexto cresce com o tempo — quanto mais usa, mais precisa fica.</div></div>
+  <div class="card"><div class="c-e">⚡</div><div class="c-t">Insights Proativos</div><div class="c-b">Além de responder perguntas, a IA gera insights semanais sem ser perguntada — detecta padrões e envia alertas estratégicos.</div></div>
+  <div class="card"><div class="c-e">🎯</div><div class="c-t">Personalização Setorial</div><div class="c-b">Fine-tuning com dados dos 50 primeiros clientes — respostas mais precisas e calibradas para cada setor específico.</div></div>
+  <div class="card"><div class="c-e">📑</div><div class="c-t">Modo de Análise Profunda</div><div class="c-b">Nova capacidade de gerar documentos estratégicos completos — plano de ação, análise de viabilidade, benchmark competitivo.</div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Evoluções de Infraestrutura — De Produto para Plataforma</div>
+<div class="tw"><table><thead><tr><th>Área</th><th>Fase 1</th><th>Fase 2</th><th>Por quê</th></tr></thead><tbody>
+<tr><td>Deploy</td><td>Railway básico</td><td>Railway + Redis cache + CDN</td><td>Latência &lt; 200ms com 500 usuários simultâneos</td></tr>
+<tr><td>Banco de Dados</td><td>Supabase básico</td><td>Supabase + réplica de leitura + backup diário</td><td>Consistência e disponibilidade em crescimento</td></tr>
+<tr><td>Monitoramento</td><td>Sentry errors</td><td>Sentry + Datadog APM + alertas de degradação</td><td>Identificar gargalos antes de virar problema</td></tr>
+<tr><td>Segurança</td><td>Auth básica + HTTPS</td><td>2FA + audit log + LGPD compliance formal</td><td>Requisito para empresas médias</td></tr>
+<tr><td>CI/CD</td><td>Deploy manual</td><td>Pipeline automatizado com staging + rollback</td><td>Zero downtime em atualizações — SLA 99,9%</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Critérios de Saída da Fase 2</div>
+<div class="tw"><table><thead><tr><th>Critério</th><th>Meta</th><th>Sinal de Alerta</th></tr></thead><tbody>
+<tr><td>Retenção 90 dias</td><td><span class="badge bg">≥ 75%</span></td><td>Churn acelerado em qualquer cohort de plano</td></tr>
+<tr><td>NPS</td><td><span class="badge bg">≥ 50</span></td><td>Detratores mencionando o mesmo problema 3x</td></tr>
+<tr><td>Uptime com SLA</td><td><span class="badge bg">99,9%</span></td><td>Qualquer incidente > 30 min sem plano de comunicação</td></tr>
+<tr><td>Uso das integrações</td><td><span class="badge bg">≥ 40% das empresas</span></td><td>Integração mais usada com bugs recorrentes</td></tr>
+<tr><td>MRR crescendo</td><td><span class="badge bg">≥ 15% MoM</span></td><td>Crescimento abaixo de 10% por 2 meses consecutivos</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">🌐</div>
+  <div><div class="sh-tag" style="color:var(--p)">Fase 03 — Ecossistema Completo</div>
+    <div class="sh-title">5.000 Empresas e Todos os Módulos — Meses 10 a 20</div>
+    <div class="sh-desc">Todos os 10 módulos do documento mestre integrados. A IA com Intel de Mercado em tempo real. O EGE deixa de competir com softwares de gestão e começa a competir com consultorias estratégicas.</div>
+  </div>
+</div>
+<div class="cll">"A Fase 3 é onde o EGE vira um ecossistema. A plataforma não existe mais sozinha — existe no contexto do mercado do empresário, com dados de concorrentes e tendências em tempo real."</div>
+
+<div class="blk"><div class="blk-h">Módulos Adicionados na Fase 3 — por Trimestre</div>
+<div class="tw"><table><thead><tr><th>Módulo</th><th>O que Adiciona</th><th>Impacto para o Empresário</th><th>Trimestre</th></tr></thead><tbody>
+<tr><td><strong>Intel de Mercado</strong></td><td>Monitoramento de concorrentes, tendências, análise de sentimento, alertas de movimentação</td><td>Decisões estratégicas baseadas no mercado, não em intuição</td><td><span class="badge bp">Q1 F3</span></td></tr>
+<tr><td><strong>Score Preditivo</strong></td><td>IA prevê o score dos próximos 3 meses com base em dados históricos e tendências de KPIs</td><td>O empresário sabe hoje onde estará em 90 dias</td><td><span class="badge bp">Q1 F3</span></td></tr>
+<tr><td><strong>Módulo Financeiro Avançado</strong></td><td>DRE automatizada, fluxo de caixa projetado, análise de rentabilidade por produto/cliente</td><td>Visibilidade financeira de CFO sem ter CFO</td><td><span class="badge bb">Q2 F3</span></td></tr>
+<tr><td><strong>RH e Gestão de Equipe</strong></td><td>Performance por colaborador, OKRs individuais, plano de desenvolvimento, score de engajamento</td><td>Gestão de pessoas estruturada sem RH formal</td><td><span class="badge bb">Q2 F3</span></td></tr>
+<tr><td><strong>Módulo de Marketing</strong></td><td>ROI por canal, custo por lead, funil completo, A/B testing, benchmark de performance</td><td>Marketing orientado a dados, não a achismo</td><td><span class="badge bt">Q3 F3</span></td></tr>
+<tr><td><strong>Marketplace de Consultores</strong></td><td>Rede de consultores certificados EGE — sessão estratégica contratada direto da plataforma</td><td>Ponte entre IA e consultoria humana quando necessário</td><td><span class="badge bt">Q3 F3</span></td></tr>
+<tr><td><strong>App Mobile Nativo</strong></td><td>iOS e Android com funcionalidades críticas — dashboard, alertas, IA, tarefas</td><td>Check diário sem precisar abrir laptop</td><td><span class="badge bo">Q4 F3</span></td></tr>
+<tr><td><strong>API Pública</strong></td><td>API documentada para integrações customizadas — ERPs, sistemas legados, parceiros</td><td>Empresas médias com sistemas próprios podem integrar</td><td><span class="badge bo">Q4 F3</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">A IA na Fase 3 — De Consultora a Parceira Estratégica</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">1</div><div class="fn-body"><div class="fn-title">Intel de Mercado em Tempo Real</div><div class="fn-desc">Monitora continuamente notícias, publicações e movimentações de concorrentes — gera alertas proativos quando detecta oportunidade ou ameaça relevante para a empresa.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">2</div><div class="fn-body"><div class="fn-title">Simulação de Cenários</div><div class="fn-desc">"O que acontece com meu negócio se eu abrir uma segunda unidade?" — a IA gera 3 cenários com impacto em score, KPIs e financeiro, baseados nos dados reais da empresa.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">3</div><div class="fn-body"><div class="fn-title">Benchmark Real com 5.000 Empresas</div><div class="fn-desc">Com a base de dados acumulada, a IA tem comparações setoriais precisas — o empresário sabe exatamente onde está em relação a empresas similares no setor e porte.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">4</div><div class="fn-body"><div class="fn-title">Fine-tuning Contínuo Trimestral</div><div class="fn-desc">O modelo é atualizado com os padrões de sucesso das empresas que mais cresceram na plataforma — a IA fica mais precisa e estratégica a cada ciclo de aprendizado.</div></div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Estrutura de Planos e Monetização na Fase 3</div>
+<div class="tw"><table><thead><tr><th>Plano</th><th>Público-Alvo</th><th>Funcionalidades</th><th>Preço Mensal</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Starter</span></td><td>Micro (até 10 pessoas)</td><td>Diagnóstico + Dashboard + IA básica + 3 workflows</td><td><strong style="color:var(--g)">R$297</strong></td></tr>
+<tr><td><span class="badge bb">Growth</span></td><td>Pequena (10–50 pessoas)</td><td>Tudo do Starter + Plano automático + Monitoramento + Portal + Integrações</td><td><strong style="color:var(--b)">R$697</strong></td></tr>
+<tr><td><span class="badge bp">Scale</span></td><td>Média (50–200 pessoas)</td><td>Tudo do Growth + Intel de Mercado + Financeiro + RH + Marketing + API</td><td><strong style="color:var(--p)">R$1.497</strong></td></tr>
+<tr><td><span class="badge bo">Enterprise</span></td><td>Grupos e Franquias</td><td>Plano customizado + CSM dedicado + SLA 99,99% + onboarding presencial</td><td><strong style="color:var(--o)">A partir de R$3.000</strong></td></tr>
+</tbody></table></div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:var(--o)">Fase 04 — Escala</div>
+    <div class="sh-title">50.000 Empresas Sem Limite Técnico — Mês 20+</div>
+    <div class="sh-desc">A Fase 4 não adiciona novas funcionalidades — garante que a plataforma serve 50.000 empresas com a mesma performance de quando tinha 5.000. Escala técnica, comercial e expansão geográfica.</div>
+  </div>
+</div>
+<div class="cll">"Escalar não é fazer mais do mesmo. É redesenhar a operação para que ela funcione 10x maior sem 10x mais pessoas. O EGE precisa usar os próprios princípios que ensina."</div>
+
+<div class="blk"><div class="blk-h">Arquitetura Técnica para Escala</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Fase 1–3</th><th>Fase 4 (Escala)</th><th>Capacidade</th></tr></thead><tbody>
+<tr><td>Compute</td><td>Railway básico</td><td>Kubernetes (GKE ou EKS) + auto-scaling</td><td>100k+ usuários simultâneos</td></tr>
+<tr><td>Banco de Dados</td><td>Supabase + réplica</td><td>CockroachDB ou Supabase Enterprise + sharding por região</td><td>10M+ registros sem degradação</td></tr>
+<tr><td>IA Inference</td><td>Claude API direto</td><td>Claude API + cache semântico (Redis) + queue de requests</td><td>Custo de IA 70% menor em escala</td></tr>
+<tr><td>CDN e Assets</td><td>Cloudflare básico</td><td>Cloudflare Enterprise + edge computing + assets por região</td><td>&lt; 100ms em qualquer lugar do Brasil</td></tr>
+<tr><td>Fila e Eventos</td><td>Síncrono direto</td><td>Kafka ou SQS + workers assíncronos + dead letter queue</td><td>Picos de uso sem queda de performance</td></tr>
+<tr><td>Observabilidade</td><td>Datadog básico</td><td>Datadog + OpenTelemetry + tracing distribuído + SLO dashboards</td><td>Diagnóstico em minutos, não em horas</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Escala Comercial — A Operação que Cresce Sozinha</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">🤖</div><div class="c-t">Self-service Completo</div><div class="c-b">Onboarding 100% automatizado — o empresário entra, faz o diagnóstico e está operacional em 20 minutos sem suporte humano.</div></div>
+  <div class="card"><div class="c-e">💬</div><div class="c-t">IA de Suporte</div><div class="c-b">Chatbot de suporte treinado nos dados da plataforma resolve 80% das dúvidas sem ticket humano — integrado ao histórico do usuário.</div></div>
+  <div class="card"><div class="c-e">🤝</div><div class="c-t">Partner Program</div><div class="c-b">Rede de contadores, consultores e aceleradoras que indicam o EGE — comissão recorrente de 20% do MRR indicado.</div></div>
+  <div class="card"><div class="c-e">🏷️</div><div class="c-t">Whitelabel</div><div class="c-b">Fintechs, associações empresariais e franqueadoras oferecem o EGE com sua marca — receita B2B2B sem custo de aquisição.</div></div>
+  <div class="card"><div class="c-e">🌎</div><div class="c-t">Expansão LATAM</div><div class="c-b">Stack multi-idioma, suporte a moedas locais, benchmarks por país. México, Colômbia e Argentina como primeiros mercados.</div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Métricas de Saúde da Plataforma em Escala</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Meta em Escala</th><th>Como é Monitorada</th><th>Alerta Ativo</th></tr></thead><tbody>
+<tr><td>Uptime</td><td><span class="badge bg">≥ 99,95%</span></td><td>Status page pública + alertas automáticos</td><td>&lt; 99,9% por 5 minutos</td></tr>
+<tr><td>Latência P95 da API</td><td><span class="badge bg">&lt; 300ms</span></td><td>Datadog APM por endpoint</td><td>Degradação &gt; 500ms</td></tr>
+<tr><td>Churn mensal</td><td><span class="badge bg">≤ 2,5%</span></td><td>Cohort analysis automática por plano</td><td>Churn &gt; 4% em qualquer cohort</td></tr>
+<tr><td>NPS trimestral</td><td><span class="badge bg">≥ 65</span></td><td>Survey in-app a cada 90 dias</td><td>NPS &lt; 50 em qualquer segmento</td></tr>
+<tr><td>CAC payback</td><td><span class="badge bg">≤ 4 meses</span></td><td>Dashboard financeiro automático por canal</td><td>Payback &gt; 6 meses por canal</td></tr>
+<tr><td>Custo de IA por empresa</td><td><span class="badge bg">≤ R$15/mês</span></td><td>Rastreamento de custo por tenant</td><td>Custo &gt; R$30 por empresa ativa</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">👥</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 05 — Equipe</div>
+    <div class="sh-title">Estrutura de Equipe por Fase de Desenvolvimento</div>
+    <div class="sh-desc">A equipe cresce de forma deliberada — não por pressão, mas por necessidade comprovada. Cada contratação resolve um problema específico e mensurável. Contratar antes da hora é mais perigoso do que depois.</div>
+  </div>
+</div>
+<div class="cll">"O modelo ideal é: equipe mínima para validar, equipe enxuta para crescer, equipe estruturada para escalar. Cada nova contratação precisa ser justificada por uma métrica que não pode ser resolvida com automação."</div>
+
+<div class="blk"><div class="blk-h">Fase 1 — Equipe do MVP (4 a 6 pessoas)</div>
+<div class="tw"><table><thead><tr><th>Papel</th><th>Responsabilidade Principal</th><th>Perfil</th><th>Modalidade</th></tr></thead><tbody>
+<tr><td><strong>Tech Lead / Fullstack</strong></td><td>Arquitetura técnica, backend Node.js, Supabase, integração de IA</td><td>5+ anos, já construiu SaaS antes, não precisa de gerente</td><td><span class="badge bg">CLT ou PJ sênior</span></td></tr>
+<tr><td><strong>Fullstack Developer</strong></td><td>Frontend React, componentes, integração de APIs, telas do produto</td><td>3+ anos React, visão de produto, move rápido</td><td><span class="badge bb">CLT ou PJ pleno</span></td></tr>
+<tr><td><strong>Product Designer</strong></td><td>Design system, fluxos de UX, protótipos, testes com usuários</td><td>Focado em produto, entende negócio, não apenas visual</td><td><span class="badge bp">PJ ou freelancer</span></td></tr>
+<tr><td><strong>Product Manager</strong></td><td>Priorização do backlog, contato com clientes beta, definição de métricas</td><td>Pode ser o próprio founder — mais perto do usuário</td><td><span class="badge bg">Fundador</span></td></tr>
+<tr><td><strong>Customer Success (beta)</strong></td><td>Onboarding dos 50 primeiros clientes, coleta de feedback, reporta para produto</td><td>Comunicativo, curioso, vira advogado do cliente</td><td><span class="badge by">Estagiário sênior</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fase 2 — Equipe de Crescimento (10 a 15 pessoas) — Quando Contratar Cada Papel</div>
+<div class="tw"><table><thead><tr><th>Novo Papel</th><th>Gatilho de Contratação</th><th>O que Resolve</th></tr></thead><tbody>
+<tr><td>Backend Developer</td><td>Ao atingir 100 empresas</td><td>Separa responsabilidades — Tech Lead foca em arquitetura, não em features</td></tr>
+<tr><td>Frontend Developer</td><td>Ao iniciar Portal da Equipe</td><td>Velocidade de entrega no frontend sem sacrificar qualidade</td></tr>
+<tr><td>DevOps / SRE</td><td>Ao lançar SLA 99,9%</td><td>Infra como código, deploys sem downtime, monitoramento proativo</td></tr>
+<tr><td>AI Engineer</td><td>Ao iniciar fine-tuning</td><td>Especialista em LLMs, prompt engineering avançado, avaliação de qualidade</td></tr>
+<tr><td>Head of Customer Success</td><td>Ao atingir 200 empresas</td><td>Estrutura o time de CS, cria playbooks, define SLA de suporte</td></tr>
+<tr><td>Sales / Growth</td><td>Após NPS ≥ 50 confirmado</td><td>Primeiro vendedor — converte interesse orgânico em receita previsível</td></tr>
+<tr><td>Data Analyst</td><td>Ao iniciar análise de cohort</td><td>Decisões de produto guiadas por dados reais, não por intuição</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fase 3 e 4 — Estrutura Organizacional por Área</div>
+<div class="org-wrap">
+  ${[
+    {e:'⚙️',name:'Engineering',color:'var(--g)',roles:['Tech Lead','Backend ×3','Frontend ×3','Mobile ×2','DevOps ×2','QA ×2'],f3:'12 pessoas',f4:'20+'},
+    {e:'🤖',name:'AI / Data',color:'var(--b)',roles:['AI Engineer ×2','Data Scientist','Data Analyst ×2'],f3:'5 pessoas',f4:'10+'},
+    {e:'📦',name:'Product',color:'var(--p)',roles:['CPO / Head of Product','Product Manager ×2','Designer ×2','UX Researcher'],f3:'6 pessoas',f4:'8'},
+    {e:'🎯',name:'Customer Success',color:'var(--t)',roles:['Head CS','CSM ×3','Suporte ×2','Onboarding Specialist'],f3:'6 pessoas',f4:'15+'},
+    {e:'📣',name:'Go-to-Market',color:'var(--o)',roles:['Head of Sales','AE ×3','SDR ×2','Marketing ×2','Partnerships'],f3:'8 pessoas',f4:'20+'},
+    {e:'🏢',name:'Operações',color:'var(--y)',roles:['CFO / Finance','Legal','People (RH)','Operations'],f3:'4 pessoas',f4:'8'},
+  ].map(a=>`
+  <div class="org-area">
+    <div class="org-head" style="border-bottom-color:${a.color}22">
+      <div class="org-e">${a.e}</div>
+      <div class="org-name">${a.name}</div>
+      <div style="margin-left:auto;display:flex;gap:12px">
+        <span class="badge" style="background:${a.color}1A;color:${a.color}">F3: ${a.f3}</span>
+        <span class="badge" style="background:${a.color}1A;color:${a.color}">F4: ${a.f4}</span>
+      </div>
+    </div>
+    <div class="org-roles">
+      ${a.roles.map(r=>`<span class="org-role" style="background:${a.color}0F;color:${a.color}">${r}</span>`).join('')}
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">As 4 Regras de Ouro das Contratações</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">1</div><div class="fn-body"><div class="fn-title">Contrate por problema, não por vaga</div><div class="fn-desc">Cada contratação resolve um problema específico e mensurável: "precisamos de um DevOps porque deploys consomem 30% do tempo do Tech Lead" — não "precisamos crescer a equipe".</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">2</div><div class="fn-body"><div class="fn-title">Sênior antes de júnior</div><div class="fn-desc">No começo, 1 sênior entrega mais que 3 juniores e gera menos dívida técnica. O trade-off só muda após a equipe ter processos maduros documentados.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">3</div><div class="fn-body"><div class="fn-title">Cultura de autonomia desde o início</div><div class="fn-desc">Pessoas que precisam ser microgerenciadas não escalam. Contratar quem toma decisões sozinho e reporta resultados — não atividades.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">4</div><div class="fn-body"><div class="fn-title">Diversidade de perspectiva em cada squad</div><div class="fn-desc">Equipe técnica homogênea constrói produto com pontos cegos. Pelo menos 1 pessoa com profundo conhecimento do cliente em cada squad de produto.</div></div></div>
+</div></div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Network Effect System · Ecosystem Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 40% at 3% 5%,rgba(0,192,138,.07),transparent),radial-gradient(ellipse 55% 55% at 97% 95%,rgba(114,48,220,.06),transparent),radial-gradient(ellipse 40% 35% at 50% 50%,rgba(19,84,204,.03),transparent)}
+.wrap{max-width:1120px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+/* hero */
+.hero{text-align:center;margin-bottom:48px;animation:up .9s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.3);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite}
+h1{font-size:clamp(26px,5.5vw,58px);font-weight:900;line-height:1.03;letter-spacing:-.028em;margin-bottom:14px}
+h1 em{font-style:normal;background:linear-gradient(125deg,var(--g) 0%,var(--b) 60%,var(--p) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:13.5px;color:var(--mid);max-width:700px;margin:0 auto;line-height:1.8}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700}
+.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+/* nav */
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:36px}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:11px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.n5::after{background:var(--r)}.n6::after{background:var(--y)}.n7::after{background:var(--g)}.n8::after{background:var(--p)}.n9::after{background:var(--b)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--mid);margin-bottom:4px}
+.nb-t{font-size:10.5px;font-weight:700;color:var(--txt);line-height:1.25}
+/* content blocks */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:34px;flex-shrink:0}.sh-tag{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.7;max-width:720px}
+.blk{margin-bottom:28px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:14px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:13px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+.cll-b{border-left-color:var(--b);border-color:rgba(19,84,204,.18);background:rgba(19,84,204,.04)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+/* metcalfe visual */
+.metcalfe{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:600px){.metcalfe{grid-template-columns:repeat(2,1fr)}}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:14px;text-align:center;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;inset:0;opacity:.05}
+.mc-n{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;line-height:1;margin-bottom:4px}
+.mc-label{font-size:10px;color:var(--mid);margin-bottom:6px}
+.mc-conn{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700}
+/* NE type cards */
+.ne-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.ne-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;display:flex;gap:14px;align-items:flex-start}
+.ne-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;min-width:26px;padding-top:2px}
+.ne-content{flex:1}
+.ne-title{font-size:14px;font-weight:800;margin-bottom:4px}
+.ne-desc{font-size:12px;color:var(--mid);line-height:1.6}
+/* loop */
+.loop{display:flex;flex-wrap:wrap;gap:0;align-items:center;justify-content:center;margin-bottom:14px;background:var(--s2);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.loop-step{text-align:center;padding:10px 12px;min-width:110px}
+.loop-icon{font-size:22px;margin-bottom:6px}
+.loop-name{font-size:11px;font-weight:700;margin-bottom:3px}
+.loop-sub{font-size:10px;color:var(--mid)}
+.loop-arrow{font-size:20px;color:var(--mid);padding:0 4px;align-self:center}
+/* arch diagram */
+.arch{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.arch-layer{border-bottom:1px solid var(--bd);padding:14px 20px}
+.arch-layer:last-child{border-bottom:none}
+.arch-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.arch-label{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;min-width:70px}
+.arch-title{font-size:14px;font-weight:800}
+.arch-boxes{display:flex;gap:8px;flex-wrap:wrap}
+.arch-box{background:var(--s3);border:1px solid var(--bd2);border-radius:8px;padding:7px 12px;font-size:11px;line-height:1.4}
+/* expansion timeline */
+.timeline{position:relative;padding-left:24px;margin-bottom:14px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--bd)}
+.tl-item{position:relative;margin-bottom:14px}
+.tl-dot{width:16px;height:16px;border-radius:50%;border:2px solid;position:absolute;left:-20px;top:4px;background:var(--bg)}
+.tl-body{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 15px}
+.tl-phase{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:4px}
+.tl-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.tl-desc{font-size:12px;color:var(--mid);line-height:1.55}
+/* trust stars */
+.trust-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.tc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.tc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.t0::after{background:var(--g)}.t1::after{background:var(--b)}.t2::after{background:var(--p)}.t3::after{background:var(--o)}
+.tc-name{font-size:13px;font-weight:800;margin-bottom:6px}
+.tc-desc{font-size:12px;color:var(--mid);line-height:1.6}
+/* code block */
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--bd)}
+.code-body{padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.st{color:var(--g)}.nm{color:var(--o)}.cm{color:var(--mid);font-style:italic}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Network Effect System · EGE Ecosystem Architecture</div>
+  <h1>Network Effect<br><em>Ecosystem</em></h1>
+  <p class="sub">Transformando a plataforma EGE de software de gestão em ecossistema de negócios onde empresas criam valor umas para as outras — e onde cada nova empresa torna a plataforma mais valiosa para todas as existentes.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">5</div><div class="sl">Tipos de network effects</div></div>
+  <div class="st sb"><div class="sv">7</div><div class="sl">Etapas do value loop</div></div>
+  <div class="st sp"><div class="sv">6</div><div class="sl">Camadas de arquitetura</div></div>
+  <div class="st so"><div class="sv">4</div><div class="sl">Eixos de expansão</div></div>
+  <div class="st st2"><div class="sv">N²</div><div class="sl">Lei de Metcalfe</div></div>
+</div>
+<div class="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">🌐 Purpose</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">⚡ NE Types</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">👥 Community</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">🤝 Partnerships</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">🛒 Marketplace</div></div>
+  <div class="nb n5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">🧠 Data Intel</div></div>
+  <div class="nb n6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">🔒 Trust</div></div>
+  <div class="nb n7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">🔄 Value Loop</div></div>
+  <div class="nb n8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">📐 Expansion</div></div>
+  <div class="nb n9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">🏗 Architecture</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const C={g:'var(--g)',b:'var(--b)',p:'var(--p)',o:'var(--o)',t:'var(--t)',r:'var(--r)',y:'var(--y)'};
+
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🌐</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 01 — Purpose</div>
+    <div class="sh-title">Por que Network Effects São a Vantagem Competitiva Definitiva</div>
+    <div class="sh-desc">A diferença entre um software e um ecossistema: uma ferramenta tem o mesmo valor para o décimo usuário que para o primeiro. Uma rede tem valor exponencialmente maior para o centésimo usuário — porque o centésimo encontra 99 outros para interagir, colaborar, aprender e negociar.</div>
+  </div>
+</div>
+<div class="cll">"O objetivo estratégico do EGE não é apenas construir o melhor software de gestão — é construir o ecossistema empresarial mais valioso do Brasil. Um ecossistema que nenhum concorrente pode replicar com dinheiro e engenheiros porque o valor está nos participantes, não no código."</div>
+
+<div class="blk"><div class="blk-h">Lei de Metcalfe — Crescimento Exponencial do Valor</div>
+<div class="metcalfe">
+${[[100,'100 empresas','9.900'],[1000,'1.000 empresas','999.000'],[10000,'10.000 empresas','100.000.000'],[50000,'50.000 empresas','2.5B']].map(([n,l,c],i)=>`
+<div class="mc"><div class="mc-n" style="color:${[C.g,C.b,C.p,C.o][i]}">${n>=10000?n.toLocaleString():n}</div>
+<div class="mc-label">${l}</div>
+<div class="mc-conn" style="color:${[C.g,C.b,C.p,C.o][i]}">${c} conexões</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Fases de Valor — Como o Ecossistema Evolui</div>
+<div class="tw"><table><thead><tr><th>Fase</th><th>Empresas</th><th>Valor Principal</th><th>Network Effect Dominante</th></tr></thead><tbody>
+<tr><td><span class="badge br">Fase 1 MVP</span></td><td>0–500</td><td>Software de gestão de alta qualidade individual</td><td>Nenhum — valor individual do produto</td></tr>
+<tr><td><span class="badge by">Fase 2</span></td><td>500–2.000</td><td>Benchmarking setorial + comunidade inicial ativa</td><td>Data network effect emergente</td></tr>
+<tr><td><span class="badge bb">Fase 3</span></td><td>2.000–10.000</td><td>Marketplace ativo, parcerias, aprendizado coletivo</td><td>Knowledge + marketplace effects</td></tr>
+<tr><td><span class="badge bg">Fase 4</span></td><td>10.000+</td><td>Ecossistema autossustentável com inteligência coletiva</td><td>Todos os 5 tipos compostos</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Princípios dos Network Effects no EGE</div>
+<div class="grid3">
+${[
+  {e:'⚖️',t:'Valor Bilateral',c:C.g,d:'Cada empresa que entra cria valor para si (acesso ao ecossistema) E para todas as outras (mais dados, benchmarks, parceiros potenciais).'},
+  {e:'🔒',t:'Switching Cost Crescente',c:C.b,d:'Quanto mais tempo na plataforma, mais dados históricos, conexões e reputação estão no EGE. O custo de saída cresce com o engajamento.'},
+  {e:'⏱',t:'Barreira Temporal',c:C.p,d:'Um concorrente que lançar hoje precisaria de anos para acumular dados, reputação e relações. O tempo é o fosso competitivo real.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">⚡</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 02 — Network Effect Types</div>
+    <div class="sh-title">Os 5 Tipos de Network Effects — Arquitetura Complementar</div>
+    <div class="sh-desc">O EGE foi arquitetado com 5 tipos complementares que se reforçam mutuamente. Cada tipo cria valor em uma dimensão diferente. A combinação dos 5 cria um ecossistema muito mais resistente do que qualquer network effect isolado poderia ser.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 5 Network Effects — Como Funcionam</div>
+<div class="ne-cards">
+${[
+  {n:'NE1',t:'Knowledge Network — Conhecimento Compartilhado',c:C.g,d:'Cada vez que um empresário documenta um aprendizado ou estratégia que funcionou, ele contribui para o banco de conhecimento coletivo — que beneficia especialmente empresas em estágios similares. A IA identifica e amplifica as contribuições de maior qualidade.'},
+  {n:'NE2',t:'Data Intelligence — Inteligência Coletiva',c:C.b,d:'Cada empresa gera dados que, agregados e anonimizados, tornam o AI Brain mais preciso para todas. Com 10.000 empresas do mesmo setor, o benchmark tem precisão de consultoria de primeira linha. Impossível de replicar sem o volume de dados.'},
+  {n:'NE3',t:'Business Partnership — Parcerias Estratégicas',c:C.p,d:'A plataforma torna-se o lugar onde empresas encontram seus melhores parceiros. O EGE conhece profundamente o estágio e as necessidades de cada empresa — e faz o matching mais inteligente do mercado baseado em dados, não em indicações casuais.'},
+  {n:'NE4',t:'Marketplace — Economia Interna',c:C.o,d:'A plataforma gera atividade econômica real entre participantes. Consultores vendem projetos, agências vendem serviços, especialistas vendem treinamentos. Cada transação bem-sucedida fortalece a reputação do provedor e a confiança das empresas no marketplace.'},
+  {n:'NE5',t:'Social Proof — Prova Social Setorial',c:C.t,d:'Quando as empresas mais admiradas de um segmento usam o EGE, as demais querem entender o que essas empresas usam. O case de sucesso de uma empresa de referência é o argumento mais poderoso para as próximas do setor.'},
+].map(m=>`<div class="ne-card" style="border-left:3px solid ${m.c}"><div class="ne-num" style="color:${m.c}">${m.n}</div><div class="ne-content"><div class="ne-title" style="color:${m.c}">${m.t}</div><div class="ne-desc">${m.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Quando Cada Network Effect se Ativa</div>
+<div class="tw"><table><thead><tr><th>Network Effect</th><th>Ativado a partir de</th><th>Pico de Valor em</th><th>Reversibilidade</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Knowledge Network</span></td><td>500 empresas ativas</td><td>5.000 empresas</td><td>Média — know-how fica na plataforma</td></tr>
+<tr><td><span class="badge bb">Data Intelligence</span></td><td>1.000 por setor</td><td>10.000 empresas</td><td>Baixa — dados históricos são únicos</td></tr>
+<tr><td><span class="badge bp">Business Partnership</span></td><td>200 por setor</td><td>2.000 por setor</td><td>Alta — relações são pessoais</td></tr>
+<tr><td><span class="badge bo">Marketplace</span></td><td>50 provedores verificados</td><td>500 provedores</td><td>Média — reputação fica na plataforma</td></tr>
+<tr><td><span class="badge bt">Social Proof</span></td><td>3 referências por setor</td><td>20 referências por setor</td><td>Alta — pode ir para outro canal</td></tr>
+</tbody></table></div></div>`}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">👥</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 03 — Business Community</div>
+    <div class="sh-title">Sistema de Comunidade — 4 Camadas de Interação</div>
+    <div class="sh-desc">Empresários aprendem principalmente de outros empresários. A experiência de quem já passou pela mesma fase, no mesmo setor, com o mesmo porte, tem valor prático que nenhuma outra fonte consegue substituir. O EGE torna esse aprendizado sistemático, estruturado e escalável.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Camada 1 — Grupos Setoriais (Automáticos por Diagnóstico)</div>
+<div class="tw"><table><thead><tr><th>Tipo de Grupo</th><th>Critério de Entrada</th><th>Tamanho Ideal</th><th>Moderação</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Setor Principal</span></td><td>Automático pelo diagnóstico (SaaS, Serviços, Varejo, Saúde)</td><td>200–2.000 empresas</td><td>IA + voluntários verificados</td></tr>
+<tr><td><span class="badge bb">Sub-setor + Porte</span></td><td>Automático — ex: "Consultorias 10–30 pessoas"</td><td>50–300 empresas</td><td>Moderação voluntária ativa</td></tr>
+<tr><td><span class="badge bp">Nível de Maturidade</span></td><td>Automático pelo score EGE — ex: "Empresas Nível 3"</td><td>100–500 empresas</td><td>Moderação pela IA</td></tr>
+<tr><td><span class="badge bt">Interesse Estratégico</span></td><td>Opt-in — ex: "Expansão Internacional", "Gestão de Times"</td><td>20–200 empresas</td><td>Auto-moderação</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Camada 2 — Formatos de Discussão Estruturada</div>
+<div class="grid2">
+${[
+  {e:'🎯',t:'Desafio Atual',c:C.g,d:'Empresário posta um desafio específico com contexto (setor, porte, score) e recebe respostas de quem já passou pelo mesmo. IA cura por relevância — não por popularidade.'},
+  {e:'✅',t:'O que Funcionou',c:C.b,d:'Estratégia que produziu resultado mensurável — com os números reais, a execução concreta e o aprendizado. Formato exige especificidade: sem case concreto, não é publicado.'},
+  {e:'📊',t:'Análise da IA',c:C.p,d:'IA identifica temas recorrentes nos grupos e gera análises setoriais mensais com dados agregados. Spark para discussões profundas — a IA faz a curadoria que humanos não conseguiriam.'},
+  {e:'🎤',t:'AMA — Ask Me Anything',c:C.o,d:'Empresários nível 4–5 realizam sessões mensais abertas ao grupo. Conhecimento de referência direto para quem está nos níveis anteriores — o melhor mentor possível para cada estágio.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Camada 3 — Grupos Mastermind (6–10 Empresários)</div>
+<div class="code-block"><div class="code-head">Estrutura Padrão da Sessão Mastermind — 90 minutos</div>
+<div class="code-body">Bloco 1 — <span class="st">Hot Seat</span> (40 min)
+  → 1 empresa apresenta desafio específico com contexto
+  → grupo faz perguntas ANTES de oferecer perspectivas
+  → empresário define sua próxima ação ao final
+
+Bloco 2 — <span class="st">Wins e Aprendizados</span> (20 min)
+  → cada empresa: 1 vitória + 1 aprendizado do mês
+  → sem elaboração — velocidade e densidade
+
+Bloco 3 — <span class="st">KPI Check-in</span> (20 min)
+  → 3 KPIs de saúde de cada empresa
+  → visibilidade mútua cria accountability real
+
+Bloco 4 — <span class="st">Compromisso Público</span> (10 min)
+  → cada empresa: 1 ação para o próximo mês
+  → registrada no EGE para follow-up automático</div></div></div>
+
+<div class="blk"><div class="blk-h">Camada 4 — Eventos e Encontros</div>
+<div class="tw"><table><thead><tr><th>Evento</th><th>Formato</th><th>Escala</th><th>Propósito</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Webinars Setoriais</span></td><td>Online mensal — case + Q&A</td><td>200–500 participantes</td><td>Aprendizado + awareness de novas empresas</td></tr>
+<tr><td><span class="badge bb">Summit EGE Anual</span></td><td>Conferência presencial</td><td>Top 500 empresas</td><td>Networking profundo + planejamento estratégico</td></tr>
+<tr><td><span class="badge bp">Encontros Regionais</span></td><td>Presencial com agenda estruturada</td><td>20–50 por região</td><td>Conexões pessoais que viram parcerias</td></tr>
+<tr><td><span class="badge bo">Bootcamps de Estágio</span></td><td>Imersão 2 dias — transição de nível</td><td>10–30 empresas</td><td>Implementação acelerada do próximo nível do BOS</td></tr>
+</tbody></table></div></div>`}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">🤝</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 04 — Partnership Ecosystem</div>
+    <div class="sh-title">Sistema de Parcerias — Matching Inteligente por IA</div>
+    <div class="sh-desc">O mercado brasileiro está repleto de empresas que seriam parceiros naturais — e que nunca se encontram. O EGE usa o conhecimento profundo de cada empresa (estágio, necessidades, pontos fortes, gaps) para fazer matchings que criam valor real — não networking casual.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Tipos de Parceria Facilitados pelo EGE</div>
+<div class="tw"><table><thead><tr><th>Tipo de Parceria</th><th>Descrição</th><th>Como o EGE Facilita</th><th>Exemplo Concreto</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Fornecedor — Comprador</span></td><td>Empresa de serviço B2B encontra cliente ideal no ecossistema</td><td>Match por setor, porte, estágio e necessidade diagnosticada</td><td>Consultora de RH + SaaS com 15 contratações previstas</td></tr>
+<tr><td><span class="badge bb">Co-desenvolvimento</span></td><td>Empresas com competências complementares desenvolvem produto conjunto</td><td>Match por competências e objetivos estratégicos alinhados</td><td>Agência + desenvolvedor criam produto SaaS</td></tr>
+<tr><td><span class="badge bp">Canal de Distribuição</span></td><td>Empresa usa a rede comercial de outra para novos segmentos</td><td>Match por base de clientes e compatibilidade de oferta</td><td>Fintech usa canal de contabilidade para distribuir</td></tr>
+<tr><td><span class="badge bt">Aliança Estratégica</span></td><td>Empresas complementares formam aliança para clientes maiores</td><td>Match por capacidade e lacunas do diagnóstico</td><td>Design + Dev + Marketing formam agência full-service</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O Algoritmo de Matching — Partnership Score</div>
+<div class="code-block"><div class="code-head">Partnership Compatibility Algorithm</div>
+<div class="code-body">partnership_score(A, B) = {
+  complementarity: score(A.strengths <span class="kw">vs</span> B.weaknesses) +
+                   score(B.strengths <span class="kw">vs</span> A.weaknesses),   <span class="cm">// 35%</span>
+  sector_fit:      overlap(A.target_clients, B.target_clients), <span class="cm">// 20%</span>
+  stage_proximity: <span class="nm">1</span> - abs(A.maturity_score - B.maturity_score) / <span class="nm">100</span>, <span class="cm">// 20%</span>
+  goal_alignment:  overlap(A.annual_priorities, B.annual_priorities), <span class="cm">// 15%</span>
+  trust_score:     A.reputation_score × B.reputation_score  <span class="cm">// 10%</span>
+}
+<span class="cm">// Sugestão enviada quando partnership_score > 0.70</span>
+<span class="cm">// Razão explícita incluída: "a Empresa B tem exatamente a</span>
+<span class="cm">//  capacidade de vendas que o seu diagnóstico indica como gargalo"</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Processo de Formação de Parceria — 4 Etapas</div>
+<div class="grid2">
+${[
+  {n:'1',e:'🔍',t:'Descoberta',c:C.g,d:'IA sugere parceria potencial com razão explícita baseada em dados. Não é "você pode gostar de" — é "você precisa exatamente disso e esta empresa tem".'},
+  {n:'2',e:'📋',t:'Introdução Estruturada',c:C.b,d:'Plataforma facilita a primeira conversa com template de agenda: o que cada empresa está construindo, o que cada uma precisa, o que uma parceria poderia ser.'},
+  {n:'3',e:'🚀',t:'Piloto de 90 Dias',c:C.p,d:'Parceria começa como projeto piloto com objetivos definidos. Sucesso do piloto é o critério para formalização — não otimismo inicial.'},
+  {n:'4',e:'⭐',t:'Formalização e Reputação',c:C.o,d:'Após piloto bem-sucedido, ambas validam na plataforma. Resultado alimenta a reputação de ambas e entra no banco de casos de parceria.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${m.c}">${m.n}</span><span style="font-size:20px">${m.e}</span><span class="c-t" style="color:${m.c};margin:0">${m.t}</span></div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">🛒</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 05 — Marketplace System</div>
+    <div class="sh-title">A Economia Interna da Plataforma</div>
+    <div class="sh-desc">O Marketplace transforma a plataforma de um lugar de aprendizado em um lugar de negócio. Demanda não gerada por anúncio — gerada pelo diagnóstico. Quando uma empresa termina o diagnóstico com score baixo em Comercial, ela recebe automaticamente os consultores certos para resolver exatamente aquela lacuna.</div>
+  </div>
+</div>
+<div class="cll" style="border-left-color:var(--o);border-color:rgba(217,90,8,.18);background:rgba(217,90,8,.04)">"Isso é conversão de intenção, não de awareness. A diferença é fundamental: em vez de convencer alguém que precisa de marketing, você conecta quem já sabe que precisa com quem prova que pode entregar. O diagnóstico cria a demanda mais qualificada possível."</div>
+
+<div class="blk"><div class="blk-h">Categorias do Marketplace — Serviços Disponíveis</div>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Tipos de Serviço</th><th>Perfil do Provedor</th><th>Modelo de Monetização</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Consultoria Estratégica</span></td><td>BOS implementation, planejamento estratégico, diagnóstico organizacional</td><td>Ex-consultores, coaches certificados EGE</td><td>Projeto ou retainer · EGE cobra % da transação</td></tr>
+<tr><td><span class="badge bb">Vendas e Marketing</span></td><td>Geração de leads, inside sales, branding, SEO, performance marketing</td><td>Agências e especialistas com track record verificado</td><td>Projeto ou contrato mensal</td></tr>
+<tr><td><span class="badge bp">Tecnologia e Automação</span></td><td>Desenvolvimento, integrações n8n, automação de processos, dados</td><td>Devs, agências tech, especialistas em automação</td><td>Projeto ou contrato</td></tr>
+<tr><td><span class="badge by">Financeiro e Jurídico</span></td><td>CFO as a service, M&A advisory, tributário, contratos</td><td>Profissionais liberais certificados EGE</td><td>Hora ou retainer</td></tr>
+<tr><td><span class="badge bo">Treinamento</span></td><td>Cursos de vendas, gestão, liderança, processos — especializados para PMEs</td><td>Especialistas + academia EGE</td><td>Assinatura ou por curso</td></tr>
+<tr><td><span class="badge bt">Recrutamento e Pessoas</span></td><td>Seleção executiva, avaliações, assessment, cultura</td><td>Recrutadoras especializadas em crescimento</td><td>Por contratação</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Sistema de Qualidade do Marketplace</div>
+<div class="grid2">
+${[
+  {e:'🏅',t:'Certificação EGE',c:C.g,d:'Provedores passam por qualificação rigorosa: currículo verificado, casos documentados com resultados, entrevista estruturada. Badge EGE Certified é conquistado — não comprado.'},
+  {e:'🛡',t:'Projeto Piloto Obrigatório',c:C.b,d:'Primeiros 3 projetos monitorados com avaliação estruturada. Aprovação média > 4.2/5 para manutenção no marketplace. Sem garantia de qualidade, sem presença.'},
+  {e:'📈',t:'KPIs de Entrega',c:C.p,d:'Para cada categoria, há métricas de resultado esperado. Consultor de vendas tem meta de impacto em win rate — não apenas entrega do relatório.'},
+  {e:'💰',t:'Sistema de Escrow',c:C.o,d:'Pagamentos liberados em marcos do projeto, não upfront. Proteção para ambos os lados da transação. Confiança estrutural — não baseada em fé.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p5(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">🧠</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 06 — Data Network Effect</div>
+    <div class="sh-title">Como a IA Fica Mais Inteligente com Cada Nova Empresa</div>
+    <div class="sh-desc">O Data Network Effect é o mais estratégico dos 5 tipos — porque cria valor de forma invisível ao usuário individual, mas beneficia todos proporcionalmente ao crescimento da base. Cada empresa que insere seus dados contribui para a inteligência coletiva de PMEs brasileiras.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Produtos de Inteligência Coletiva</div>
+<div class="grid2">
+${[
+  {e:'📊',t:'Benchmark Engine',c:C.g,d:'Com 10.000 empresas ativas, o EGE tem o benchmark de KPIs de PMEs brasileiras mais rico e atual disponível — muito mais preciso do que qualquer pesquisa anual de consultoria com dados declaratórios.'},
+  {e:'🔮',t:'Pattern Intelligence',c:C.b,d:'Identifica padrões preditivos na base. Não o que está acontecendo em média, mas o que tende a acontecer a seguir em determinadas configurações de KPIs. Preditores de crise, de crescimento, de breakthrough.'},
+  {e:'📰',t:'Industry Intelligence Reports',c:C.p,d:'Relatórios setoriais mensais gerados automaticamente pela IA com dados agregados. Para a maioria das PMEs, o melhor relatório de inteligência de mercado que já tiveram acesso — incluso na assinatura.'},
+  {e:'⚡',t:'Predictive Recommendations',c:C.o,d:'O produto final: ações específicas e antecipadas para cada empresa. Não reage a um problema existente — previne um problema futuro ou captura uma oportunidade antes que outros vejam.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Benchmark Engine — Granularidade por Dimensão</div>
+<div class="tw"><table><thead><tr><th>Benchmark</th><th>Granularidade</th><th>Atualização</th><th>Aplicação no AI Brain</th></tr></thead><tbody>
+<tr><td>MRR growth</td><td>Setor + porte + estágio</td><td>Mensal</td><td>Contextualiza performance vs. pares reais</td></tr>
+<tr><td>CAC por canal</td><td>Setor + modelo de negócio</td><td>Mensal</td><td>Identifica canal sub-explorado com melhor ROI</td></tr>
+<tr><td>Churn por segmento</td><td>Setor + perfil de cliente</td><td>Mensal</td><td>Compara retenção e alerta sobre risco relativo</td></tr>
+<tr><td>Tempo de progressão de nível</td><td>Setor + porte + ponto de partida</td><td>Trimestral</td><td>Define expectativa realista de evolução para cada empresa</td></tr>
+<tr><td>Win rate por processo comercial</td><td>Setor + ticket médio + ciclo</td><td>Mensal</td><td>Calibra recomendações de processo de vendas</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Recomendação Preditiva — Exemplo Real</div>
+<div class="code-block"><div class="code-head">Predictive Recommendation Engine — Output</div>
+<div class="code-body">predictive_rec = {
+  trigger:        <span class="st">'pattern_match: empresa em configuração X'</span>,
+  evidence:       <span class="st">'78% das empresas nesta configuração tiveram churn</span>
+<span class="st">                  acima de 5% nos próximos 60 dias'</span>,
+  recommendation: <span class="st">'Iniciar campanha de retenção ativa imediatamente'</span>,
+  priority:       <span class="st">'P1'</span>,
+  confidence:     <span class="nm">0.78</span>,
+  action:         <span class="st">'Ativar Workflow 05 — Cliente em risco no n8n'</span>,
+  time_to_act:    <span class="st">'Esta semana — janela de 14 dias'</span>
+}</div></div></div>`}
+
+function p6(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.y}"></div>
+  <div class="sh-icon">🔒</div>
+  <div><div class="sh-tag" style="color:${C.y}">Seção 07 — Trust & Reputation System</div>
+    <div class="sh-title">O Sistema de Confiança — Infraestrutura do Ecossistema</div>
+    <div class="sh-desc">Nenhum ecossistema funciona sem confiança. Parcerias não são formadas com strangers. Serviços não são contratados sem referência. O Trust System é a infraestrutura que torna todas as interações possíveis — e que se fortalece com o tempo e o volume de interações.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Componentes do Sistema de Reputação</div>
+<div class="trust-grid">
+${[
+  {cls:'t0',t:'Company Credibility Score',c:C.g,d:'Score de confiabilidade de cada empresa no ecossistema. Baseado na consistência entre o que a empresa declara e o que os dados mostram, e na qualidade de suas interações com outras empresas. Não mede tamanho — mede confiabilidade.'},
+  {cls:'t1',t:'Provider Verification System',c:C.b,d:'Para provedores de serviço, verificação rigorosa em 4 etapas: identidade + documentação, competências com casos documentados, monitoramento contínuo de qualidade, e certificação em módulos EGE. Badge EGE Verified é mantido por performance.'},
+  {cls:'t2',t:'Structured Review System',c:C.p,d:'Reviews com campos estruturados — não apenas estrelas. Entrega vs. prometido, processo e comunicação, impacto em KPIs (integrado com dados do BOS), recomendação com contexto. Objetivo e comparável.'},
+  {cls:'t3',t:'Dispute Resolution System',c:C.o,d:'3 níveis: mediação automatizada pela IA, mediação por parceiro verificado neutro, arbitragem por comitê do ecossistema. O que diferencia um ecossistema saudável não é a ausência de conflitos — é o processo justo para resolvê-los.'},
+].map(m=>`<div class="tc ${m.cls}"><div class="tc-name" style="color:${m.c}">${m.t}</div><div class="tc-desc">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Company Credibility Score — Como é Calculado</div>
+<div class="tw"><table><thead><tr><th>Dimensão</th><th>Como é Calculado</th><th>Peso</th><th>Atualização</th></tr></thead><tbody>
+<tr><td>Consistência de dados</td><td>KPIs declarados vs. comportamentos observados na plataforma</td><td><span class="badge bg">25%</span></td><td>Contínua</td></tr>
+<tr><td>Histórico de parcerias</td><td>Avaliações recebidas de empresas com quem interagiu</td><td><span class="badge bg">30%</span></td><td>Por projeto concluído</td></tr>
+<tr><td>Contribuição à comunidade</td><td>Qualidade e utilidade das contribuições ao conhecimento coletivo</td><td><span class="badge bb">20%</span></td><td>Semanal</td></tr>
+<tr><td>Cumprimento de compromissos</td><td>% de tarefas do BOS concluídas no prazo — proxy de confiabilidade</td><td><span class="badge bb">15%</span></td><td>Semanal</td></tr>
+<tr><td>Reputação no marketplace</td><td>Avaliações de serviços contratados ou prestados</td><td><span class="badge bt">10%</span></td><td>Por transação</td></tr>
+</tbody></table></div></div>`}
+
+function p7(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🔄</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 08 — Value Loop</div>
+    <div class="sh-title">O Loop de Crescimento Sustentável — 7 Etapas Encadeadas</div>
+    <div class="sh-desc">Um ecossistema saudável não precisa de campanhas de marketing para crescer — ele cresce porque cada participante, ao crescer dentro do ecossistema, atrai novos participantes de forma natural. Cada iteração do loop é mais rápida que a anterior porque parte de uma base maior.</div>
+  </div>
+</div>
+<div class="cll">"Value Loop do EGE: empresas entram → dados crescem → IA fica mais inteligente → recomendações geram mais crescimento → empresas crescem → casos de sucesso atraem novas empresas → mais dados → loop acelerado. A vantagem não é conquistada de uma vez — é construída, um loop por vez."</div>
+
+<div class="blk"><div class="blk-h">O Loop Principal — 7 Etapas em Ciclo</div>
+<div class="loop">
+${[['1','🚪','Entrada','Diagnóstico + BOS'],['→'],['2','📊','Dados','Benchmark + IA'],['→'],['3','🧠','Inteligência','Recomendações +'],['→'],['4','📈','Crescimento','KPIs melhoram'],['→'],['5','🏆','Case','Sucesso documentado'],['→'],['6','📢','Atração','Prova social setorial'],['→'],['7','🔁','Expansão','Loop mais forte']].map(item=>{
+  if(item.length===1) return `<div class="loop-arrow">${item[0]}</div>`;
+  const [n,e,name,sub]=item;
+  return `<div class="loop-step"><div class="loop-icon">${e}</div><div class="loop-name" style="color:${['var(--g)','var(--b)','var(--p)','var(--t)','var(--o)','var(--y)','var(--g)'][parseInt(n)-1]}">${n}. ${name}</div><div class="loop-sub">${sub}</div></div>`;
+}).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Loops Secundários que Reforçam o Principal</div>
+<div class="grid3">
+${[
+  {e:'👥',t:'Loop de Comunidade',c:C.b,d:'Empresas aprendem → contribuem com conhecimento → comunidade fica mais valiosa → mais empresas querem participar → mais aprendizado disponível → loop.'},
+  {e:'🛒',t:'Loop de Marketplace',c:C.o,d:'Provedores entram → entregam resultados → constroem reputação → mais empresas contratam → provedores crescem → novos provedores querem entrar → marketplace melhora → loop.'},
+  {e:'🤝',t:'Loop de Parcerias',c:C.p,d:'Parceria bem-sucedida → ambas as empresas crescem → case documentado → mais empresas querem formar parcerias → ecossistema de parceiros cresce → loop.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Métricas de Saúde do Value Loop</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>O que Mede</th><th>Meta (10k empresas)</th><th>Alerta Se</th></tr></thead><tbody>
+<tr><td>DAU / MAU ratio</td><td>Engajamento diário vs. mensal</td><td><span class="badge bg">DAU/MAU &gt; 30%</span></td><td>&lt; 15%</td></tr>
+<tr><td>Network density</td><td>% de empresas com interação no mês</td><td><span class="badge bg">&gt; 40% mensalmente</span></td><td>&lt; 20%</td></tr>
+<tr><td>K-factor de indicação</td><td>Novas empresas trazidas por existentes</td><td><span class="badge bb">K &gt; 0.3</span></td><td>K &lt; 0.1</td></tr>
+<tr><td>Marketplace GMV growth</td><td>Volume de transações MoM</td><td><span class="badge bb">MoM &gt; 8%</span></td><td>MoM &lt; 2%</td></tr>
+<tr><td>Community contribution rate</td><td>% de empresas que contribuem ativamente</td><td><span class="badge bp">&gt; 25%</span></td><td>&lt; 10%</td></tr>
+<tr><td>Partnership success rate</td><td>% de parcerias que chegam ao piloto</td><td><span class="badge bg">&gt; 60%</span></td><td>&lt; 35%</td></tr>
+</tbody></table></div></div>`}
+
+function p8(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">📐</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 09 — Platform Expansion</div>
+    <div class="sh-title">Como o Ecossistema Cresce — 4 Eixos de Expansão</div>
+    <div class="sh-desc">O ecossistema cresce em múltiplas dimensões simultaneamente — não apenas em número de empresas, mas em profundidade de serviços, amplitude geográfica, verticalização setorial e sofisticação de modelo de negócio. Cada dimensão cria loops que reforçam as outras.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Eixo 1 — Verticalização Setorial</div>
+<div class="tw"><table><thead><tr><th>Setor Alvo</th><th>Especialização do BOS</th><th>Benchmark Específico</th><th>Timeline</th></tr></thead><tbody>
+<tr><td><span class="badge bg">SaaS B2B</span></td><td>ARR/MRR, churn cohort, expansion revenue, NRR</td><td>CAC · LTV · NRR · Time-to-value</td><td>Fase 2 — M6–12</td></tr>
+<tr><td><span class="badge bb">Serviços Profissionais</span></td><td>Utilização de equipe, margens por projeto, pipeline</td><td>Receita por sócio · pitch-to-close</td><td>Fase 2 — M9–15</td></tr>
+<tr><td><span class="badge bp">Varejo Omnichannel</span></td><td>Mix online/offline, gestão de estoque, sazonalidade</td><td>Venda por m² · ticket · giro</td><td>Fase 3 — M18–24</td></tr>
+<tr><td><span class="badge bt">Health & Wellness</span></td><td>Compliance, agendamento, NPS clínico, retenção</td><td>Receita por leito · absenteísmo</td><td>Fase 3 — M18–24</td></tr>
+<tr><td><span class="badge by">Educação e Treinamento</span></td><td>Cohort de turmas, NPS de curso, lifetime do aluno</td><td>Custo de aquisição · LTV aluno</td><td>Fase 3 — M24–30</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Eixo 2 — Expansão Geográfica</div>
+<div class="timeline">
+${[
+  {c:C.g,phase:'FASE 1 — BRASIL NACIONAL',title:'Cobertura Nacional Completa',desc:'5 regiões com encontros presenciais e comunidades regionais ativas. Benchmark nacional com suficiência estatística por setor.'},
+  {c:C.b,phase:'FASE 2 — LATAM',title:'Argentina · Chile · Colômbia · México',desc:'4 maiores mercados de PMEs da América Latina. Padrões de gestão identificados no Brasil têm validade transfronteiriça — base de dados como vantagem.'},
+  {c:C.p,phase:'FASE 3 — LUSÓFONOS',title:'Portugal · Angola',desc:'Mercados onde a barreira linguística é zero e o contexto empresarial é próximo. Network effect bilateral com a base brasileira.'},
+  {c:C.o,phase:'FASE 4 — GLOBAL',title:'Plataforma Multilíngue',desc:'Network effects que cruzam fronteiras. Uma empresa brasileira pode encontrar um parceiro distribuidor em Portugal, ou contratar expertise de um especialista em Buenos Aires.'},
+].map(t=>`<div class="tl-item"><div class="tl-dot" style="border-color:${t.c}"></div><div class="tl-body" style="border-left:3px solid ${t.c}"><div class="tl-phase" style="color:${t.c}">${t.phase}</div><div class="tl-title">${t.title}</div><div class="tl-desc">${t.desc}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Eixos 3 e 4 — Aprofundamento de Serviços e Modelo Enterprise</div>
+<div class="grid2">
+${[
+  {e:'🏦',t:'M&A Facilitation',c:C.g,d:'O EGE conhece profundamente todas as empresas — pode facilitar aquisições com due diligence baseada em dados reais de KPIs históricos e score de maturidade.'},
+  {e:'💳',t:'Financial Products',c:C.b,d:'Produtos financeiros calibrados pelo score BOS e histórico de KPIs. Crédito mais barato para empresas com gestão provada — o dado é o colateral.'},
+  {e:'🏭',t:'EGE for Supply Chain',c:C.p,d:'Grandes empresas patrocinam o acesso de seus fornecedores ao EGE. Canal de distribuição massivo com patrocínio corporativo — B2B2B.'},
+  {e:'🔗',t:'EGE for Franchises',c:C.o,d:'Redes de franquia usam o EGE para padronizar a gestão de franqueados. O BOS se torna o sistema operacional da rede inteira.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p9(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 10 — Final Architecture</div>
+    <div class="sh-title">Arquitetura Completa do Network Effect System — 6 Camadas</div>
+    <div class="sh-desc">Participants → Interaction Systems → Intelligence Engine → Trust & Reputation → Platform Core Integration → Value Loop Engine. Cada camada amplifica as demais. O ecossistema é mais do que a soma das partes — é o sistema que emerge da interação entre todas as partes.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 6 Camadas da Arquitetura do Ecossistema</div>
+<div class="arch">
+${[
+  {label:'LAYER 1',title:'Participants',color:C.g,boxes:['Empresas PMEs (2–200 colaboradores)','Provedores de Serviço Certificados','Mentores Nível 4–5','Parceiros Estratégicos']},
+  {label:'LAYER 2',title:'Interaction Systems',color:C.b,boxes:['Community (Grupos · Discussões · Mastermind · Eventos)','Partnership Ecosystem (Matching · Piloto · Formalização)','Marketplace (Serviços · Transações · Certificação · Escrow)']},
+  {label:'LAYER 3',title:'Intelligence Engine',color:C.p,boxes:['Benchmark Engine (KPIs por setor · porte · maturidade)','Pattern Intelligence (Risco · Crescimento · Breakthrough)','Predictive Recommendation Engine (Ações antecipadas)','Industry Intelligence Reports (Mensal por setor)']},
+  {label:'LAYER 4',title:'Trust & Reputation',color:C.o,boxes:['Credibility Score (5 dimensões)','Provider Verification (4 etapas)','Structured Review System','Dispute Resolution (3 níveis)']},
+  {label:'LAYER 5',title:'Platform Core Integration',color:C.t,boxes:['BOS (Business Operating System)','AI Brain (AI Advisor + Monitor)','Growth Engine (Plano · Ciclo · Retrospectiva)','Performance Monitor (KPIs · Alertas P0–P3)']},
+  {label:'LAYER 6',title:'Value Loop Engine',color:C.g,boxes:['Entrada → Dados → Inteligência → Crescimento','Case → Atração → Expansão → Loop acelerado','Loops Secundários: Community · Marketplace · Partnership']},
+].map(l=>`<div class="arch-layer" style="border-left:3px solid ${l.color}"><div class="arch-row"><div class="arch-label" style="color:${l.color}">${l.label}</div><div class="arch-title" style="color:${l.color}">${l.title}</div></div><div class="arch-boxes">${l.boxes.map(b=>`<div class="arch-box">${b}</div>`).join('')}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Metas do Ecossistema — 1 Ano vs. 3 Anos</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Dimensão</th><th>Meta 1 Ano</th><th>Meta 3 Anos</th></tr></thead><tbody>
+<tr><td>Empresas ativas mensais</td><td><span class="badge bg">Participantes</span></td><td>5.000</td><td>50.000</td></tr>
+<tr><td>Network density mensal</td><td><span class="badge bb">Interação</span></td><td>35%</td><td>50%</td></tr>
+<tr><td>K-factor de crescimento</td><td><span class="badge bg">Indicação</span></td><td>K = 0.25</td><td>K = 0.40</td></tr>
+<tr><td>GMV do marketplace</td><td><span class="badge bo">Economia</span></td><td>R$ 2M/mês</td><td>R$ 30M/mês</td></tr>
+<tr><td>Parcerias formadas</td><td><span class="badge bp">Colaboração</span></td><td>500/mês</td><td>5.000/mês</td></tr>
+<tr><td>Setores com benchmark</td><td><span class="badge bt">Inteligência</span></td><td>15 setores</td><td>60 setores</td></tr>
+<tr><td>NPS do ecossistema</td><td><span class="badge bg">Satisfação</span></td><td>&gt; 55</td><td>&gt; 70</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O Fosso Competitivo — Por que o Ecossistema é Irreplicável</div>
+<div class="cll cll-b">"Um ecossistema com 50.000 empresas, dados históricos de 5 anos, reputação de provedores estabelecida, e inteligência coletiva que melhora continuamente não é apenas um produto superior — é uma realidade alternativa de negócios para as PMEs que dela participam. O fosso competitivo definitivo: não é o código, não é o design, não é o time — é o ecossistema."</div>
+<div style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;font-size:11px;color:var(--mid);font-family:'JetBrains Mono',monospace;line-height:2">
+EGE Network Effect System · Architecture Document · v1.0 · Março 2026 · Platform Strategy Architect<br>
+642 parágrafos · 10 seções · 5 network effects · 7 etapas do value loop · 6 camadas de arquitetura · 4 eixos de expansão
+</div></div>`}
+
+const panels=[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

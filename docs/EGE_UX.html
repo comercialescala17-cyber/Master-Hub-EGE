@@ -1,0 +1,510 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Arquitetura de Experiência do Usuário</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--t),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:600px;margin:0 auto;line-height:1.8}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* Journey */
+.journey{display:flex;flex-direction:column;gap:0}
+.j-item{display:flex;gap:16px;position:relative}
+.j-item::before{content:'';position:absolute;left:15px;top:36px;bottom:-6px;width:2px;background:var(--bd)}
+.j-item:last-child::before{display:none}
+.j-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:4px}
+.j-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:14px 18px;margin-bottom:10px}
+.j-phase{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.j-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.j-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+.j-tags{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+
+/* Stepper */
+.stepper{display:flex;align-items:flex-start;gap:0;margin:16px 0;position:relative}
+@media(max-width:700px){.stepper{flex-direction:column;gap:8px}}
+.stepper::before{content:'';position:absolute;top:20px;left:0;right:0;height:2px;background:var(--bd);z-index:0}
+@media(max-width:700px){.stepper::before{display:none}}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;padding:0 6px}
+.step-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;background:var(--s1);border:2px solid var(--bd);margin-bottom:10px;transition:all .2s}
+.step-label{font-size:11.5px;font-weight:700;margin-bottom:3px}
+.step-time{font-size:9.5px;color:var(--mid)}
+
+/* Numbered flow steps */
+.flow-num{display:flex;flex-direction:column;gap:8px}
+.fn-item{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:11px}
+.fn-n{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  flex-shrink:0;margin-top:1px}
+.fn-body{flex:1}
+.fn-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fn-desc{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* Chat */
+.chat-box{background:var(--s2);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+.chat-head{background:var(--s3);padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.chat-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--b));
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.chat-name{font-size:13px;font-weight:700}.chat-sub{font-size:10.5px;color:var(--mid)}
+.chat-live{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:10px;color:var(--g);font-weight:600}
+.chat-live-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite}
+.chat-msgs{padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:80%;padding:11px 15px;border-radius:12px;font-size:12.5px;line-height:1.65}
+.msg.user{align-self:flex-end;background:rgba(19,84,204,.15);border:1px solid rgba(19,84,204,.22)}
+.msg.ai{align-self:flex-start;background:rgba(0,192,138,.07);border:1px solid rgba(0,192,138,.16)}
+.msg-from{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.msg.user .msg-from{color:var(--b);text-align:right}.msg.ai .msg-from{color:var(--g)}
+.chat-suggest{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 16px}
+.sug{font-size:11px;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.04);
+  border:1px solid var(--bd);color:var(--mid);cursor:pointer;transition:all .15s}
+.sug:hover{border-color:var(--g);color:var(--g);background:rgba(0,192,138,.06)}
+
+/* Pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+@media(max-width:700px){.pillars{grid-template-columns:1fr}}
+.pillar{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:22px;position:relative;overflow:hidden}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.pg::before{background:var(--g)}.pb::before{background:var(--b)}.po::before{background:var(--o)}
+.pl-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:8px}
+.pl-t{font-size:16px;font-weight:800;margin-bottom:8px}
+.pl-b{font-size:12px;color:var(--mid);line-height:1.6;margin-bottom:14px}
+.pl-items{display:flex;flex-direction:column;gap:7px}
+.pl-item{display:flex;align-items:flex-start;gap:8px;font-size:12px}
+.pl-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* Checklist */
+.checklist{border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.cl-item{display:flex;align-items:flex-start;gap:14px;padding:13px 18px;border-bottom:1px solid var(--bd);transition:background .15s}
+.cl-item:last-child{border-bottom:none}
+.cl-item:hover{background:rgba(255,255,255,.02)}
+.cl-check{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;flex-shrink:0;margin-top:1px;border:1.5px solid}
+.cl-q{font-size:13px;font-weight:700;margin-bottom:2px}
+.cl-sub{font-size:11.5px;color:var(--mid)}
+
+/* Module map */
+.mod-map{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
+@media(max-width:700px){.mod-map{grid-template-columns:repeat(2,1fr)}}
+.mod-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;text-align:center;position:relative;overflow:hidden}
+.mod-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.mc0::after{background:var(--g)}.mc1::after{background:var(--b)}.mc2::after{background:var(--p)}.mc3::after{background:var(--t)}.mc4::after{background:var(--g)}
+.mod-e{font-size:24px;margin-bottom:8px}.mod-t{font-size:12.5px;font-weight:700;margin-bottom:3px}.mod-f{font-size:10px;color:var(--mid)}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Experiência do Usuário</div>
+  <h1>Arquitetura de<br><span>Experiência do Usuário</span></h1>
+  <p class="sub">Jornada completa do empresário — do primeiro acesso ao resultado mensurável. Onboarding, IA consultora, navegação e a experiência que transforma a plataforma em hábito diário.</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">6</div><div class="sl">Fases da jornada</div></div>
+  <div class="st sb"><div class="sv">20'</div><div class="sl">Até o 1º valor</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Módulos de navegação</div></div>
+  <div class="st so"><div class="sv">3</div><div class="sl">Rituais de uso</div></div>
+  <div class="st st2"><div class="sv">3</div><div class="sl">Pilares de UX</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🗺 Jornada</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">🚀 Onboarding</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🤖 Interação IA</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">🧭 Fluxo de Uso</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">✨ Experiência Ideal</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🗺</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Jornada do Usuário</div>
+    <div class="sh-title">Do Primeiro Acesso ao Resultado Mensurável</div>
+    <div class="sh-desc">Cada etapa da jornada foi projetada para que o empresário entenda melhor o próprio negócio — não para aprender a usar a plataforma. A plataforma aprende enquanto ele responde.</div>
+  </div>
+</div>
+<div class="cll">"O design de cada etapa responde a uma única pergunta: O que o empresário ganhou agora? Se a resposta for 'ele aprendeu a usar uma funcionalidade', a etapa foi mal projetada."</div>
+<div class="blk"><div class="blk-h">As 6 Fases da Jornada Completa</div>
+<div class="tw"><table><thead><tr><th>Fase</th><th>Nome</th><th>Duração</th><th>Objetivo</th><th>Emoção Alvo</th></tr></thead><tbody>
+<tr><td><span class="badge bg">01</span></td><td><strong>Descoberta</strong></td><td>Pré-acesso</td><td>Criar expectativa de que existe uma forma melhor de gerir a empresa</td><td>Curiosidade e esperança</td></tr>
+<tr><td><span class="badge bb">02</span></td><td><strong>Ativação</strong></td><td>0–20 min</td><td>Primeiro valor tangível — o empresário conhece o score da empresa</td><td>"Isso é sobre mim" — reconhecimento</td></tr>
+<tr><td><span class="badge bp">03</span></td><td><strong>Engajamento</strong></td><td>Semanas 1–3</td><td>Plano gerado, primeiras tarefas ativas, rotina criada</td><td>Sensação de controle e direção</td></tr>
+<tr><td><span class="badge bt">04</span></td><td><strong>Adoção</strong></td><td>Mês 1–3</td><td>Uso consistente — o dashboard vira centro de gestão da empresa</td><td>Dependência positiva e confiança</td></tr>
+<tr><td><span class="badge bo">05</span></td><td><strong>Resultado</strong></td><td>Mês 3–6</td><td>Primeiro resultado mensurável — score subiu, meta batida</td><td>Orgulho e prova de valor</td></tr>
+<tr><td><span class="badge bg">06</span></td><td><strong>Expansão</strong></td><td>Mês 6+</td><td>Empresário indica para outros, expande uso para toda a equipe</td><td>Identidade e pertencimento</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Detalhe de Cada Fase</div>
+<div class="journey">
+${[
+  {n:'1',phase:'Descoberta',title:'A Promessa que Atrai',desc:'Comunicação focada em resultado, não em funcionalidades. O CTA de entrada não é "teste grátis" — é "descubra o score da sua empresa agora". Proposta de valor imediata antes do cadastro.',c:'var(--g)',tags:['Pré-acesso','Curiosidade']},
+  {n:'2',phase:'Ativação',title:'O Momento de Reconhecimento',desc:'O objetivo é o momento em que o empresário pensa: "Isso é sobre mim." Acontece quando ele vê o score e reconhece sua realidade descrita com precisão. Meta: menos de 20 minutos do cadastro ao primeiro score.',c:'var(--b)',tags:['0–20 min','Reconhecimento']},
+  {n:'3',phase:'Engajamento',title:'A Rotina que Cria Hábito',desc:'Um produto só vira hábito quando o usuário sente falta quando não usa. Três gatilhos semanais: insight toda segunda às 07h, alertas de KPI com análise e ação, e progresso visível das iniciativas.',c:'var(--p)',tags:['Semanas 1–3','Controle']},
+  {n:'4',phase:'Adoção',title:'O Dashboard como Centro de Gestão',desc:'A adoção acontece quando o empresário para de ver a plataforma como ferramenta e começa a vê-la como o lugar onde ele gere a empresa — quando abre o dashboard antes do e-mail.',c:'var(--t)',tags:['Mês 1–3','Dependência positiva']},
+  {n:'5',phase:'Resultado',title:'A Prova que Gera Lealdade',desc:'A plataforma torna o progresso impossível de ignorar: evolução do score, metas batidas, gargalos resolvidos. Relatório de 90 dias gerado automaticamente com todos os marcos do ciclo.',c:'var(--o)',tags:['Mês 3–6','Orgulho']},
+  {n:'6',phase:'Expansão',title:'A Comunidade que Multiplica',desc:'Empresários com resultados visíveis viram promotores naturais. Programa de indicação estruturado, relatórios compartilháveis e comunidade de empresários do mesmo nível de maturidade.',c:'var(--g)',tags:['Mês 6+','Identidade']},
+].map(j=>`
+<div class="j-item">
+  <div class="j-dot" style="border-color:${j.c};color:${j.c}">${j.n}</div>
+  <div class="j-body">
+    <div class="j-phase" style="color:${j.c}">${j.phase}</div>
+    <div class="j-title">${j.title}</div>
+    <div class="j-desc">${j.desc}</div>
+    <div class="j-tags">${j.tags.map(t=>`<span class="badge" style="background:${j.c}1A;color:${j.c}">${t}</span>`).join('')}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+<div class="blk"><div class="blk-h">Gatilhos de Retorno — Como o Hábito se Forma</div>
+<div class="tw"><table><thead><tr><th>Gatilho</th><th>Frequência</th><th>Mecanismo</th><th>O que o Empresário Sente</th></tr></thead><tbody>
+<tr><td>Insight semanal da IA</td><td>Toda segunda 07h</td><td>Push notification + card renovado no dashboard</td><td>Curiosidade — "o que mudou?"</td></tr>
+<tr><td>Alerta de KPI fora do padrão</td><td>Quando ocorre</td><td>Push com análise e ação recomendada</td><td>Urgência controlada — "preciso agir agora"</td></tr>
+<tr><td>Progresso das iniciativas</td><td>Contínuo</td><td>Barra de progresso + celebração de marcos</td><td>Satisfação de ver o plano avançando</td></tr>
+<tr><td>Score mensal</td><td>Dia 1 de cada mês</td><td>Relatório com variação e comparativo setorial</td><td>"Quanto evoluí?" — motivação</td></tr>
+<tr><td>Conquista desbloqueada</td><td>Ao atingir marco</td><td>Animação + mensagem personalizada da IA</td><td>Dopamina positiva — reforça o uso</td></tr>
+</tbody></table></div></div>`;}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">🚀</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Onboarding</div>
+    <div class="sh-title">Do Cadastro ao Primeiro Valor em 20 Minutos</div>
+    <div class="sh-desc">O onboarding do EGE é o diagnóstico. Cada pergunta é sobre o negócio do empresário — ao final das 20 perguntas ele já tem score, gargalos e plano estratégico do primeiro ciclo.</div>
+  </div>
+</div>
+<div class="cll">"O onboarding ideal é aquele que o empresário não percebe como onboarding — percebe como a primeira consultoria estratégica que teve sobre o próprio negócio."</div>
+<div class="blk"><div class="blk-h">As 5 Etapas — Sequência Completa (20 minutos)</div>
+<div class="stepper">
+${[
+  {e:'📝',t:'Cadastro',s:'2 min'},
+  {e:'🔍',t:'Diagnóstico',s:'10 min'},
+  {e:'📊',t:'Score',s:'3 min'},
+  {e:'📋',t:'Plano',s:'3 min'},
+  {e:'🏠',t:'Dashboard',s:'2 min'},
+].map(s=>`
+<div class="step">
+  <div class="step-dot">${s.e}</div>
+  <div class="step-label">${s.t}</div>
+  <div class="step-time">${s.s}</div>
+</div>`).join('')}
+</div></div>
+<div class="blk"><div class="blk-h">Etapa 1 — Cadastro Acelerado (2 minutos)</div>
+<div class="tw"><table><thead><tr><th>Campo Coletado</th><th>Por que é Necessário</th><th>Formato</th></tr></thead><tbody>
+<tr><td>Nome + e-mail</td><td>Identificação e acesso à conta</td><td>Campo simples + login Google</td></tr>
+<tr><td>Nome da empresa + setor</td><td>Calibrar diagnóstico e benchmark setorial</td><td>Dropdown com 20 setores + campo livre</td></tr>
+<tr><td>Porte aproximado</td><td>Calibrar metas e referências comparativas</td><td>Micro (até 10) / Pequena (10–50) / Média (50–200)</td></tr>
+<tr><td>Principal desafio atual</td><td>Personalizar a ordem das perguntas do diagnóstico</td><td>5 opções visuais — clica na que mais ressoa</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Etapa 2 — Diagnóstico Guiado (10 minutos)</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">🃏</div><div class="c-t">Card único por tela</div><div class="c-b">Uma pergunta de cada vez, sem scroll, sem distrações. Barra de progresso no topo. Opções de 1 a 5 com descrição.</div></div>
+  <div class="card"><div class="c-e">💬</div><div class="c-t">Linguagem do empresário</div><div class="c-b">"Você consegue prever o faturamento do próximo mês?" — não "avalie sua previsibilidade financeira".</div></div>
+  <div class="card"><div class="c-e">⚡</div><div class="c-t">Micro-feedback imediato</div><div class="c-b">Ao responder, uma frase contextualiza: "Empresas com esse nível têm 3x mais crises de caixa." Cria relevância.</div></div>
+  <div class="card"><div class="c-e">💾</div><div class="c-t">Salvamento automático</div><div class="c-b">Salva a cada resposta — o empresário pode pausar e continuar depois sem perder progresso.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Etapa 3 — Revelação do Score (pico emocional do onboarding)</div>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--g)"><div class="c-e">🎯</div><div class="c-t">Score com posição relativa</div><div class="c-b">"Você está entre os 42% mais avançados do setor." O número tem contexto — cria orgulho ou urgência imediata.</div></div>
+  <div class="card" style="border-left:3px solid var(--b)"><div class="c-e">📡</div><div class="c-t">Radar das 10 dimensões</div><div class="c-b">Gráfico visual das forças e gargalos de relance. O empresário se reconhece na imagem do próprio negócio.</div></div>
+  <div class="card" style="border-left:3px solid var(--o)"><div class="c-e">⚠️</div><div class="c-t">Top 3 gargalos com impacto</div><div class="c-b">"Financeiro em 34/100 pode estar custando R$8k–R$15k/mês em custo oculto." O problema fica concreto.</div></div>
+  <div class="card" style="border-left:3px solid var(--p)"><div class="c-e">✨</div><div class="c-t">Pontos fortes primeiro</div><div class="c-b">Os 2 maiores pontos fortes são reconhecidos antes dos gargalos. Equilíbrio emocional — não só críticas.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Etapas 4 e 5 — Plano do Ciclo + Dashboard Configurado</div>
+<div class="tw"><table><thead><tr><th>Etapa</th><th>O que o Empresário Recebe</th><th>Impacto na Experiência</th></tr></thead><tbody>
+<tr><td>Plano do 1º Ciclo</td><td>3 iniciativas prioritárias para 12 semanas, com impacto esperado no score</td><td>Sai do diagnóstico com ação — não com um relatório para ler depois</td></tr>
+<tr><td>Primeira tarefa do dia</td><td>UMA ação concreta para fazer hoje — pequena, específica, com critério de conclusão</td><td>Inicio imediato — o plano já tem uma tarefa ativa no mesmo dia</td></tr>
+<tr><td>Dashboard configurado</td><td>KPIs relevantes do setor, alertas do diagnóstico e insight da IA já carregados</td><td>O dashboard não está vazio — já é útil no primeiro acesso</td></tr>
+<tr><td>Mensagem de abertura da IA</td><td>"Analisei o score da [Empresa]. O financeiro está limitando seu crescimento. Vamos resolver isso em 8 semanas."</td><td>O empresário sente que a IA já o conhece — relação começa aqui</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Métricas de Sucesso do Onboarding</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Meta</th><th>Sinal de Problema se Abaixo</th></tr></thead><tbody>
+<tr><td>Completion rate do diagnóstico</td><td><span class="badge bg">≥ 75%</span></td><td>Perguntas não são relevantes ou há fricção excessiva no fluxo</td></tr>
+<tr><td>Tempo até primeiro score</td><td><span class="badge bg">&lt; 20 minutos</span></td><td>Fluxo tem etapas desnecessárias que quebram o engajamento</td></tr>
+<tr><td>Retorno em 24h</td><td><span class="badge bg">≥ 60%</span></td><td>Valor entregue foi insuficiente para criar curiosidade de retorno</td></tr>
+<tr><td>Primeira tarefa iniciada</td><td><span class="badge bg">≥ 40%</span></td><td>Plano não ressoou ou a ação imediata não estava clara</td></tr>
+<tr><td>NPS do onboarding</td><td><span class="badge bg">≥ 65</span></td><td>Experiência não superou as expectativas geradas na descoberta</td></tr>
+</tbody></table></div></div>`;}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">🤖</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Interação com a IA</div>
+    <div class="sh-title">A IA que Conhece a História da Empresa</div>
+    <div class="sh-desc">Quando o empresário abre o chat, a IA já sabe o score atual, o histórico de todos os ciclos, as iniciativas em andamento, os KPIs da semana e os alertas ativos. Cada resposta é contextualizada por esse histórico completo.</div>
+  </div>
+</div>
+<div class="cll">"A meta de experiência é que o empresário sinta que está falando com alguém que conhece a empresa tão bem quanto ele — e que tem a experiência estratégica que ele não tem. Não um assistente. Um parceiro."</div>
+<div class="blk"><div class="blk-h">Demonstração — Conversa em Contexto Real</div>
+<div class="chat-box">
+  <div class="chat-head">
+    <div class="chat-avatar">🤖</div>
+    <div><div class="chat-name">IA Consultora EGE</div>
+    <div class="chat-sub">Score · KPIs · Histórico · Intel de Mercado — tudo em contexto</div></div>
+    <div class="chat-live"><span class="chat-live-dot"></span>Online</div>
+  </div>
+  <div class="chat-msgs">
+    <div class="msg user"><div class="msg-from">Empresário</div>Devo contratar mais um vendedor agora?</div>
+    <div class="msg ai"><div class="msg-from">IA Consultora</div>Para responder bem, preciso entender dois pontos: <strong>qual é a taxa de conversão atual do time?</strong> E o gargalo que você sente é mais em <strong>volume de leads</strong> ou em <strong>fechamento</strong>?<br><br>Vejo no CRM que o pipeline tem <strong>47 deals abertos</strong> com apenas <strong>3 vendedores ativos</strong>. Se o follow-up está baixo, mais um vendedor não resolve o problema raiz.</div>
+    <div class="msg user"><div class="msg-from">Empresário</div>Conversão está em 18%. Sinto que é mais problema de follow-up.</div>
+    <div class="msg ai"><div class="msg-from">IA Consultora</div>Confirmado — <strong>não é hora de contratar</strong>. Seu setor tem conversão mediana de 24%. Com 18%, você tem 6pp de espaço para crescer sem custo fixo novo.<br><br><strong>Ação recomendada:</strong> implementar o Workflow 02 (follow-up automático de proposta) já no seu plano. Impacto estimado: +3–5pp na conversão em 30 dias — equivalente a 2–3 vendas a mais com o time atual.<br><br>Posso criar a tarefa agora para sua equipe?</div>
+  </div>
+  <div class="chat-suggest">
+    <div class="sug">📊 Como está meu score esta semana?</div>
+    <div class="sug">🎯 O que devo priorizar hoje?</div>
+    <div class="sug">⚠️ Por que o caixa caiu?</div>
+    <div class="sug">📈 Estou no caminho para bater a meta do ciclo?</div>
+  </div>
+</div></div>
+<div class="blk"><div class="blk-h">Os 4 Princípios da Boa Conversa com a IA</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">1</div><div class="fn-body"><div class="fn-title">Qualifica antes de generalizar</div><div class="fn-desc">Para perguntas abertas, a IA não responde com generalidades — faz uma pergunta específica. "Devo contratar?" vira "qual é sua conversão atual?" Uma pergunta por vez, nunca um interrogatório.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">2</div><div class="fn-body"><div class="fn-title">Toda resposta termina com ação</div><div class="fn-desc">A IA não é enciclopédia — é consultora. Toda resposta finaliza com recomendação clara. Não "considere avaliar se..." — mas "a ação é X, até sexta-feira, critério de sucesso é Y".</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">3</div><div class="fn-body"><div class="fn-title">Fundamenta com dados da empresa</div><div class="fn-desc">Usa os dados reais — não benchmarks abstratos. "Seu CAC atual é R$2.100 e o LTV médio é R$18.400 — relação de 8,7x, acima do mínimo de 3x. Você tem margem para crescer em aquisição."</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">4</div><div class="fn-body"><div class="fn-title">Três níveis de profundidade disponíveis</div><div class="fn-desc">Rápida (2–3 linhas + 1 ação) · Padrão (análise + causa + recomendação) · Profunda (documento estruturado com plano). O empresário escolhe pela forma como pergunta.</div></div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Pontos de Entrada — A IA Presente em Toda a Plataforma</div>
+<div class="tw"><table><thead><tr><th>Ponto de Entrada</th><th>Contexto Carregado Automaticamente</th><th>Tipo de Interação</th></tr></thead><tbody>
+<tr><td>Card de insight no Dashboard</td><td>Resumo proativo da semana com convite para aprofundar</td><td>Passiva → ativa: o insight convida ao diálogo</td></tr>
+<tr><td>Botão flutuante "Perguntar à IA"</td><td>Contexto da tela atual já carregado automaticamente</td><td>Iniciada pelo usuário em qualquer momento</td></tr>
+<tr><td>Alerta de KPI</td><td>Causa provável + ação recomendada já preparadas</td><td>Urgência cria o gatilho de entrada</td></tr>
+<tr><td>Plano estratégico</td><td>Raciocínio completo por trás de cada recomendação</td><td>Curiosidade sobre "por que a IA recomendou isso?"</td></tr>
+<tr><td>Relatório mensal</td><td>Cada seção tem ícone de IA para perguntar sobre aquele dado</td><td>Contextual ao conteúdo sendo lido</td></tr>
+<tr><td>Chat dedicado (/ia)</td><td>Histórico completo de todas as conversas + tópicos sugeridos</td><td>Consultoria ativa e aprofundada</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Tópicos Sugeridos — Removendo o Atrito de Início</div>
+<div class="grid2">
+  <div class="card"><div class="c-e">📅</div><div class="c-t">Na Semana 6 do Ciclo 1</div><div class="c-b">"Por que a iniciativa de Vendas está atrasada?" · "Quais tarefas priorizo essa semana?" · "Estou no caminho para bater a meta do ciclo?"</div></div>
+  <div class="card"><div class="c-e">⚠️</div><div class="c-t">Após Alerta de Caixa</div><div class="c-b">"Qual é o impacto real desse alerta?" · "O que faço nas próximas 72 horas?" · "Devo antecipar recebíveis ou cortar custos?"</div></div>
+</div></div>`;}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">🧭</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Fluxo de Uso</div>
+    <div class="sh-title">5 Módulos · 3 Rituais · 1 Centro de Gestão</div>
+    <div class="sh-desc">A navegação mais comum não é direta pelo menu — é guiada por alertas e insights. O Dashboard é o ponto de entrada, mas cada módulo tem vida própria e conexões naturais com os demais.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">Os 5 Módulos Primários</div>
+<div class="mod-map">
+  <div class="mod-card mc0"><div class="mod-e">🏠</div><div class="mod-t">Dashboard</div><div class="mod-f">Diária · 5–10 min</div></div>
+  <div class="mod-card mc1"><div class="mod-e">🔍</div><div class="mod-t">Diagnóstico</div><div class="mod-f">Mensal · 20–30 min</div></div>
+  <div class="mod-card mc2"><div class="mod-e">📋</div><div class="mod-t">Plano</div><div class="mod-f">Diária · 10–20 min</div></div>
+  <div class="mod-card mc3"><div class="mod-e">📊</div><div class="mod-t">Indicadores</div><div class="mod-f">Semanal · 15–25 min</div></div>
+  <div class="mod-card mc4"><div class="mod-e">🤖</div><div class="mod-t">IA Consultora</div><div class="mod-f">Diária · 10–45 min</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Ritual 1 — Uso Diário (5 a 10 minutos)</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">1</div><div class="fn-body"><div class="fn-title">Abertura do Dashboard</div><div class="fn-desc">Score do dia, KPIs com variação vs. ontem, alertas ativos, card de insight da semana (se segunda-feira).</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">2</div><div class="fn-body"><div class="fn-title">Leitura do Insight</div><div class="fn-desc">O card da IA mostra o mais relevante em 3 a 5 linhas. Um clique → chat com contexto completo carregado.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">3</div><div class="fn-body"><div class="fn-title">Verificação de Tarefas</div><div class="fn-desc">3 a 5 tarefas mais urgentes do dia — o empresário atualiza status ou reatribui para a equipe.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">4</div><div class="fn-body"><div class="fn-title">Resposta ao Alerta (se houver)</div><div class="fn-desc">Alertas P0 e P1 têm botão "Ver análise" — abre o chat da IA com causa e ação recomendada já preparadas.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">5</div><div class="fn-body"><div class="fn-title">Encerramento com Resumo</div><div class="fn-desc">O sistema resume o que ficou em aberto — o empresário nunca sai da plataforma sem saber o próximo passo.</div></div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Ritual 2 — Revisão Semanal (20 a 30 minutos)</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.12);color:var(--g)">1</div><div class="fn-body"><div class="fn-title">Relatório da Semana Anterior</div><div class="fn-desc">Gerado automaticamente — faturamento, leads, conversão, tarefas concluídas, score da semana.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.12);color:var(--g)">2</div><div class="fn-body"><div class="fn-title">Módulo de Indicadores</div><div class="fn-desc">Análise semana a semana — quais KPIs estão no caminho, quais estão desviando da meta do ciclo.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.12);color:var(--g)">3</div><div class="fn-body"><div class="fn-title">Módulo do Plano</div><div class="fn-desc">Progresso das iniciativas — o que avançou, o que travou, o que precisa de ação imediata.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.12);color:var(--g)">4</div><div class="fn-body"><div class="fn-title">Conversa com a IA</div><div class="fn-desc">"O que devo focar essa semana?" — IA define as 3 prioridades com base nos dados consolidados.</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.12);color:var(--g)">5</div><div class="fn-body"><div class="fn-title">Distribuição de Tarefas</div><div class="fn-desc">Atribuição e ajuste de tarefas para a equipe com base na revisão semanal — direto da plataforma.</div></div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Ritual 3 — Revisão Trimestral e Novo Ciclo (60 a 90 minutos)</div>
+<div class="tw"><table><thead><tr><th>Etapa</th><th>O que Acontece</th><th>Saída</th></tr></thead><tbody>
+<tr><td>1. Relatório de Ciclo</td><td>Comparação completa — score, KPIs, iniciativas: alcançado vs. planejado</td><td>Visão objetiva do que funcionou e o que não funcionou</td></tr>
+<tr><td>2. Diagnóstico Parcial</td><td>Reavaliação das dimensões foco — score recalculado com dados reais do período</td><td>Score atualizado refletindo o progresso real</td></tr>
+<tr><td>3. Retrospectiva com IA</td><td>Análise do que funcionou, o que não funcionou e os aprendizados do ciclo</td><td>Contexto estratégico para as decisões do próximo ciclo</td></tr>
+<tr><td>4. Geração do Novo Plano</td><td>Algoritmo recalcula prioridades — empresário revisa e aprova as 3 iniciativas</td><td>Plano do ciclo 2 ativo e pronto para execução</td></tr>
+<tr><td>5. Celebração + Próximo Passo</td><td>Reconhecimento visual dos avanços + definição da meta principal do ciclo seguinte</td><td>Motivação renovada + direção clara para os próximos 90 dias</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Mapa de Transições entre Módulos</div>
+<div class="tw"><table><thead><tr><th>De</th><th>Para</th><th>Gatilho de Transição</th><th>O que o Usuário Ganha</th></tr></thead><tbody>
+<tr><td>Dashboard</td><td>IA Consultora</td><td>Clicar em alerta ou card de insight</td><td>Análise profunda do dado que chamou atenção</td></tr>
+<tr><td>Dashboard</td><td>Plano</td><td>Clicar em tarefa urgente ou iniciativa atrasada</td><td>Visão completa do que precisa ser feito no ciclo</td></tr>
+<tr><td>Diagnóstico</td><td>Plano</td><td>Ao finalizar novo diagnóstico</td><td>Plano atualizado gerado automaticamente</td></tr>
+<tr><td>Indicadores</td><td>IA Consultora</td><td>Clicar em "?" em qualquer KPI</td><td>Análise da causa com recomendação específica</td></tr>
+<tr><td>Plano</td><td>Indicadores</td><td>Clicar no KPI vinculado à iniciativa</td><td>Ver o impacto real da iniciativa nos números</td></tr>
+<tr><td>IA Consultora</td><td>Plano</td><td>IA recomenda nova iniciativa</td><td>Adicionar diretamente ao ciclo atual com um clique</td></tr>
+</tbody></table></div></div>`;}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">✨</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Experiência Ideal</div>
+    <div class="sh-title">Simples, Estratégica e Orientada a Resultados</div>
+    <div class="sh-desc">Três pilares que guiam cada decisão de design, cópia e funcionalidade — cada um com critérios objetivos de como deve ser implementado e avaliado.</div>
+  </div>
+</div>
+<div class="cll">"A plataforma certa não é a mais cheia de funcionalidades. É a que o empresário abre toda manhã porque sente que não pode tomar boas decisões sem ela."</div>
+<div class="blk"><div class="blk-h">Os 3 Pilares da Experiência Ideal</div>
+<div class="pillars">
+  <div class="pillar pg">
+    <div class="pl-n">PILAR 01</div>
+    <div class="pl-t" style="color:var(--g)">Simples</div>
+    <div class="pl-b">Zero complexidade desnecessária. Cada elemento existe por um motivo — a profundidade está escondida sob capas de clareza.</div>
+    <div class="pl-items">
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Uma função principal por tela</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Linguagem do empresário, não do produto</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Próximo passo sempre visível</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Progressive disclosure de complexidade</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Zero configuração para começar a usar</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Erros com solução incluída</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--g)"></div><span>Consistência visual total</span></div>
+    </div>
+  </div>
+  <div class="pillar pb">
+    <div class="pl-n">PILAR 02</div>
+    <div class="pl-t" style="color:var(--b)">Estratégica</div>
+    <div class="pl-b">Contexto em cada dado. Nunca um número sem significado — a plataforma apresenta decisões, não gráficos.</div>
+    <div class="pl-items">
+      <div class="pl-item"><div class="pl-dot" style="background:var(--b)"></div><span>Todo número tem benchmark + meta + tendência</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--b)"></div><span>Hierarquia de atenção inteligente</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--b)"></div><span>IA sempre disponível a um clique</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--b)"></div><span>O plano estratégico como fio condutor</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--b)"></div><span>Recomendação antes da análise</span></div>
+    </div>
+  </div>
+  <div class="pillar po">
+    <div class="pl-n">PILAR 03</div>
+    <div class="pl-t" style="color:var(--o)">Orientada a Resultados</div>
+    <div class="pl-b">Progresso impossível de ignorar. Em 30 segundos o empresário responde: "estou indo bem, onde travei, o que mudou?"</div>
+    <div class="pl-items">
+      <div class="pl-item"><div class="pl-dot" style="background:var(--o)"></div><span>Score com trajetória sempre visível</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--o)"></div><span>Barra de progresso do ciclo em todo o plano</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--o)"></div><span>Celebração visual de marcos e conquistas</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--o)"></div><span>Relatório mensal automático com headline</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:var(--o)"></div><span>Linha do tempo da empresa</span></div>
+    </div>
+  </div>
+</div></div>
+<div class="blk"><div class="blk-h">Mecanismos de Visibilidade de Resultado</div>
+<div class="tw"><table><thead><tr><th>Mecanismo</th><th>Como Funciona</th><th>Efeito na Experiência</th></tr></thead><tbody>
+<tr><td>Score com trajetória</td><td>Score de hoje sempre ao lado do score do início do ciclo e do início do uso</td><td>O empresário vê a evolução — mesmo que seja pequena</td></tr>
+<tr><td>Barra de progresso do ciclo</td><td>"8 de 12 semanas · 67% das iniciativas no caminho" — visível em todas as telas do plano</td><td>Senso de avanço contínuo e controle</td></tr>
+<tr><td>Celebração de marcos</td><td>Ao concluir iniciativa ou atingir meta — animação + mensagem personalizada da IA</td><td>Reforço positivo — motiva o próximo passo</td></tr>
+<tr><td>Relatório mensal automático</td><td>Comparação mês a mês com o headline mais impactante dos dados do período</td><td>"Em outubro você cresceu 23% acima da mediana do setor"</td></tr>
+<tr><td>Linha do tempo da empresa</td><td>Histórico visual de todos os ciclos, scores e marcos conquistados</td><td>Senso de narrativa — "isso é a história do meu negócio"</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Checklist de Qualidade — Cada Tela Passa por Este Filtro Antes de Ir a Produção</div>
+<div class="checklist">
+${[
+  {c:'var(--g)',bc:'rgba(0,192,138,.15)',q:'Clareza de propósito',sub:'O usuário sabe em 5 segundos o que pode fazer aqui?'},
+  {c:'var(--g)',bc:'rgba(0,192,138,.15)',q:'Próximo passo sempre óbvio',sub:'Existe sempre uma ação clara disponível? Nenhuma tela é beco sem saída.'},
+  {c:'var(--b)',bc:'rgba(19,84,204,.15)',q:'Valor imediato',sub:'O usuário recebe algo útil sem precisar explorar muito?'},
+  {c:'var(--b)',bc:'rgba(19,84,204,.15)',q:'Linguagem do usuário',sub:'A cópia usa termos que o empresário reconhece no próprio negócio?'},
+  {c:'var(--p)',bc:'rgba(114,48,220,.15)',q:'Contexto em todo número',sub:'Todo dado tem benchmark, meta e tendência — nunca um número isolado.'},
+  {c:'var(--p)',bc:'rgba(114,48,220,.15)',q:'IA disponível a um clique',sub:'É fácil perguntar à IA sobre qualquer dado que está sendo visto?'},
+  {c:'var(--o)',bc:'rgba(217,90,8,.15)',q:'Resultado visível',sub:'O progresso está claro, mensurável e motivante? O empresário sente que está avançando?'},
+].map(c=>`
+<div class="cl-item">
+  <div class="cl-check" style="border-color:${c.c};color:${c.c};background:${c.bc}">✓</div>
+  <div><div class="cl-q">${c.q}</div><div class="cl-sub">${c.sub}</div></div>
+</div>`).join('')}
+</div></div>
+<div class="blk"><div class="blk-h">Princípios de Design Visual</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">🌑</div><div class="c-t">Modo Dark como Padrão</div><div class="c-b">Reduz fadiga visual para uso diário. Comunica sofisticação — o público-alvo associa a ferramentas de alto padrão.</div></div>
+  <div class="card"><div class="c-e">🎨</div><div class="c-t">Cores Funcionais</div><div class="c-b">Verde = progresso. Vermelho = urgência. Azul = análise. Amarelo = oportunidade. Nenhuma cor sem significado.</div></div>
+  <div class="card"><div class="c-e">🔤</div><div class="c-t">Hierarquia Tipográfica</div><div class="c-b">Inter para texto corrido. JetBrains Mono para números e KPIs. O olho aprende a separar qualitativo de quantitativo.</div></div>
+  <div class="card"><div class="c-e">⚡</div><div class="c-t">Microinterações</div><div class="c-b">Cada clique tem feedback visual imediato. O usuário sempre sabe que a ação foi registrada — evita incerteza.</div></div>
+  <div class="card"><div class="c-e">📱</div><div class="c-t">Dois Layouts Otimizados</div><div class="c-b">Desktop-first para análise profunda. Mobile-first para check rápido diário. Um usuário, dois comportamentos.</div></div>
+  <div class="card"><div class="c-e">📐</div><div class="c-t">Densidade Calibrada</div><div class="c-b">Nível 1 de toda tela é limpo e direto. A densidade cresce conforme o usuário aprofunda — nunca sobrecarrega.</div></div>
+</div></div>`;}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

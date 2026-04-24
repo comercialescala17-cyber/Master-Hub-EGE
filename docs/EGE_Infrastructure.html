@@ -1,0 +1,474 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Infraestrutura Cloud</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(28px,5vw,56px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:680px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.85;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.ty{color:var(--b)}.cm{color:var(--mid);font-style:italic}.st{color:var(--g)}.nm{color:var(--o)}
+/* Phase cards */
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+@media(max-width:700px){.phase-grid{grid-template-columns:1fr}}
+.phase-card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+.phase-head{padding:16px 18px;border-bottom:1px solid var(--bd);position:relative}
+.phase-head::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ph0::before{background:var(--g)}.ph1::before{background:var(--b)}.ph2::before{background:var(--p)}
+.phase-label{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:5px}
+.phase-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.phase-sub{font-size:11px;color:var(--mid)}
+.phase-body{padding:14px 18px;display:flex;flex-direction:column;gap:7px}
+.phase-item{font-size:12px;color:var(--mid);display:flex;gap:6px;line-height:1.5}
+.phase-item strong{color:var(--txt);font-weight:600;min-width:60px;flex-shrink:0}
+/* Pipeline steps */
+.pipeline{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.pl-step{display:flex;gap:12px;position:relative}
+.pl-step::before{content:'';position:absolute;left:15px;top:36px;bottom:-4px;width:2px;background:var(--bd)}
+.pl-step:last-child::before{display:none}
+.pl-num{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:2px}
+.pl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:11px 16px;margin-bottom:8px}
+.pl-name{font-size:13px;font-weight:700;margin-bottom:3px}.pl-desc{font-size:12px;color:var(--mid);line-height:1.55}
+.pl-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--g);margin-top:5px;background:rgba(0,192,138,.07);padding:2px 8px;border-radius:4px;display:inline-block}
+/* Security layers */
+.sec-layers{display:flex;flex-direction:column;gap:8px}
+.sl-item{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.sl-head{padding:12px 18px;display:flex;align-items:center;gap:10px}
+.sl-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0}
+.sl-name{font-size:13px;font-weight:700}
+.sl-body{padding:0 18px 12px;border-top:1px solid var(--bd)}
+.sl-row{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6}
+.sl-row:last-child{border-bottom:none}
+.sl-row strong{color:var(--txt);font-weight:600}
+/* Cache levels */
+.cache-levels{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+@media(max-width:700px){.cache-levels{grid-template-columns:1fr 1fr}}
+.cl-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.cl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cl0::before{background:var(--o)}.cl1::before{background:var(--b)}.cl2::before{background:var(--g)}.cl3::before{background:var(--t)}
+.cl-level{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:6px}
+.cl-name{font-size:13px;font-weight:800;margin-bottom:5px}
+.cl-desc{font-size:11.5px;color:var(--mid);line-height:1.6}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Cloud Infrastructure</div>
+  <h1>Infraestrutura Cloud<br><span>Plataforma EGE</span></h1>
+  <p class="sub">Railway → Kubernetes · Supabase · Vercel CDN · Redis · Cloudflare WAF · GitHub Actions CI/CD. Começa simples, escala sem reescrever. Custo proporcional à receita.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">7</div><div class="sl">Camadas de segurança</div></div>
+  <div class="st sb"><div class="sv">6</div><div class="sl">Estágios de CI/CD</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Níveis de cache</div></div>
+  <div class="st so"><div class="sv">4h</div><div class="sl">RTO disaster recovery</div></div>
+  <div class="st st2"><div class="sv">R$550</div><div class="sl">Custo infra MVP/mês</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🏗 Componentes</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">☁️ Cloud Arch</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">⚡ Performance</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">🔒 Segurança</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🚀 Deploy</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — System Components</div>
+    <div class="sh-title">Frontend · Backend · IA Engine · Database · Analytics</div>
+    <div class="sh-desc">6 camadas independentes que escalam de forma autônoma. Cada camada tem seus SLAs, estratégias de escala e planos de failover definidos antes do go-live. Serviços gerenciados no MVP — sem equipe de DevOps dedicada nas fases iniciais.</div>
+  </div>
+</div>
+<div class="cll">"Cada escolha de tecnologia foi feita para maximizar a velocidade de entrega no MVP e não criar dívida técnica que precisaria ser paga na fase de escala."</div>
+
+<div class="blk"><div class="blk-h">Mapa de Componentes por Camada</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Tecnologia MVP</th><th>Tecnologia Escala</th><th>SLA Target</th></tr></thead><tbody>
+<tr><td><span class="badge bo">Borda (CDN/WAF)</span></td><td>Cloudflare Pro</td><td>Cloudflare Enterprise</td><td>99,99%</td></tr>
+<tr><td><span class="badge bb">Frontend</span></td><td>Vercel Pro + Next.js 14</td><td>Vercel Enterprise + Edge Functions</td><td>99,9%</td></tr>
+<tr><td><span class="badge bg">Backend API</span></td><td>Railway (1–3 instâncias)</td><td>Kubernetes (5–20 pods) + HPA</td><td>99,9%</td></tr>
+<tr><td><span class="badge bt">Banco de Dados</span></td><td>Supabase Pro (PostgreSQL)</td><td>Supabase Enterprise + read replicas</td><td>99,95%</td></tr>
+<tr><td><span class="badge bg">Cache</span></td><td>Redis via Upstash</td><td>Redis Cluster (3 masters + replicas)</td><td>99,9%</td></tr>
+<tr><td><span class="badge bp">IA Engine</span></td><td>Claude API (Anthropic)</td><td>Claude API + context cache</td><td>99,5% (externo)</td></tr>
+<tr><td><span class="badge by">Observabilidade</span></td><td>Sentry + Datadog Free</td><td>Datadog Enterprise + PagerDuty</td><td>meta-infra</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">1.1 — Frontend (Next.js 14 + Vercel)</div>
+<div class="grid2">
+  <div class="card"><div class="c-e">⚛️</div><div class="c-t">Web App</div><div class="c-b">Next.js 14 + React 18. SSR para páginas de marketing, CSR para o dashboard interativo. Bundle splitting agressivo — cada rota carrega apenas o JS necessário.</div></div>
+  <div class="card"><div class="c-e">🎨</div><div class="c-t">Design System</div><div class="c-b">Tailwind CSS + Radix UI para componentes acessíveis. Pacote npm versionado compartilhado entre web e mobile (futuro React Native).</div></div>
+  <div class="card"><div class="c-e">🔄</div><div class="c-t">Estado e Cache Cliente</div><div class="c-b">Zustand para estado global + React Query para cache de API. staleTime configurado por tipo de dado — dashboard refetch a cada 60s em background.</div></div>
+  <div class="card"><div class="c-e">📡</div><div class="c-t">Real-time</div><div class="c-b">Socket.IO Client para tasks ao vivo, KPI updates e AI streaming. Reconexão automática com backoff exponencial após queda de conexão.</div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">1.2 — Backend (Node.js + Railway/Kubernetes)</div>
+<div class="tw"><table><thead><tr><th>Serviço</th><th>Tecnologia</th><th>Função</th><th>Escala</th></tr></thead><tbody>
+<tr><td><span class="badge bg">API Server</span></td><td>Node.js + Express + Socket.IO</td><td>REST endpoints + WebSocket em tempo real</td><td>Horizontal por CPU/req</td></tr>
+<tr><td><span class="badge bb">Worker Service</span></td><td>Node.js + BullMQ</td><td>Geração de IA, relatórios, notificações, scores</td><td>Horizontal por queue depth</td></tr>
+<tr><td><span class="badge bt">Scheduler</span></td><td>node-cron no Worker</td><td>Insights semanais, relatórios mensais, limpeza</td><td>1 instância (singleton)</td></tr>
+<tr><td><span class="badge bp">Webhook Processor</span></td><td>Worker dedicado</td><td>Processa webhooks externos com retry automático</td><td>Horizontal por volume</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">1.3 — AI Engine (Claude API + Serviços Internos)</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>Tecnologia</th><th>Função</th><th>Custo Estimado</th></tr></thead><tbody>
+<tr><td><span class="badge bp">LLM Principal</span></td><td>Claude API (claude-sonnet-4)</td><td>Chat, planos estratégicos, análises</td><td>~$0.003/1k tokens saída</td></tr>
+<tr><td><span class="badge bb">Embeddings</span></td><td>OpenAI text-embedding-3-small</td><td>Busca semântica em histórico</td><td>~$0.00002/1k tokens</td></tr>
+<tr><td><span class="badge bg">Vector Store</span></td><td>Supabase pgvector</td><td>Armazenamento e busca por similaridade</td><td>Incluso no Supabase</td></tr>
+<tr><td><span class="badge bg">Response Cache</span></td><td>Redis + PostgreSQL</td><td>Cache de insights repetitivos</td><td>Reduz custo tokens em 30%</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">1.4 — Database · 1.5 — Analytics</div>
+<div class="grid2">
+  <div class="card">
+    <div class="c-e">🗄️</div><div class="c-t">Stack de Dados</div>
+    <div class="c-b" style="display:flex;flex-direction:column;gap:5px;margin-top:8px">
+      ${[['PostgreSQL 15','Banco principal — RLS, particionamento, pgvector, pgcrypto'],['Redis','Cache, rate limiting, BullMQ, pub/sub WebSocket'],['Supabase Storage','Avatares, PDFs, exports — CDN global via Cloudflare'],['ClickHouse (futuro)','Analytics pesadas sem afetar banco operacional']].map(([n,d])=>`<div style="font-size:11.5px;padding:5px 8px;background:rgba(0,192,138,.05);border-radius:5px"><strong style="color:var(--g)">${n}:</strong> <span style="color:var(--mid)">${d}</span></div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="c-e">📊</div><div class="c-t">Stack de Observabilidade</div>
+    <div class="c-b" style="display:flex;flex-direction:column;gap:5px;margin-top:8px">
+      ${[['Datadog APM','Latência, error rate, throughput por endpoint'],['Sentry','Stack traces + alerta de erros novos'],['PostHog','Funil de onboarding, feature adoption, session replay'],['Metabase','MRR, churn, DAU/MAU, NPS — business KPIs'],['AI Cost Dashboard','Tokens/empresa, custo/request, projeção mensal']].map(([n,d])=>`<div style="font-size:11.5px;padding:5px 8px;background:rgba(19,84,204,.05);border-radius:5px"><strong style="color:var(--b)">${n}:</strong> <span style="color:var(--mid)">${d}</span></div>`).join('')}
+    </div>
+  </div>
+</div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">☁️</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Cloud Architecture</div>
+    <div class="sh-title">3 Fases de Crescimento — MVP ao Enterprise</div>
+    <div class="sh-desc">Cada fase tem custo, capacidade e tecnologias específicos. A regra de migração: mover para a próxima fase quando o custo de infra atual ultrapassar 40% da receita de novos clientes do mês.</div>
+  </div>
+</div>
+<div class="cll">"Não arquitetar para o problema de amanhã. A complexidade prematura é o maior inimigo da velocidade de entrega em estágios iniciais."</div>
+
+<div class="blk"><div class="blk-h">Comparativo das 3 Fases</div>
+<div class="phase-grid">
+${[
+  {cls:'ph0',label:'Fase 1 — MVP',title:'0–500 empresas',sub:'Meses 0–4',color:'var(--g)',items:[
+    ['Custo/mês','R$550–700'],['Req/seg','~200 rps'],['Deploy','Railway + Vercel'],['Banco','Supabase Pro'],['Cache','Upstash Redis'],['CI/CD','GitHub Actions'],['Equipe ops','0 — 100% gerenciado'],
+  ]},
+  {cls:'ph1',label:'Fase 2 — Plataforma',title:'500–5.000 empresas',sub:'Meses 4–10',color:'var(--b)',items:[
+    ['Custo/mês','R$3.000–5.000'],['Req/seg','~2.000 rps'],['Deploy','Railway 3 instâncias'],['Banco','Supabase + read replica'],['Cache','Redis dedicado 1GB'],['CI/CD','GitHub Actions + staging'],['Equipe ops','0.5 DevOps'],
+  ]},
+  {cls:'ph2',label:'Fase 3 — Enterprise',title:'5.000–50.000 empresas',sub:'Mês 10+',color:'var(--p)',items:[
+    ['Custo/mês','R$15.000–35.000'],['Req/seg','~15.000 rps'],['Deploy','Kubernetes + HPA'],['Banco','Postgres Cluster + Timescale'],['Cache','Redis Cluster 3 masters'],['CI/CD','ArgoCD + GitOps'],['Equipe ops','2 DevOps / SRE'],
+  ]},
+].map(ph=>`
+<div class="phase-card">
+  <div class="phase-head ${ph.cls}">
+    <div class="phase-label" style="color:${ph.color}">${ph.label}</div>
+    <div class="phase-title">${ph.title}</div>
+    <div class="phase-sub">${ph.sub}</div>
+  </div>
+  <div class="phase-body">
+    ${ph.items.map(([k,v])=>`<div class="phase-item"><strong>${k}</strong>${v}</div>`).join('')}
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Diagrama — Fase 1 (MVP)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Arquitetura MVP — Railway + Supabase + Vercel</span></div>
+  <div class="code-body">┌──────────────────────────────────────────────────────────┐
+│               <span class="st">CLOUDFLARE CDN + WAF</span>                      │
+│         DDoS Protection · SSL/TLS · Bot Management       │
+└────────────────┬─────────────────────────┬───────────────┘
+                 │                         │
+         ┌───────▼────────┐       ┌────────▼───────┐
+         │  <span class="ty">VERCEL</span> (Next)  │       │  <span class="nm">RAILWAY</span> API   │
+         │  Frontend SPA  │       │  Node.js +     │
+         │  SSR + CSR     │       │  Socket.IO     │
+         └────────────────┘       └────────┬───────┘
+                                           │
+                          ┌────────────────┼─────────────────┐
+                          │                │                  │
+                  ┌───────▼──────┐ ┌───────▼────┐ ┌──────────▼──────┐
+                  │  <span class="ty">SUPABASE</span>    │ │   <span class="st">REDIS</span>    │ │  <span class="bp">CLAUDE API</span>     │
+                  │  PostgreSQL  │ │   Upstash  │ │  Anthropic      │
+                  │  + Auth      │ │   Cache    │ │  (external)     │
+                  │  + Storage   │ │   + Queue  │ └─────────────────┘
+                  └──────────────┘ └────────────┘</div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Diagrama — Fase 3 (Enterprise / Kubernetes)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Arquitetura Enterprise — Kubernetes + Redis Cluster</span></div>
+  <div class="code-body">┌──────────────────────────────────────────────────────────────┐
+│          <span class="st">CLOUDFLARE ENTERPRISE</span> (CDN + WAF + Workers)           │
+└───────────────────────────┬──────────────────────────────────┘
+                             │
+          ┌──────────────────▼────────────────────┐
+          │            <span class="ty">KUBERNETES CLUSTER</span>           │
+          │  ┌────────────────┐  ┌──────────────┐  │
+          │  │ <span class="nm">API Pods</span> ×10   │  │<span class="nm">Worker</span> ×5    │  │
+          │  │ HPA: CPU > 70% │  │HPA: QueueLen │  │
+          │  └────────────────┘  └──────────────┘  │
+          │  ┌────────────────┐                     │
+          │  │ <span class="bp">Scheduler</span> ×1   │  Ingress + Load LB  │
+          │  └────────────────┘                     │
+          └──────────┬─────────────────┬────────────┘
+                     │                 │
+          ┌──────────▼──────┐  ┌───────▼────────────────┐
+          │  <span class="ty">POSTGRES</span> Primary │  │    <span class="st">REDIS CLUSTER</span>        │
+          │  + 2 Read Replicas│  │  3 masters + 3 replicas │
+          │  + TimescaleDB   │  │  Sharding automático    │
+          └──────────────────┘  └────────────────────────┘</div>
+</div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">⚡</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Performance</div>
+    <div class="sh-title">Velocidade com Milhares de Usuários Simultâneos</div>
+    <div class="sh-desc">Cache em 4 níveis independentes, cursor pagination para tabelas de 50M+ rows, particionamento mensal de kpi_values, SSE em vez de polling para IA. SLAs definidos por componente com alertas automáticos.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">SLAs de Latência por Componente</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>Latência P50</th><th>Latência P99</th><th>Throughput Máximo</th></tr></thead><tbody>
+<tr><td>Dashboard GET (cache hit CDN)</td><td><span class="badge bg">&lt; 10ms</span></td><td><span class="badge bg">&lt; 30ms</span></td><td>Ilimitado — edge CDN</td></tr>
+<tr><td>Dashboard GET (cache hit Redis)</td><td><span class="badge bg">&lt; 50ms</span></td><td><span class="badge bg">&lt; 150ms</span></td><td>1.000+ req/seg</td></tr>
+<tr><td>Dashboard GET (cache miss — DB)</td><td><span class="badge by">&lt; 200ms</span></td><td><span class="badge by">&lt; 800ms</span></td><td>500 req/seg/instância</td></tr>
+<tr><td>POST /kpis/:id/values</td><td><span class="badge bg">&lt; 100ms</span></td><td><span class="badge by">&lt; 400ms</span></td><td>500 req/seg (inclui threshold)</td></tr>
+<tr><td>POST /tasks (write + WS)</td><td><span class="badge bg">&lt; 80ms</span></td><td><span class="badge by">&lt; 300ms</span></td><td>800 req/seg</td></tr>
+<tr><td>AI Chat (primeiro token SSE)</td><td><span class="badge by">&lt; 3s</span></td><td><span class="badge bo">&lt; 8s</span></td><td>20 req/seg (Claude API limit)</td></tr>
+<tr><td>WebSocket message (real-time)</td><td><span class="badge bg">&lt; 50ms</span></td><td><span class="badge bg">&lt; 200ms</span></td><td>10.000 conexões simultâneas</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Cache em 4 Níveis Independentes</div>
+<div class="cache-levels">
+${[
+  {cls:'cl0',level:'NÍVEL 1 — BORDA',name:'Cloudflare CDN',desc:'Assets estáticos (JS, CSS, fontes, imagens). TTL 1 ano + cache-bust por content hash. Latência < 10ms do Brasil inteiro.',ttl:'1 ano'},
+  {cls:'cl1',level:'NÍVEL 2 — CLIENTE',name:'React Query',desc:'Cache em memória no browser. staleTime por tipo: dashboard 60s, score 5min, benchmark 1h. Revalidação em background sem travar UI.',ttl:'60s – 1h'},
+  {cls:'cl2',level:'NÍVEL 3 — SERVIDOR',name:'Redis Cache',desc:'Cache-Aside para queries custosas. Key: recurso:company_id. Invalidação ativa quando dado muda — nunca TTL como única estratégia.',ttl:'1min – 1h'},
+  {cls:'cl3',level:'NÍVEL 4 — BANCO',name:'PgBouncer Pool',desc:'Connection pool reutilizável. 25 conexões no MVP suportam 200+ req/seg. Em escala: 100–200 conexões sem mudança no banco.',ttl:'permanente'},
+].map(c=>`
+<div class="cl-card ${c.cls}">
+  <div class="cl-level" style="color:${c.cls==='cl0'?'var(--o)':c.cls==='cl1'?'var(--b)':c.cls==='cl2'?'var(--g)':'var(--t)'}">${c.level}</div>
+  <div class="cl-name">${c.name}</div>
+  <div class="cl-desc">${c.desc}</div>
+  <div style="margin-top:8px"><span class="badge" style="background:rgba(255,255,255,.06);color:var(--mid)">TTL: ${c.ttl}</span></div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Redis Cache — Keys e TTLs por Endpoint</div>
+<div class="tw"><table><thead><tr><th>Dado</th><th>Chave Redis</th><th>TTL</th><th>Invalidação Ativa</th></tr></thead><tbody>
+<tr><td>Score atual</td><td><code style="color:var(--g);font-size:10.5px">score:current:{company_id}</code></td><td><span class="badge bg">5 min</span></td><td>Ao criar novo score</td></tr>
+<tr><td>Dashboard KPIs</td><td><code style="color:var(--g);font-size:10.5px">kpi:dashboard:{company_id}</code></td><td><span class="badge bg">1 min</span></td><td>Ao inserir kpi_value</td></tr>
+<tr><td>Plano atual</td><td><code style="color:var(--g);font-size:10.5px">plan:current:{company_id}</code></td><td><span class="badge bg">5 min</span></td><td>Ao atualizar iniciativa</td></tr>
+<tr><td>Benchmark setorial</td><td><code style="color:var(--g);font-size:10.5px">benchmark:{sector}:{size}</code></td><td><span class="badge by">1 hora</span></td><td>Atualização mensal</td></tr>
+<tr><td>Insights ativos</td><td><code style="color:var(--g);font-size:10.5px">insights:active:{company_id}</code></td><td><span class="badge by">15 min</span></td><td>Ao gerar novo insight</td></tr>
+<tr><td>Contexto IA montado</td><td><code style="color:var(--g);font-size:10.5px">ai:context:{company_id}</code></td><td><span class="badge bg">3 min</span></td><td>Qualquer KPI update</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Otimizações Críticas de Performance</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">📄</div><div class="c-t">Cursor Pagination</div><div class="c-b">Paginação por cursor em vez de OFFSET. Performance constante com 50M+ rows. OFFSET degrada linearmente com o volume.</div></div>
+  <div class="card"><div class="c-e">🗂</div><div class="c-t">Particionamento</div><div class="c-b">kpi_values particionado por mês. Query de dashboard toca apenas 1 partição em vez de 50M rows. Pruning automático pelo PostgreSQL.</div></div>
+  <div class="card"><div class="c-e">🔍</div><div class="c-t">Índices Compostos</div><div class="c-b">(company_id, status), (kpi_id, recorded_at DESC). Index scan em vez de seq scan. 100x mais rápido em queries de dashboard.</div></div>
+  <div class="card"><div class="c-e">📡</div><div class="c-t">SSE Streaming</div><div class="c-b">Token a token em vez de aguardar 20–30s pela resposta completa. UX percebida como 10x mais rápida para chat com IA.</div></div>
+  <div class="card"><div class="c-e">🖼</div><div class="c-t">Image Optimization</div><div class="c-b">Next.js Image + Cloudflare Resizing. Imagens no formato WebP e tamanho certo por device. Reduz 60% do bandwidth.</div></div>
+  <div class="card"><div class="c-e">📦</div><div class="c-t">Bundle Splitting</div><div class="c-b">Cada rota carrega apenas o JS necessário. Bundle do dashboard não inclui código de configurações. LCP < 2s em 3G.</div></div>
+</div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">🔒</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Security</div>
+    <div class="sh-title">7 Camadas de Proteção — Defense in Depth</div>
+    <div class="sh-desc">Nenhuma camada é suficiente sozinha. A falha de qualquer uma não compromete as demais. Cada camada tem responsabilidade específica e é auditada independentemente — da borda ao backup.</div>
+  </div>
+</div>
+<div class="cll">"Defense in depth: sete camadas onde a falha de qualquer uma não compromete as demais. Segurança não é uma feature — é um requisito não-funcional de cada componente."</div>
+
+<div class="blk"><div class="blk-h">7 Camadas de Segurança</div>
+<div class="sec-layers">
+${[
+  {n:'1',name:'Borda — Cloudflare',color:'var(--o)',items:[
+    ['WAF','Bloqueia SQLi, XSS, CSRF e OWASP Top 10 na borda — antes de chegar ao servidor'],
+    ['DDoS Protection','Cloudflare absorve ataques volumétricos automaticamente — sem configuração manual'],
+    ['Bot Management','Distingue bots legítimos de maliciosos — bloqueia automaticamente'],
+    ['TLS 1.3','Terminação SSL na borda com certificados gerenciados — downgrade bloqueado'],
+  ]},
+  {n:'2',name:'Rede — VPC Privada',color:'var(--b)',items:[
+    ['VPC isolada','Banco e Redis em rede privada — portas 5432 e 6379 nunca expostas publicamente'],
+    ['IP Allowlist','Somente IPs dos servidores backend conectam ao PostgreSQL'],
+    ['Secrets Manager','Credenciais em Railway/K8s secrets — nunca em código ou variáveis de ambiente expostas'],
+    ['Network Policies','Kubernetes NetworkPolicy restringe comunicação apenas entre serviços autorizados'],
+  ]},
+  {n:'3',name:'Aplicação — API Layer',color:'var(--p)',items:[
+    ['JWT + blacklist Redis','Tokens revogados imediatamente ao logout — sem aguardar expiração natural'],
+    ['Rate limiting Token Bucket','Por IP e por JWT — proteção contra bruteforce e abuso de recursos'],
+    ['Zod validation','Schema validation em todos os endpoints — nenhum dado não validado chega ao banco'],
+    ['Helmet.js','Headers HTTP automáticos: CSP, X-Frame-Options, X-Content-Type-Options, HSTS'],
+  ]},
+  {n:'4',name:'Banco de Dados — PostgreSQL',color:'var(--g)',items:[
+    ['Row Level Security','Isolamento multi-tenant no nível do banco — funciona mesmo com bug na aplicação'],
+    ['pgcrypto','Tokens de integração e dados fiscais criptografados em colunas específicas'],
+    ['Prepared statements (Prisma)','Proteção automática contra SQL injection — zero concatenação de strings'],
+    ['Audit logs imutáveis','INSERT only em audit_logs — registro de todas as mudanças em tabelas críticas'],
+  ]},
+  {n:'5',name:'CI/CD — Supply Chain',color:'var(--t)',items:[
+    ['Dependabot','PRs automáticos para updates de dependências com vulnerabilidades conhecidas'],
+    ['npm audit no CI','Build falha com vulnerabilidade CVSS ≥ 9.0 em qualquer dependência'],
+    ['Trivy container scan','Scan de imagens Docker antes do deploy — bloqueia CVEs críticos'],
+    ['GitGuardian','Monitora repositórios em tempo real — detecta credenciais expostas acidentalmente'],
+  ]},
+  {n:'6',name:'Dados — Criptografia',color:'var(--y)',items:[
+    ['Dados em trânsito','TLS 1.3 obrigatório em todas as conexões — sem exceção'],
+    ['Dados em repouso','AES-256 em disco no servidor do banco — Supabase native'],
+    ['Backups','Transferência via TLS + AES-256 com chave offline separada'],
+    ['API Keys','Hash bcrypt (cost=12) — nunca armazenadas em plaintext'],
+  ]},
+  {n:'7',name:'Compliance — Governance',color:'var(--r)',items:[
+    ['Backups PITR','Point-in-time recovery com 7 dias (Pro) ou 30 dias (Enterprise) de retenção'],
+    ['DR testado trimestralmente','Procedimento de Disaster Recovery com RTO 4h e RPO 1h documentado e testado'],
+    ['LGPD','Right-to-deletion testado em CI/CD, exportação de dados em 72h, DPA formalizado'],
+    ['Pentest anual','Empresa externa — relatório disponível para clientes Enterprise mediante NDA'],
+  ]},
+].map(l=>`
+<div class="sl-item">
+  <div class="sl-head">
+    <div class="sl-num" style="background:${l.color}1A;color:${l.color}">${l.n}</div>
+    <div class="sl-name">${l.name}</div>
+    <span class="badge" style="background:${l.color}1A;color:${l.color};margin-left:auto">Ativa</span>
+  </div>
+  <div class="sl-body">
+    ${l.items.map(([k,v])=>`<div class="sl-row"><strong>${k}:</strong> ${v}</div>`).join('')}
+  </div>
+</div>`).join('')}
+</div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">🚀</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Deployment</div>
+    <div class="sh-title">CI/CD Automatizado e Zero-Downtime Deploy</div>
+    <div class="sh-desc">6 estágios automáticos do commit ao produção. Nenhum deploy manual. Rolling update com health check. Rollback automático em menos de 5 minutos. Migrations sempre backward-compatible.</div>
+  </div>
+</div>
+<div class="cll">"Qualquer desenvolvedor pode fazer deploy de produção com confiança, em qualquer hora, sem cerimônia. O pipeline garante a qualidade — não a cautela manual."</div>
+
+<div class="blk"><div class="blk-h">Pipeline CI/CD — 6 Estágios em Sequência</div>
+<div class="pipeline">
+${[
+  {n:'1',name:'Lint & Format',desc:'ESLint + Prettier verificam qualidade e consistência do código. Falha bloqueia o PR antes de qualquer review.',code:'eslint . && prettier --check . → < 1 minuto',color:'var(--g)'},
+  {n:'2',name:'Type Check',desc:'TypeScript strict mode — zero any implícito, todos os tipos verificados. Falha bloqueia o PR.',code:'tsc --noEmit --strict → < 2 minutos',color:'var(--b)'},
+  {n:'3',name:'Unit Tests',desc:'Vitest com cobertura mínima de 80% em funções críticas (score engine, threshold check, context builder).',code:'vitest run --coverage → cobertura < 80% bloqueia',color:'var(--p)'},
+  {n:'4',name:'Integration Tests',desc:'PostgreSQL + Redis em Docker Compose. Testa o fluxo completo: diagnóstico → score → plano → alerta.',code:'docker-compose up -d && vitest integration → < 5 min',color:'var(--t)'},
+  {n:'5',name:'Security Scan',desc:'npm audit para dependências + Trivy para imagem Docker. Vulnerabilidade CVSS ≥ 9.0 bloqueia o deploy.',code:'npm audit --audit-level=critical && trivy image',color:'var(--o)'},
+  {n:'6',name:'Deploy',desc:'Staging automático em merge para main. Produção requer tag vX.Y.Z + aprovação manual no GitHub. Rollback automático se health check falhar.',code:'railway up → /v1/health check → 200 OK → traffic shift',color:'var(--g)'},
+].map(s=>`
+<div class="pl-step">
+  <div class="pl-num" style="border-color:${s.color};color:${s.color}">${s.n}</div>
+  <div class="pl-body">
+    <div class="pl-name">${s.name}</div>
+    <div class="pl-desc">${s.desc}</div>
+    <div class="pl-code">${s.code}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Ambientes — do Local ao Produção</div>
+<div class="tw"><table><thead><tr><th>Ambiente</th><th>Trigger</th><th>Banco</th><th>Propósito</th></tr></thead><tbody>
+<tr><td><span class="badge bt">Development</span></td><td>npm run dev (manual)</td><td>PostgreSQL Docker local</td><td>Desenvolvimento e debug</td></tr>
+<tr><td><span class="badge bb">Preview (Vercel)</span></td><td>Push em qualquer branch</td><td>Supabase isolado por branch</td><td>Review de PR com dados fictícios</td></tr>
+<tr><td><span class="badge by">Staging</span></td><td>Merge em main</td><td>Supabase staging anonimizado</td><td>Validação pré-produção — acesso interno</td></tr>
+<tr><td><span class="badge bg">Production</span></td><td>Tag vX.Y.Z + aprovação</td><td>Supabase production</td><td>Usuários reais — aprovação manual obrigatória</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Migrations do Banco — Regra dos 2 Deploys</div>
+<div class="tw"><table><thead><tr><th>Operação</th><th>Estratégia Segura (2 deploys)</th><th>❌ Perigoso (evitar)</th></tr></thead><tbody>
+<tr><td>Adicionar coluna</td><td><code style="color:var(--g);font-size:10.5px">ADD COLUMN com DEFAULT</code> — imediato</td><td>ADD COLUMN NOT NULL sem DEFAULT</td></tr>
+<tr><td>Remover coluna</td><td>Deploy 1: deprecar código → Deploy 2: DROP COLUMN</td><td>DROP COLUMN em deploy único</td></tr>
+<tr><td>Renomear coluna</td><td>ADD nova → dupla escrita → DROP antiga (2 deploys)</td><td>RENAME COLUMN direto</td></tr>
+<tr><td>Adicionar índice</td><td><code style="color:var(--g);font-size:10.5px">CREATE INDEX CONCURRENTLY</code> — sem lock</td><td>CREATE INDEX sem CONCURRENTLY</td></tr>
+<tr><td>Alterar tipo</td><td>Nova coluna → migrar dados → DROP antiga (2 deploys)</td><td>ALTER COLUMN TYPE direto</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Disaster Recovery — Cenários e RTO</div>
+<div class="tw"><table><thead><tr><th>Cenário</th><th>Detecção</th><th>Ação</th><th>RTO</th></tr></thead><tbody>
+<tr><td>Pod / instância down</td><td>&lt; 30s (health check)</td><td>Kubernetes reinicia automaticamente</td><td><span class="badge bg">&lt; 2 min</span></td></tr>
+<tr><td>Deploy com bug crítico</td><td>&lt; 2min (Sentry)</td><td>Rollback automático para versão anterior</td><td><span class="badge bg">&lt; 5 min</span></td></tr>
+<tr><td>Read replica down</td><td>&lt; 1min (Datadog)</td><td>Traffic roteado para banco primário</td><td><span class="badge bg">&lt; 3 min</span></td></tr>
+<tr><td>Banco primário down</td><td>&lt; 1min (Datadog)</td><td>Failover para replica promovida</td><td><span class="badge by">&lt; 15 min</span></td></tr>
+<tr><td>Falha de região completa</td><td>&lt; 5min (Synthetics)</td><td>Restauração em nova região via backup</td><td><span class="badge bo">&lt; 4 horas</span></td></tr>
+<tr><td>Corrupção de dados</td><td>Manual</td><td>PITR para point-in-time anterior</td><td><span class="badge bo">&lt; 4 horas</span></td></tr>
+</tbody></table></div></div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

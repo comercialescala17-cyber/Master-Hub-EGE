@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Arquitetura da IA Consultora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 96% 90%,rgba(114,48,220,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(28px,5vw,58px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--p),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+/* Layout blocks */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:680px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.6}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}
+.br{background:rgba(192,32,32,.12);color:var(--r)}
+/* Code block */
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.85;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.ty{color:var(--b)}.cm{color:var(--mid);font-style:italic}.st{color:var(--g)}.nm{color:var(--o)}
+/* Pipeline steps */
+.pipeline{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.pl-step{display:flex;gap:16px;position:relative}
+.pl-step::before{content:'';position:absolute;left:19px;top:42px;bottom:-6px;width:2px;background:var(--bd)}
+.pl-step:last-child::before{display:none}
+.pl-num{width:40px;height:40px;border-radius:50%;border:2px solid;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;
+  flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:2px}
+.pl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:14px 18px;margin-bottom:10px}
+.pl-label{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.pl-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.pl-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+.pl-code{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--g);margin-top:8px;
+  background:rgba(0,192,138,.07);padding:4px 10px;border-radius:5px;display:inline-block}
+/* Mode cards */
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+@media(max-width:600px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.mode-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.mode-icon{font-size:22px}
+.mode-name{font-size:13px;font-weight:800}
+.mode-temp{font-family:'JetBrains Mono',monospace;font-size:10px;margin-left:auto}
+.mode-body{padding:12px 18px}
+.mode-trigger{font-size:10.5px;color:var(--mid);margin-bottom:6px}
+.mode-output{font-size:12px;line-height:1.6;color:var(--txt)}
+/* Contact points */
+.contact-list{display:flex;flex-direction:column;gap:8px}
+.cp{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.cp-head{padding:12px 18px;display:flex;align-items:center;gap:10px}
+.cp-n{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0}
+.cp-name{font-size:13px;font-weight:700}
+.cp-desc{padding:0 18px 12px;font-size:12px;color:var(--mid);line-height:1.65;border-top:1px solid var(--bd);padding-top:10px}
+/* Learning loops */
+.loop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+@media(max-width:600px){.loop-grid{grid-template-columns:1fr}}
+.loop-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.loop-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.lc0::before{background:var(--g)}.lc1::before{background:var(--b)}.lc2::before{background:var(--p)}.lc3::before{background:var(--o)}
+.loop-badge{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.loop-title{font-size:14px;font-weight:800;margin-bottom:6px}
+.loop-desc{font-size:12px;color:var(--mid);line-height:1.65;margin-bottom:10px}
+.loop-freq{font-size:10.5px;font-weight:700}
+/* Data layer cards */
+.data-layers{display:flex;flex-direction:column;gap:8px}
+.dl{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.dl-head{padding:12px 18px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.dl-icon{font-size:20px;flex-shrink:0}
+.dl-name{font-size:13px;font-weight:700}
+.dl-count{font-family:'JetBrains Mono',monospace;font-size:10px;margin-left:auto}
+.dl-body{padding:12px 18px;border-top:1px solid var(--bd)}
+.dl-item{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5}
+.dl-item:last-child{border-bottom:none}
+.dl-item strong{color:var(--txt);font-weight:600}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>AI System Architecture</div>
+  <h1>Arquitetura da<br><span>IA Consultora EGE</span></h1>
+  <p class="sub">Um sistema de aconselhamento estratégico contínuo que combina o contexto completo do negócio com modelos de linguagem de última geração. Não é um chatbot — é uma parceira que conhece a empresa melhor do que qualquer consultor externo poderia.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">5</div><div class="sl">Camadas do sistema</div></div>
+  <div class="st sb"><div class="sv">4</div><div class="sl">Modos de raciocínio</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Loops de aprendizado</div></div>
+  <div class="st so"><div class="sv">24/7</div><div class="sl">Monitoramento ativo</div></div>
+  <div class="st st2"><div class="sv">0.3</div><div class="sl">Temperatura padrão</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Propósito</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📊 Inputs de Dados</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">⚙️ Motor de Decisão</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">💬 Interação</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🧠 Aprendizado</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Purpose</div>
+    <div class="sh-title">O Papel da IA Consultora no EGE</div>
+    <div class="sh-desc">A IA não é um chatbot de suporte nem um assistente de tarefas. É um sistema de aconselhamento estratégico contínuo — a consultora que o empresário nunca pôde pagar, agora disponível 24/7 com acesso total ao histórico e aos dados reais da empresa.</div>
+  </div>
+</div>
+<div class="cll">"A IA não substitui um consultor humano para decisões de alta complexidade. Ela substitui os 90% das decisões cotidianas que os empresários tomam com informação insuficiente, sem apoio, na correria do dia a dia."</div>
+
+<div class="blk"><div class="blk-h">O Problema que a IA Resolve</div>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--r)">
+    <div class="c-e">❌</div><div class="c-t" style="color:var(--r)">Sem a IA</div>
+    <div class="c-b">Aconselhamento estratégico custa R$15k–R$80k por projeto. Diagnóstico pontual, depois o empresário fica sozinho na execução por meses. Decisões tomadas no achismo.</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--g)">
+    <div class="c-e">✅</div><div class="c-t" style="color:var(--g)">Com a IA EGE</div>
+    <div class="c-b">Aconselhamento estratégico contínuo com acesso total aos dados da empresa. Disponível a qualquer hora. Melhora conforme a empresa cresce. Custo: zero adicional.</div>
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Os 4 Papéis da IA Consultora</div>
+<div class="tw"><table><thead><tr><th>Papel</th><th>Descrição</th><th>Frequência</th><th>Valor para o Empresário</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Analista Estratégica</span></td><td>Lê todos os dados e identifica o que mais importa saber hoje — sem o empresário precisar perguntar</td><td>Contínua</td><td>Visibilidade sem overhead de análise</td></tr>
+<tr><td><span class="badge bb">Consultora de Crescimento</span></td><td>Responde perguntas estratégicas com base nos dados reais — não em suposições</td><td>Sob demanda</td><td>Decisões mais rápidas e embasadas</td></tr>
+<tr><td><span class="badge br">Sistema de Alerta Precoce</span></td><td>Detecta padrões de risco antes que se tornem crises — caixa comprimindo, conversão caindo</td><td>24/7 automática</td><td>Prevenção em vez de remediação</td></tr>
+<tr><td><span class="badge bp">Gestora de Execução</span></td><td>Acompanha o progresso do plano e recomenda ajustes quando a realidade diverge do planejado</td><td>Semanal</td><td>Plano que realmente é executado</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">As 5 Camadas do Sistema</div>
+<div class="tw"><table><thead><tr><th>#</th><th>Camada</th><th>Componente</th><th>Tecnologia</th><th>Função</th></tr></thead><tbody>
+<tr><td><span class="badge bg">1</span></td><td>Contexto</td><td>Context Aggregator</td><td>PostgreSQL + Redis</td><td>Agrega dados da empresa em pacote estruturado antes de cada request</td></tr>
+<tr><td><span class="badge bb">2</span></td><td>Análise</td><td>Pattern Engine</td><td>Claude API + Embeddings</td><td>Identifica padrões, anomalias e gaps estratégicos nos dados</td></tr>
+<tr><td><span class="badge bp">3</span></td><td>Decisão</td><td>Recommendation Generator</td><td>Claude API (temp 0.3)</td><td>Transforma análise em recomendações com ação e critério de sucesso</td></tr>
+<tr><td><span class="badge bt">4</span></td><td>Interação</td><td>Conversation Interface</td><td>REST API + WebSocket</td><td>Chat em tempo real, insights proativos, alertas e relatórios</td></tr>
+<tr><td><span class="badge bo">5</span></td><td>Aprendizado</td><td>Learning Engine</td><td>Supabase Vector + Embeddings</td><td>Fine-tuning contínuo com padrões de sucesso das empresas</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O que a IA É vs. o que Ela Não É</div>
+<div class="grid2">
+  <div class="card">
+    <div class="c-e">✅</div><div class="c-t" style="color:var(--g)">A IA É</div>
+    <div class="c-b" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+      ${["Uma consultora que conhece os dados reais da empresa","Uma analista disponível 24/7 sem custo adicional","Uma parceira que evolui conforme a empresa cresce","Um sistema que admite incerteza quando não tem dados","Uma consultora que termina com ação concreta"].map(t=>`<div style="padding:5px 8px;background:rgba(0,192,138,.06);border-radius:6px;font-size:11.5px;color:var(--txt)">✓ ${t}</div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="c-e">❌</div><div class="c-t" style="color:var(--r)">A IA Não É</div>
+    <div class="c-b" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+      ${["Um chatbot genérico com respostas de template","Substituta para decisões críticas de alto risco","Um oráculo que sempre tem a resposta certa","Uma IA que alucina para parecer competente","Um gerador de relatórios longos e impraticáveis"].map(t=>`<div style="padding:5px 8px;background:rgba(192,32,32,.06);border-radius:6px;font-size:11.5px;color:var(--txt)">✗ ${t}</div>`).join('')}
+    </div>
+  </div>
+</div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">📊</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Data Inputs</div>
+    <div class="sh-title">O que a IA Analisa</div>
+    <div class="sh-desc">A diferença entre uma resposta genérica e uma resposta estratégica está no contexto. Antes de qualquer interação, o sistema monta o pacote completo de dados da empresa — 5 camadas de informação estruturada que transformam um modelo genérico em um consultor preciso.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">5 Camadas de Dados de Entrada</div>
+<div class="data-layers">
+${[
+  {icon:'🔬',name:'Camada 1 — Diagnóstico e Maturidade',color:'var(--g)',count:'9 dimensões',items:[
+    ['Score global atual','Calibra o nível de sofisticação das recomendações — nível 2 precisa de fundação; nível 4 precisa de otimização fina'],
+    ['Score por dimensão (JSONB)','Identifica qual dimensão está travando o crescimento — a IA ataca o gargalo, não os pontos fortes'],
+    ['Percentil setorial','Contextualiza o score: "você está no top 30% do setor mesmo com score 52"'],
+    ['Histórico dos 4 ciclos anteriores','Mede velocidade de evolução — subindo rápido, estagnado ou regredindo'],
+    ['Respostas individuais do diagnóstico','Entende o raciocínio por trás do número — não apenas o score, mas por quê'],
+  ]},
+  {icon:'💰',name:'Camada 2 — Indicadores Financeiros',color:'var(--b)',count:'8 métricas críticas',items:[
+    ['MRR e variação MoM','Detecta aceleração, desaceleração ou reversão de tendência de receita'],
+    ['LTV / CAC ratio','Ratio < 3:1 sinaliza modelo de negócio insustentável — alerta preventivo antes da crise'],
+    ['Runway de caixa','Runway < 60 dias ativa alerta P0 automático com análise de causa e opções'],
+    ['Margem de contribuição','Queda de margem com crescimento = problema estrutural — crescer pode estar destruindo valor'],
+    ['Churn de receita','Churn > 5% ao mês = crise silenciosa que o empresário muitas vezes não vê no faturamento bruto'],
+  ]},
+  {icon:'🤝',name:'Camada 3 — Dados Comerciais e Pipeline',color:'var(--p)',count:'6 métricas de CRM',items:[
+    ['Stage distribution','Pipeline concentrado em prospecção = problema de qualificação; em negociação = problema de fechamento'],
+    ['Velocity por estágio','Gargalo visível pelo tempo acima do benchmark do setor — onde os deals ficam parados'],
+    ['Win rate por vendedor','Taxa de conversão individual — identifica padrões de quem fecha mais para replicar'],
+    ['Lead source quality','Qual canal gera leads que convertem mais E retêm mais — não apenas volume de leads'],
+  ]},
+  {icon:'⚙️',name:'Camada 4 — Métricas Operacionais',color:'var(--t)',count:'4 indicadores de execução',items:[
+    ['Progresso das iniciativas','% de conclusão das 3 iniciativas do ciclo — atraso > 20% no meio do ciclo gera alerta automático'],
+    ['Velocidade de execução','Throughput semanal de tarefas — queda indica sobrecarga ou perda de foco estratégico'],
+    ['SLA de atendimento','Degradação de SLA frequentemente antecede pico de churn em 4–6 semanas'],
+    ['Produtividade por processo','Tempo por unidade nos processos automatizados — gargalos visíveis por desvio do baseline'],
+  ]},
+  {icon:'🌐',name:'Camada 5 — Inteligência de Mercado',color:'var(--o)',count:'3 fontes externas',items:[
+    ['Benchmark setorial','Posição vs. p25/p50/p75 do setor — atualizado mensalmente com dados anonimizados da base EGE'],
+    ['Tendências e movimentos','Notícias e publicações sinalizadas quando têm impacto direto no modelo de negócio'],
+    ['Sazonalidade histórica','A IA contextualiza uma queda de 15% em julho se o setor tem queda média de 20% no período'],
+  ]},
+].map(l=>`
+  <div class="dl">
+    <div class="dl-head">
+      <div class="dl-icon">${l.icon}</div>
+      <div class="dl-name">${l.name}</div>
+      <span class="badge" style="background:${l.color}1A;color:${l.color};margin-left:auto">${l.count}</span>
+    </div>
+    <div class="dl-body">
+      ${l.items.map(([k,v])=>`<div class="dl-item"><strong>${k}:</strong> ${v}</div>`).join('')}
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">O Pacote de Contexto — Estrutura do System Prompt</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">System Prompt — montado dinamicamente antes de cada request</span></div>
+  <div class="code-body"><span class="kw">const</span> <span class="nm">contextPackage</span> = {
+  <span class="st">identity</span>: <span class="ty">'Você é a IA Consultora do EGE para [Company Name]...'</span>,
+  <span class="st">company_profile</span>: { sector, size_range, plan, months_on_platform },
+  <span class="st">current_state</span>: {
+    score: { total, level, dimensions: {...}, percentile, trend },
+    cycle: { week_of_12, days_remaining, completion_pct },
+    active_initiatives: [{ title, progress, status, owner }],
+    open_alerts: [{ severity, kpi, message, days_open }]
+  },
+  <span class="st">recent_kpis</span>: { last_7_days: {...}, vs_last_week, vs_target },
+  <span class="st">crm_snapshot</span>: { open_deals, pipeline_value, conversion_rate },
+  <span class="st">market_context</span>: { benchmarks, recent_news, seasonality },
+  <span class="st">conversation_history</span>: [ <span class="cm">/* last 10 messages */</span> ],
+  <span class="st">behavioral_rules</span>: [
+    <span class="ty">'Sempre termine com UMA ação concreta e UM critério de sucesso'</span>,
+    <span class="ty">'Use dados reais da empresa — nunca invente números'</span>,
+    <span class="ty">'Se não souber, diga o que falta — não tente adivinhar'</span>,
+    <span class="ty">'Faça UMA pergunta de qualificação antes de recomendar em perguntas abertas'</span>
+  ]
+};</div>
+</div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Decision Engine</div>
+    <div class="sh-title">Como a IA Gera Insights e Recomendações</div>
+    <div class="sh-desc">O Motor de Decisão não é uma query simples ao modelo. É um pipeline de raciocínio estruturado que opera em 4 modos distintos — cada um com prompt template específico, temperatura diferente e estrutura de saída definida para o contexto.</div>
+  </div>
+</div>
+<div class="cll">"O diferencial da IA não é responder bem — qualquer LLM razoável responde bem. O diferencial é perceber o que precisa ser dito ANTES do empresário perguntar."</div>
+
+<div class="blk"><div class="blk-h">Os 4 Modos de Raciocínio</div>
+<div class="mode-grid">
+  ${[
+    {icon:'💬',n:'Modo 1',name:'Reativo',color:'var(--g)',temp:'0.4',trigger:'Pergunta do usuário no chat',output:'Análise + Causa + Recomendação + Ação + Critério de Sucesso'},
+    {icon:'🔍',n:'Modo 2',name:'Proativo',color:'var(--b)',temp:'0.3',trigger:'CRON semanal ou evento de dados',output:'Insight Title + Contexto + Impacto + Ação + Urgência'},
+    {icon:'🚨',n:'Modo 3',name:'Alerta',color:'var(--r)',temp:'0.2',trigger:'Threshold de KPI ultrapassado',output:'Alerta + Causa Provável + Impacto + Ações Imediatas ordenadas'},
+    {icon:'📋',n:'Modo 4',name:'Síntese',color:'var(--p)',temp:'0.3',trigger:'Fechamento de ciclo ou relatório',output:'Resumo Executivo + O que Funcionou + O que Não Funcionou + Próximo Ciclo'},
+  ].map(m=>`
+  <div class="mode-card">
+    <div class="mode-head" style="border-bottom-color:${m.color}33">
+      <div class="mode-icon">${m.icon}</div>
+      <div>
+        <div style="font-size:9px;font-weight:700;color:${m.color};letter-spacing:.1em;text-transform:uppercase">${m.n}</div>
+        <div class="mode-name">${m.name}</div>
+      </div>
+      <div class="mode-temp" style="color:${m.color}">temp ${m.temp}</div>
+    </div>
+    <div class="mode-body">
+      <div class="mode-trigger"><span style="color:var(--mid);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Trigger</span><br>${m.trigger}</div>
+      <div style="height:1px;background:var(--bd);margin:8px 0"></div>
+      <div class="mode-output" style="font-size:11.5px;color:var(--mid)">${m.output}</div>
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Modo 1 — Pipeline Reativo: 4 Passos do Raciocínio</div>
+<div class="pipeline">
+${[
+  {n:'1',label:'Classificação da intenção',title:'Categorizar antes de responder',desc:'A pergunta é classificada em uma de 8 categorias: financeiro, comercial, operacional, estratégico, pessoal, mercado, produto, equipe. Isso determina qual subset do contexto é priorizado no prompt.',code:'classify(question) → {category: "comercial", subcategory: "equipe"}',color:'var(--g)'},
+  {n:'2',label:'Qualificação (se necessário)',title:'Uma pergunta antes de responder',desc:'Para perguntas abertas ou ambíguas, o sistema detecta a necessidade de mais contexto e a IA faz UMA pergunta de clarificação. Nunca duas de uma vez. Sempre focada no dado que mais importa.',code:'needsQualification(question, context) → "Qual o seu target de conversão atual?"',color:'var(--b)'},
+  {n:'3',label:'Montagem do prompt',title:'Contexto completo + instrução de estrutura',desc:'Contexto da empresa + pergunta classificada + instrução de estrutura de saída + exemplos few-shot relevantes + histórico dos últimos 10 turnos da conversa.',code:'buildPrompt({context, question, outputSchema, fewShots})',color:'var(--p)'},
+  {n:'4',label:'Validação da saída',title:'A resposta contém os 5 elementos?',desc:'Verificação automática: contém análise? usa dados reais? tem uma ação concreta? tem critério de sucesso? não contradiz os dados disponíveis? Se falhar em qualquer ponto, retry com ajuste no prompt.',code:'validate(response) → {hasAction: true, usesRealData: true, hasCriteria: true}',color:'var(--t)'},
+].map(s=>`
+<div class="pl-step">
+  <div class="pl-num" style="border-color:${s.color};color:${s.color}">${s.n}</div>
+  <div class="pl-body">
+    <div class="pl-label" style="color:${s.color}">${s.label}</div>
+    <div class="pl-title">${s.title}</div>
+    <div class="pl-desc">${s.desc}</div>
+    <div class="pl-code">${s.code}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Exemplo Real de Cadeia de Raciocínio</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Pergunta: "Devo contratar um novo vendedor agora?"</span></div>
+  <div class="code-body"><span class="cm">// PASSO 1 — CLASSIFICAÇÃO</span>
+category = <span class="st">"comercial"</span>, subcategory = <span class="st">"equipe"</span>
+
+<span class="cm">// PASSO 2 — DADOS DISPONÍVEIS NO CONTEXTO</span>
+pipeline_atual     = <span class="nm">47 deals abertos</span>, 3 vendedores ativos
+conversion_rate    = <span class="nm">18%</span> (benchmark setor: <span class="nm">24%</span>)
+capacidade_atual   = <span class="nm">15 deals/vendedor</span> — pipeline acomodaria +1
+cac_atual          = <span class="nm">R$2.100</span> — +1 vendedor = +R$4.500/mês em custo fixo
+
+<span class="cm">// PASSO 3 — RACIOCÍNIO DA IA</span>
+análise    = <span class="ty">"Problema de eficiência, não de capacidade"</span>
+evidências = [<span class="ty">"18% vs 24% benchmark"</span>, <span class="ty">"pipeline com espaço ocioso"</span>]
+
+<span class="cm">// PASSO 4 — SAÍDA ESTRUTURADA</span>
+recomendação = <span class="ty">"Não contratar — implementar workflow de follow-up"</span>
+ação         = <span class="ty">"Ativar Workflow 02: follow-up automático D+1/D+3/D+7"</span>
+critério     = <span class="ty">"+3pp na conversão em 30 dias = 2-3 vendas extras sem custo"</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Modo 2 — Insights Proativos: Exemplos Reais</div>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>Trigger</th><th>Exemplo de Insight Gerado</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Semanal</span></td><td>Domingo 23h — CRON</td><td>"Sua receita cresceu 12% este mês, mas o CAC cresceu 31%. Esse desequilíbrio precisa de atenção antes de você escalar aquisição."</td></tr>
+<tr><td><span class="badge br">Tendência negativa</span></td><td>3 semanas de queda num KPI</td><td>"Sua conversão caiu 3pp nas últimas 3 semanas. Possível causa: tempo de resposta ao lead subiu de 4h para 9h."</td></tr>
+<tr><td><span class="badge bg">Oportunidade</span></td><td>Dado acima do benchmark</td><td>"Seu ticket médio está 40% acima da mediana do setor. Há espaço para criar um tier premium e aumentar margem sem aumentar volume."</td></tr>
+<tr><td><span class="badge by">Aviso de ciclo</span></td><td>Semana 8 de 12</td><td>"A iniciativa de Processos está com 23% de progresso onde deveria ter 67%. Risco real de não concluir no ciclo atual."</td></tr>
+<tr><td><span class="badge bt">Intel de mercado</span></td><td>Notícia relevante do setor</td><td>"Uma fintech do seu setor lançou parcelamento sem juros esta semana. Seus clientes podem perguntar sobre isso — tenha uma resposta pronta."</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Modo 3 — Sistema de Alertas: P0 a P3</div>
+<div class="tw"><table><thead><tr><th>Severity</th><th>Critério de Ativação</th><th>Resposta</th><th>Análise da IA</th></tr></thead><tbody>
+<tr><td><span class="badge br">P0 Crítico</span></td><td>Runway &lt; 60 dias / Churn &gt; 8% / KPI -30% em 7 dias</td><td>&lt; 5 min</td><td>Causa provável + 3 ações imediatas ordenadas por impacto + estimativa de impacto de cada ação</td></tr>
+<tr><td><span class="badge bo">P1 Alto</span></td><td>KPI -15% em 14 dias / iniciativa com risco de não concluir</td><td>&lt; 30 min</td><td>Análise de tendência + 2 ações corretivas com prazo específico</td></tr>
+<tr><td><span class="badge by">P2 Médio</span></td><td>KPI abaixo da meta por 3 semanas consecutivas</td><td>&lt; 2h</td><td>Contexto + 1 ação de investigação recomendada</td></tr>
+<tr><td><span class="badge bg">P3 Info</span></td><td>KPI acima do alvo / iniciativa concluída</td><td>Próximo acesso</td><td>Reconhecimento do resultado + sugestão de próximo passo</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">💬</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Interaction Model</div>
+    <div class="sh-title">Como o Empresário Interage com a IA</div>
+    <div class="sh-desc">A IA não vive apenas no chat. Ela está presente em toda a plataforma — no dashboard, nos alertas, no plano estratégico, nos relatórios. O empresário não precisa "ir até a IA" — a IA vem até ele quando há algo relevante.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">5 Pontos de Contato com a IA</div>
+<div class="contact-list">
+${[
+  {n:'1',name:'Card de Insight no Dashboard (Passivo → Ativo)',color:'var(--g)',desc:'Toda segunda-feira, um insight é exibido no topo do dashboard — 3 a 5 linhas com o dado mais relevante da semana e um convite ao diálogo. O empresário pode ignorar, curtir ou clicar para aprofundar. Quando clica, o chat abre com o contexto do insight já carregado e a conversa começa de onde parou.'},
+  {n:'2',name:'Chat Estratégico Dedicado (/ia)',color:'var(--b)',desc:'A interface de conversa completa. Perguntas estratégicas, pedidos de análise, simulações de cenário, questionamentos sobre recomendações. Histórico completo preservado — a IA lembra de tudo e evolui a conversa de forma coerente ao longo do tempo. Sem limite de extensão ou profundidade.'},
+  {n:'3',name:'Alertas com Análise Embutida',color:'var(--r)',desc:'Alertas sem análise são ruído. Toda notificação carrega a causa provável e a ação recomendada embutidas — o empresário não precisa ir ao chat para entender o que fazer. Para P0: push + e-mail + WhatsApp com diagnóstico em 3 linhas e ação prioritária.'},
+  {n:'4',name:'Raciocínio Transparente no Plano Estratégico',color:'var(--p)',desc:'Cada iniciativa tem um ícone "Por que a IA recomendou isso?" que abre o raciocínio completo: dados que embasaram a decisão, impacto esperado no score, alternativas consideradas. O empresário entende a lógica — não apenas o que fazer, mas por quê. Confiança gera adesão.'},
+  {n:'5',name:'Relatórios com Narração em Linguagem Natural',color:'var(--o)',desc:'Relatórios mensais e de ciclo gerados automaticamente com narração da IA. Em vez de tabelas sem contexto, o relatório abre com um parágrafo que resume o período em linguagem do empresário, destaca positivos, aponta atenções e termina com a recomendação principal para o próximo período.'},
+].map(c=>`
+<div class="cp">
+  <div class="cp-head">
+    <div class="cp-n" style="background:${c.color}1A;color:${c.color}">${c.n}</div>
+    <div class="cp-name">${c.name}</div>
+  </div>
+  <div class="cp-desc">${c.desc}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Tipos de Pergunta e Como a IA Responde</div>
+<div class="tw"><table><thead><tr><th>Tipo de Pergunta</th><th>Exemplo Real</th><th>Primeiro Movimento da IA</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Diagnóstica</span></td><td>"Por que meu caixa está caindo se o faturamento subiu?"</td><td>Cruza MRR com DRE — procura crescimento de custo fixo ou desinvestimento de capital de giro</td></tr>
+<tr><td><span class="badge bb">Decisória</span></td><td>"Devo abrir uma segunda unidade agora?"</td><td>Pede: qual é o payback esperado e quanto de caixa livre existe atualmente?</td></tr>
+<tr><td><span class="badge bp">Prioritária</span></td><td>"Em que devo focar essa semana?"</td><td>Analisa iniciativas atrasadas + KPIs críticos + dias restantes no ciclo atual</td></tr>
+<tr><td><span class="badge bt">Comparativa</span></td><td>"Como estou em relação a empresas similares?"</td><td>Puxa benchmarks setoriais e apresenta posição percentual em 5 métricas-chave</td></tr>
+<tr><td><span class="badge by">Simulação</span></td><td>"O que acontece com meu score se eu resolver o financeiro?"</td><td>Simula impacto usando pesos das dimensões do diagnóstico e histórico de evolução</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Modos de Profundidade de Resposta</div>
+<div class="grid3">
+  <div class="card" style="border-top:3px solid var(--g)">
+    <div class="c-e">⚡</div>
+    <div class="c-t">Modo Rápido</div>
+    <div class="c-b">2–3 linhas + 1 ação. Ativado para perguntas simples ou contextos de urgência.<br><br><em style="color:var(--g);font-size:11px">"Sim, o follow-up automático resolve. Crie via Workflow 02. Meta: +3pp em 30 dias."</em></div>
+  </div>
+  <div class="card" style="border-top:3px solid var(--b)">
+    <div class="c-e">💡</div>
+    <div class="c-t">Modo Padrão</div>
+    <div class="c-b">Análise + Causa + Recomendação + Ação + Critério. O modo padrão para a maioria das interações estratégicas. Balanceia profundidade e praticidade.</div>
+  </div>
+  <div class="card" style="border-top:3px solid var(--p)">
+    <div class="c-e">📑</div>
+    <div class="c-t">Modo Profundo</div>
+    <div class="c-b">Documento estruturado completo: múltiplos cenários, plano de ação com etapas e responsáveis, métricas de acompanhamento. Para decisões de alto impacto.</div>
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">A Gramática da Conversa — Princípios de Comunicação</div>
+<div class="tw"><table><thead><tr><th>Princípio</th><th>Como Funciona</th><th>Por quê</th></tr></thead><tbody>
+<tr><td><strong>Uma ação por resposta</strong></td><td>Cada resposta termina com UMA ação — não uma lista de 7 possibilidades</td><td>Listas longas não são executadas. Uma ação é.</td></tr>
+<tr><td><strong>Qualificação antes de generalizar</strong></td><td>Para perguntas abertas: faz uma pergunta específica antes de responder</td><td>Respostas sem contexto são genéricas e inúteis</td></tr>
+<tr><td><strong>Dados reais, nunca suposições</strong></td><td>Usa os dados disponíveis — nunca inventa número para preencher lacuna</td><td>Uma mentira de dado destrói toda a credibilidade</td></tr>
+<tr><td><strong>Incerteza declarada</strong></td><td>Quando não tem dados suficientes, diz exatamente o que falta</td><td>Melhor admitir limitação do que inventar confiança</td></tr>
+<tr><td><strong>Tom de parceiro</strong></td><td>Linguagem direta, sem jargão desnecessário — fala como sócio experiente</td><td>O empresário precisa confiar — não ser impressionado</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">🧠</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Learning System</div>
+    <div class="sh-title">Como a IA Melhora ao Longo do Tempo</div>
+    <div class="sh-desc">4 mecanismos independentes que operam em paralelo — do loop mais curto (feedback semanal) ao mais longo (atualização trimestral do modelo). A IA não é estática: cada interação, cada resultado medido e cada empresa que entra na base torna o sistema mais preciso.</div>
+  </div>
+</div>
+<div class="cll">"Dados de uma empresa nunca são usados para treinar respostas específicas para outra. O que é compartilhado são padrões anônimos e agregados — 'empresas do setor X com esse perfil que implementaram Y tiveram resultado Z'."</div>
+
+<div class="blk"><div class="blk-h">Os 4 Mecanismos de Aprendizado</div>
+<div class="loop-grid">
+${[
+  {n:'1',badge:'Loop Curto — Semanal',title:'Feedback Explícito do Usuário',color:'var(--g)',cls:'lc0',desc:'Polegares up/down + campo "O que estava errado?" em cada resposta. Coletado, anotado e incorporado nos prompts em atualizações semanais. O sinal mais direto quando a IA erra de forma sistemática.',freq:'⟳ Atualização semanal dos prompts'},
+  {n:'2',badge:'Loop Médio — 30/90 dias',title:'Correlação Recomendação → Resultado',color:'var(--b)',cls:'lc1',desc:'Quando o empresário aceita uma recomendação, o sistema monitora os KPIs relacionados por 30 ou 90 dias. Recomendações com impacto positivo confirmado viram exemplos few-shot. O mais sofisticado dos mecanismos.',freq:'⟳ Banco de evidências atualizado contínuamente'},
+  {n:'3',badge:'Loop Longo — Mensal',title:'Benchmarking com Dados Agregados',color:'var(--p)',cls:'lc2',desc:'Com a base crescente de empresas, o EGE acumula o maior banco de padrões de crescimento de PMEs brasileiras — 100% anonimizado. Benchmarks setoriais mais precisos e granulares a cada ciclo.',freq:'⟳ Atualização mensal dos benchmarks'},
+  {n:'4',badge:'Loop Estratégico — Trimestral',title:'Atualização do Sistema Base',color:'var(--o)',cls:'lc3',desc:'A cada trimestre: atualização do system prompt base, banco de few-shot examples, thresholds de alerta e pesos do motor de priorização. Incorpora padrões dos loops anteriores e novidades do mercado.',freq:'⟳ Release trimestral do sistema'},
+].map(l=>`
+<div class="loop-card ${l.cls}">
+  <div class="loop-badge" style="color:${l.color}">${l.badge}</div>
+  <div class="loop-title">${l.n}. ${l.title}</div>
+  <div class="loop-desc">${l.desc}</div>
+  <div class="loop-freq" style="color:${l.color}">${l.freq}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Mecanismo 1 — Como o Feedback é Processado</div>
+<div class="tw"><table><thead><tr><th>Sinal de Feedback</th><th>Ação Automática</th><th>Frequência de Ajuste</th></tr></thead><tbody>
+<tr><td>👍 em insight proativo</td><td>Insight adicionado ao banco de exemplos positivos para o setor</td><td>Semana seguinte</td></tr>
+<tr><td>👎 + categoria de erro</td><td>Prompt analisado pelo time de IA — padrão de erro identificado e corrigido</td><td>Semanal</td></tr>
+<tr><td>Ação recomendada executada</td><td>Score de relevância do insight aumenta — mais insights desse tipo</td><td>Contínuo</td></tr>
+<tr><td>Ação ignorada consistentemente</td><td>Score de relevância diminui — tipo de insight deprioritizado para esse perfil</td><td>Contínuo</td></tr>
+<tr><td>Conversa longa com engajamento alto</td><td>Tópico identificado como alto valor — mais insights gerados nessa categoria</td><td>Mensal</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Mecanismo 2 — Rastreamento Recomendação → Resultado</div>
+<div class="pipeline">
+${[
+  {n:'1',label:'Ação aceita',title:'Empresário implementa a recomendação',desc:'Cria tarefa, ativa workflow ou confirma implementação. O sistema registra: qual recomendação, data, contexto da empresa, KPIs de baseline no momento da decisão.',code:'trackRecommendation(rec_id, company_id, baseline_kpis)',color:'var(--b)'},
+  {n:'2',label:'Janela de observação',title:'30 ou 90 dias de monitoramento',desc:'KPIs relacionados são monitorados. Janela de 30 dias para ações operacionais (follow-up, automação), 90 dias para iniciativas estratégicas (novo processo, nova oferta).',code:'observationWindow = type === "operational" ? 30 : 90',color:'var(--b)'},
+  {n:'3',label:'Medição do impacto',title:'Comparação trajetória esperada vs. real',desc:'O impact score é a diferença entre a trajetória projetada sem a ação e a realizada após a ação. Sempre declarado como correlação, não causalidade.',code:'impactScore = (actual_delta - projected_delta) / projected_delta',color:'var(--b)'},
+  {n:'4',label:'Incorporação ao banco',title:'Evidência vira exemplo few-shot',desc:'Recomendações com impact score positivo e confirmado (>+15%) entram no banco de evidências. Na próxima situação similar, o modelo recebe esse exemplo como evidência de funcionamento.',code:'addToFewShotBank({situation, recommendation, result, impact})',color:'var(--b)'},
+].map(s=>`
+<div class="pl-step">
+  <div class="pl-num" style="border-color:${s.color};color:${s.color}">${s.n}</div>
+  <div class="pl-body">
+    <div class="pl-label" style="color:${s.color}">${s.label}</div>
+    <div class="pl-title">${s.title}</div>
+    <div class="pl-desc">${s.desc}</div>
+    <div class="pl-code">${s.code}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Métricas de Qualidade da IA — Como Medimos se Está Melhorando</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Definição</th><th>Meta</th><th>Alerta</th></tr></thead><tbody>
+<tr><td><strong>Response relevance</strong></td><td>% de respostas avaliadas positivamente (polegar up)</td><td><span class="badge bg">≥ 80%</span></td><td>&lt; 70% por 2 semanas</td></tr>
+<tr><td><strong>Insight action rate</strong></td><td>% de insights proativos que geraram uma ação</td><td><span class="badge bg">≥ 35%</span></td><td>&lt; 20% por 4 semanas</td></tr>
+<tr><td><strong>Alert accuracy</strong></td><td>% de alertas P0/P1 que corresponderam a problema real</td><td><span class="badge bg">≥ 85%</span></td><td>&lt; 70% — falsos positivos</td></tr>
+<tr><td><strong>Follow-through rate</strong></td><td>% de recomendações aceitas que foram implementadas</td><td><span class="badge bg">≥ 50%</span></td><td>&lt; 30% — impraticáveis</td></tr>
+<tr><td><strong>Correlation accuracy</strong></td><td>% de previsões de impacto dentro de ±20% do realizado</td><td><span class="badge bg">≥ 65%</span></td><td>&lt; 50% — modelo impreciso</td></tr>
+<tr><td><strong>Session engagement</strong></td><td>Duração média das sessões de chat estratégico</td><td><span class="badge bg">≥ 8 min</span></td><td>&lt; 3 min — IA sem valor</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O Objetivo Final do Sistema de Aprendizado</div>
+<div class="cll" style="border-color:var(--o);background:rgba(217,90,8,.04)">"O objetivo não é construir a IA mais sofisticada tecnicamente. É construir a IA que o empresário não consegue mais viver sem — porque ela conhece seu negócio, está sempre disponível, nunca julga e sempre termina com uma ação concreta que ele pode executar ainda hoje."</div>
+</div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

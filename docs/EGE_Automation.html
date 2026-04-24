@@ -1,0 +1,555 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Automação de Processos</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--t),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:600px;margin:0 auto;line-height:1.8}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* ── FLOW DIAGRAM ──────────────────────────────────── */
+.flow-canvas{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;margin-bottom:16px;overflow-x:auto}
+.flow-title{font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.flow-row{display:flex;align-items:center;gap:0;flex-wrap:nowrap;min-width:600px}
+.flow-step{display:flex;flex-direction:column;align-items:center;flex:1}
+.flow-node{padding:10px 12px;border-radius:10px;font-size:11px;font-weight:700;text-align:center;
+  min-width:90px;position:relative;line-height:1.35}
+.fn-auto{background:rgba(0,192,138,.1);border:1.5px solid var(--g);color:var(--g)}
+.fn-human{background:rgba(19,84,204,.1);border:1.5px solid var(--b);color:var(--b)}
+.fn-decision{background:rgba(114,48,220,.1);border:1.5px solid var(--p);color:var(--p)}
+.fn-wait{background:rgba(184,114,0,.1);border:1.5px solid var(--y);color:var(--y)}
+.fn-trigger{background:rgba(217,90,8,.1);border:1.5px solid var(--o);color:var(--o)}
+.flow-sub{font-size:9px;color:var(--mid);margin-top:5px;text-align:center;max-width:90px}
+.flow-arrow{font-size:16px;color:var(--mid);padding:0 4px;flex-shrink:0}
+.flow-label-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+.flow-label{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--mid)}
+.flow-label-dot{width:10px;height:10px;border-radius:3px}
+
+/* ── WORKFLOW CARDS ──────────────────────────────── */
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px}
+.wf-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.wf-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.wf-card:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.wf-card.comercial::before{background:var(--g)}
+.wf-card.financeiro::before{background:var(--b)}
+.wf-card.atendimento::before{background:var(--t)}
+.wf-card.gestao::before{background:var(--p)}
+.wf-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.wf-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--mid)}
+.wf-cat{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px}
+.wf-title{font-size:13px;font-weight:800;margin-bottom:6px}
+.wf-trigger{font-size:11px;color:var(--mid);margin-bottom:6px}
+.wf-trigger span{color:var(--o);font-weight:600}
+.wf-action{font-size:11.5px;color:var(--txt);line-height:1.5}
+.wf-savings{margin-top:10px;padding:7px 10px;background:rgba(0,192,138,.06);
+  border:1px solid rgba(0,192,138,.14);border-radius:7px;
+  font-size:11px;color:var(--g);font-weight:600}
+.wf-expanded{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.wf-card.open .wf-expanded{display:block}
+.wf-step-list{display:flex;flex-direction:column;gap:6px}
+.wf-step{display:flex;align-items:flex-start;gap:8px;font-size:11px}
+.wf-step-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px}
+
+/* ── PROCESS MODELER ──────────────────────────────── */
+.process-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.ptab{padding:7px 14px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--mid)}
+.ptab.on{border-color:var(--g);color:var(--g);background:rgba(0,192,138,.07)}
+.process-flow{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.pf-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.pf-icon{font-size:28px}
+.pf-name{font-size:15px;font-weight:800}
+.pf-desc{font-size:12px;color:var(--mid)}
+.step-list{display:flex;flex-direction:column}
+.step-item{display:flex;gap:14px;position:relative}
+.step-item::before{content:'';position:absolute;left:15px;top:36px;bottom:-6px;width:2px;background:var(--bd)}
+.step-item:last-child::before{display:none}
+.step-icon{width:32px;height:32px;border-radius:50%;border:2px solid;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  flex-shrink:0;z-index:1;background:var(--bg);margin-top:4px}
+.step-body{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:10px;
+  padding:12px 15px;margin-bottom:10px}
+.step-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px}
+.step-title{font-size:13px;font-weight:800;margin-bottom:4px}
+.step-io{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.step-io-item{font-size:10.5px;padding:3px 9px;border-radius:5px;font-weight:500}
+.step-in{background:rgba(19,84,204,.1);color:var(--b)}
+.step-out{background:rgba(0,192,138,.1);color:var(--g)}
+.step-time{font-size:10px;color:var(--mid);margin-top:3px}
+
+/* ── ROI CALC ──────────────────────────────────── */
+.roi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
+.roi-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px}
+.roi-wf{font-size:9.5px;font-weight:700;color:var(--mid);margin-bottom:4px;letter-spacing:.06em}
+.roi-name{font-size:12.5px;font-weight:700;margin-bottom:10px}
+.roi-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd)}
+.roi-row:last-child{border:none;padding-top:8px;margin-top:4px}
+.roi-label{font-size:11px;color:var(--mid)}
+.roi-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.roi-total{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;background:rgba(0,192,138,.06);border:1px solid rgba(0,192,138,.18);
+  border-radius:12px;margin-bottom:16px}
+.roi-total-label{font-size:13px;font-weight:700;color:var(--mid)}
+.roi-total-val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;color:var(--g)}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Engenharia de Processos</div>
+  <h1>Automação de Processos<br><span>Empresariais</span></h1>
+  <p class="sub">Identifique, modele e automatize os processos da empresa. 12 workflows essenciais que eliminam trabalho manual e liberam a equipe para o que realmente importa.</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">12</div><div class="sl">Workflows essenciais</div></div>
+  <div class="st sb"><div class="sv">5</div><div class="sl">Áreas de processo</div></div>
+  <div class="st so"><div class="sv">119h</div><div class="sl">Economia mensal</div></div>
+  <div class="st sp"><div class="sv">R$9,5k</div><div class="sl">Custo evitado/mês</div></div>
+  <div class="st st2"><div class="sv">+90</div><div class="sl">Pts no score EGE</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">🔍 Identificação</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">⚙️ Modelagem</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">⚡ Automação</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">📈 Benefícios</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+// ── panel 0: objetivo ────────────────────────────────────────
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div>
+    <div class="sh-title">Por que Automatizar os Processos?</div>
+    <div class="sh-desc">Toda tarefa manual, repetitiva e previsível é uma tarefa que o sistema pode fazer. O papel da equipe é o que a IA não consegue: criar, negociar, inovar, relacionar.</div>
+  </div>
+</div>
+<div class="cll">"Uma empresa que processa 50 contratos por mês com 3 etapas manuais cada uma está consumindo recursos que poderiam estar sendo usados para crescer."</div>
+<div class="blk"><div class="blk-h">Os 3 Ganhos Fundamentais</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">⚡</div><div class="c-t">Eficiência</div>
+  <div class="c-b">Fazer mais com os mesmos recursos. Cada processo automatizado aumenta a relação entre o que é produzido e o que é consumido — sem precisar contratar.</div></div>
+  <div class="card"><div class="c-e">🎯</div><div class="c-t">Produtividade Constante</div>
+  <div class="c-b">Qualidade consistente sem depender de pessoa. O processo acontece sempre, no tempo certo, do jeito certo — independentemente de quem está na equipe.</div></div>
+  <div class="card"><div class="c-e">🔭</div><div class="c-t">Controle Operacional</div>
+  <div class="c-b">Visibilidade sem microgestão. Cada etapa é registrada. O gestor sabe em tempo real o status de cada processo — sem precisar perguntar para ninguém.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Antes vs. Depois — Processos Transformados</div>
+<div class="tw"><table><thead><tr><th>Processo</th><th>Manual</th><th>Automatizado</th><th>Economia</th></tr></thead><tbody>
+<tr><td>Relatório semanal de vendas</td><td>3h/semana por analista</td><td>Dashboard gerado automaticamente</td><td><span class="badge bg">~12h/mês</span></td></tr>
+<tr><td>Follow-up de proposta</td><td>2h/dia por vendedor</td><td>Sequência automática D+1, D+3, D+7</td><td><span class="badge bg">~40h/mês</span></td></tr>
+<tr><td>NF + boleto após venda</td><td>4h/semana do financeiro</td><td>Gerado na venda via integração</td><td><span class="badge bg">~16h/mês</span></td></tr>
+<tr><td>Cobrança de inadimplentes</td><td>3h/semana + inconstante</td><td>Sequência automática D+1 ao D+30</td><td><span class="badge bg">~12h/mês</span></td></tr>
+<tr><td>Distribuição de leads</td><td>1h/dia do gestor comercial</td><td>Regras automáticas em segundos</td><td><span class="badge bg">~20h/mês</span></td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Controle Operacional — O que Muda</div>
+<div class="tw"><table><thead><tr><th>Dimensão</th><th>Sem Automação</th><th>Com Automação</th></tr></thead><tbody>
+<tr><td>Visibilidade</td><td>Precisa perguntar para saber o status</td><td>Dashboard em tempo real — cada etapa visível</td></tr>
+<tr><td>Rastreabilidade</td><td>Impossível saber quem fez o quê e quando</td><td>Log completo de cada ação com timestamp</td></tr>
+<tr><td>Detecção de gargalos</td><td>Identificado depois do problema</td><td>Alerta preventivo quando etapa ultrapassa o tempo esperado</td></tr>
+<tr><td>Melhoria contínua</td><td>Baseada em intuição do gestor</td><td>Baseada em dados — tempo por etapa, taxa de erro, gargalos quantificados</td></tr>
+</tbody></table></div></div>`;}
+
+// ── panel 1: identificação ──────────────────────────────────
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">🔍</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Identificação</div>
+    <div class="sh-title">Como o Sistema Mapeia os Processos da Empresa</div>
+    <div class="sh-desc">Diagnóstico guiado + análise de dados existentes + biblioteca setorial — os processos que vivem na cabeça das pessoas são trazidos à superfície e estruturados.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">As 3 Vias de Identificação</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">📋</div><div class="c-t">Diagnóstico Guiado</div>
+  <div class="c-b">O empresário responde perguntas estruturadas sobre o que acontece em cada área. O sistema estrutura as respostas em um mapa de processos.</div></div>
+  <div class="card"><div class="c-e">🔗</div><div class="c-t">Análise de Dados</div>
+  <div class="c-b">O sistema analisa registros do CRM, e-mails, tarefas e ferramentas conectadas para inferir os processos que realmente existem na operação.</div></div>
+  <div class="card"><div class="c-e">📚</div><div class="c-t">Biblioteca Setorial</div>
+  <div class="c-b">O sistema sugere automaticamente os processos típicos do setor e porte da empresa — como uma checklist inteligente de processos que toda empresa deveria ter.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Área 1 — Processos Comerciais e de Vendas</div>
+<div class="tw"><table><thead><tr><th>Processo</th><th>Etapas Principais</th><th>Frequência</th><th>Score Impactado</th></tr></thead><tbody>
+<tr><td>Geração e qualificação de leads</td><td>Captação → Triagem → Qualificação ICP → Distribuição → CRM</td><td>Diária</td><td>Vendas + Marketing</td></tr>
+<tr><td>Ciclo de vendas consultivo</td><td>Contato → Diagnóstico → Proposta → Follow-up → Negociação → Fechamento</td><td>Por deal</td><td>Vendas</td></tr>
+<tr><td>Onboarding de cliente</td><td>Boas-vindas → Config → Treinamento → Ativação → Check 30d</td><td>Por cliente</td><td>Marketing + Processos</td></tr>
+<tr><td>Renovação e upsell</td><td>Alerta 60d → Review → Proposta → Negociação → Assinatura</td><td>Mensal/Anual</td><td>Vendas + Financeiro</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Área 2 — Processos Financeiros</div>
+<div class="tw"><table><thead><tr><th>Processo</th><th>Etapas Principais</th><th>Potencial de Automação</th></tr></thead><tbody>
+<tr><td>Ciclo de faturamento</td><td>Venda → Contrato → NF → Boleto → Envio → Baixa</td><td>Automação total — NF + boleto gerados na venda</td></tr>
+<tr><td>Cobrança de inadimplentes</td><td>D+1 lembrete → D+3 segunda via → D+7 formal → D+10 ligação → D+30 jurídico</td><td>Automação D+1 a D+15 — 90% do esforço eliminado</td></tr>
+<tr><td>Fechamento financeiro mensal</td><td>Consolidação → DRE → Fluxo de caixa → Relatório → Distribuição</td><td>Relatório gerado e enviado automaticamente todo dia 5</td></tr>
+<tr><td>Controle de despesas</td><td>Solicitação → Aprovação → Lançamento → Conciliação</td><td>Fluxo de aprovação automático com limites por cargo</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Áreas 3, 4 e 5 — Atendimento, Operacional e Equipe</div>
+<div class="tw"><table><thead><tr><th>Área</th><th>Processos Chave</th><th>Automação Aplicável</th></tr></thead><tbody>
+<tr><td><span class="badge bt">Atendimento</span></td><td>Abertura de ticket, triagem, SLA, NPS pós-atendimento</td><td>Triagem automática, roteamento por categoria, coleta de NPS</td></tr>
+<tr><td><span class="badge bo">Operacional</span></td><td>Entrega de produto/serviço, controle de qualidade, relatório operacional</td><td>Checklist automático, alertas de desvio, relatório gerado automaticamente</td></tr>
+<tr><td><span class="badge bp">Equipe</span></td><td>Onboarding interno, check-in semanal, avaliação de desempenho</td><td>Sequência automática de tarefas, formulário semanal, ciclo de avaliação disparado</td></tr>
+</tbody></table></div></div>`;}
+
+// ── panel 2: modelagem ──────────────────────────────────────
+function p2(){
+const processes = {
+  venda:{
+    icon:'🎯', name:'Ciclo Completo de Venda',
+    desc:'Do lead recebido ao fechamento — com follow-ups automáticos e handoff para onboarding.',
+    steps:[
+      {type:'auto',typeLabel:'Automática',title:'Lead recebido e atribuído',in:'Lead do formulário/campanha',out:'Lead no CRM + vendedor notificado',time:'Instantâneo',color:'var(--g)'},
+      {type:'human',typeLabel:'Humana',title:'Qualificação do lead',in:'Dados do lead no CRM',out:'Lead qualificado ou descartado',time:'Prazo: 24h',color:'var(--b)'},
+      {type:'human',typeLabel:'Humana',title:'Contato inicial',in:'Lead qualificado',out:'Call registrado + próximo passo',time:'Prazo: 48h',color:'var(--b)'},
+      {type:'auto',typeLabel:'Automática',title:'Follow-up D+1 se sem resposta',in:'Sem resposta ao contato',out:'E-mail automático com conteúdo de valor',time:'D+1 automático',color:'var(--g)'},
+      {type:'human',typeLabel:'Humana',title:'Diagnóstico e proposta',in:'Call de diagnóstico',out:'Proposta enviada + registrada no CRM',time:'Prazo: 48h',color:'var(--b)'},
+      {type:'decision',typeLabel:'Condicional',title:'Proposta aceita?',in:'Status da proposta',out:'SIM → Fechamento | NÃO → Negociação',time:'Decisão do cliente',color:'var(--p)'},
+      {type:'auto',typeLabel:'Automática',title:'Ativação do onboarding',in:'Venda fechada',out:'Onboarding iniciado + CS designado',time:'Instantâneo',color:'var(--g)'},
+    ]
+  },
+  cobranca:{
+    icon:'💰', name:'Cobrança de Inadimplência',
+    desc:'Sequência automatizada do D+1 ao D+30 — sem que o financeiro precise lembrar de nada.',
+    steps:[
+      {type:'auto',typeLabel:'Automática',title:'Boleto vencido detectado',in:'Integração bancária / sistema de cobrança',out:'Fluxo de cobrança iniciado',time:'D+0 — instantâneo',color:'var(--g)'},
+      {type:'auto',typeLabel:'Automática',title:'Lembrete amigável D+1',in:'Cliente inadimplente',out:'E-mail com segunda via e link de pagamento',time:'D+1',color:'var(--g)'},
+      {type:'auto',typeLabel:'Automática',title:'Segunda via + WhatsApp D+3',in:'Sem pagamento',out:'WhatsApp/SMS + segunda via + opção de negociação',time:'D+3',color:'var(--g)'},
+      {type:'auto',typeLabel:'Automática',title:'E-mail formal D+7',in:'Ainda sem pagamento',out:'E-mail com menção a juros e renegociação',time:'D+7',color:'var(--g)'},
+      {type:'human',typeLabel:'Humana',title:'Ligação do financeiro D+10',in:'Tarefa criada automaticamente',out:'Contato direto + acordo de pagamento',time:'D+10',color:'var(--b)'},
+      {type:'decision',typeLabel:'Condicional',title:'Acordo firmado?',in:'Resultado da ligação',out:'SIM → Encerrar fluxo | NÃO → Continuar',time:'Na ligação',color:'var(--p)'},
+      {type:'auto',typeLabel:'Automática',title:'Encaminhamento D+30',in:'Sem resolução',out:'Dados enviados para cobrança formal',time:'D+30',color:'var(--r)'},
+    ]
+  },
+  onboarding:{
+    icon:'🤝', name:'Onboarding de Novo Cliente',
+    desc:'100% dos clientes recebem a mesma experiência — do D+0 ao D+30 — sem depender de CS disponível.',
+    steps:[
+      {type:'auto',typeLabel:'Automática',title:'Boas-vindas D+0',in:'Venda fechada',out:'E-mail com credenciais + CS designado',time:'Instantâneo',color:'var(--g)'},
+      {type:'human',typeLabel:'Humana',title:'Call de boas-vindas D+1',in:'Tarefa criada para o CS',out:'Contato inicial + dúvidas iniciais resolvidas',time:'D+1',color:'var(--b)'},
+      {type:'auto',typeLabel:'Automática',title:'Vídeo + checklist D+2',in:'Sem resposta ao e-mail',out:'Vídeo de primeiros passos + checklist interativo',time:'D+2',color:'var(--g)'},
+      {type:'decision',typeLabel:'Condicional',title:'Checklist concluído? D+5',in:'Status do checklist',out:'SIM → Próximo passo | NÃO → Suporte ativo',time:'D+5 verificação',color:'var(--p)'},
+      {type:'auto',typeLabel:'Automática',title:'NPS de onboarding D+14',in:'D+14 após venda',out:'Formulário NPS disparado automaticamente',time:'D+14',color:'var(--g)'},
+      {type:'auto',typeLabel:'Automática',title:'Relatório de uso D+30',in:'Dados de uso do cliente',out:'Relatório + reunião de review agendada',time:'D+30',color:'var(--g)'},
+    ]
+  }
+};
+
+let activeProcess = 'venda';
+
+function renderProcess(key){
+  const p = processes[key];
+  const typeColors = {auto:'var(--g)',human:'var(--b)',decision:'var(--p)',wait:'var(--y)',trigger:'var(--o)'};
+  return`
+  <div class="pf-header">
+    <span class="pf-icon">${p.icon}</span>
+    <div><div class="pf-name">${p.name}</div><div class="pf-desc">${p.desc}</div></div>
+  </div>
+  <div class="step-list">
+  ${p.steps.map((s,i)=>`
+    <div class="step-item">
+      <div class="step-icon" style="border-color:${typeColors[s.type]};color:${typeColors[s.type]}">${i+1}</div>
+      <div class="step-body">
+        <div class="step-type" style="color:${typeColors[s.type]}">${s.typeLabel}</div>
+        <div class="step-title">${s.title}</div>
+        <div class="step-time" style="color:var(--mid)">${s.time}</div>
+        <div class="step-io">
+          <span class="step-io-item step-in">↓ ${s.in}</span>
+          <span class="step-io-item step-out">↑ ${s.out}</span>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+setTimeout(()=>{
+  document.querySelectorAll('.ptab').forEach(t=>{
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('on'));
+      this.classList.add('on');
+      document.getElementById('pf-body').innerHTML = renderProcess(this.dataset.p);
+    });
+  });
+},0);
+
+return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Modelagem</div>
+    <div class="sh-title">Estruturação de Processos em Fluxos Executáveis</div>
+    <div class="sh-desc">Cada processo tem: gatilho, etapas, responsáveis, entradas, saídas e condições de desvio. Explore os 3 processos modelados completamente abaixo.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">Anatomia de um Processo no Sistema EGE</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>Definição</th><th>Exemplo — Processo de Venda</th></tr></thead><tbody>
+<tr><td><strong>Gatilho</strong></td><td>O evento que inicia o processo</td><td>Lead qualificado atribuído ao vendedor no CRM</td></tr>
+<tr><td><strong>Etapas</strong></td><td>Sequência de ações a executar</td><td>Contato → Diagnóstico → Proposta → Follow-up → Fechamento</td></tr>
+<tr><td><strong>Responsáveis</strong></td><td>Quem executa cada etapa</td><td>Vendedor executa etapas humanas; sistema executa follow-ups</td></tr>
+<tr><td><strong>Entradas / Saídas</strong></td><td>O que cada etapa recebe e produz</td><td>Entrada: diagnóstico. Saída: proposta no CRM + e-mail enviado</td></tr>
+<tr><td><strong>Condições de Desvio</strong></td><td>O que acontece fora do fluxo padrão</td><td>Proposta rejeitada → subprocesso de negociação</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Os 4 Tipos de Etapa</div>
+<div class="grid3">
+  <div class="card" style="border-left:3px solid var(--g)"><div class="c-e">🤖</div><div class="c-t" style="color:var(--g)">Automática</div><div class="c-b">Executada pelo sistema sem intervenção. Envio de e-mail, geração de NF, atualização de CRM, notificações.</div></div>
+  <div class="card" style="border-left:3px solid var(--b)"><div class="c-e">👤</div><div class="c-t" style="color:var(--b)">Humana</div><div class="c-b">Requer julgamento ou relacionamento. Ligação, reunião, negociação — o que a IA não substitui.</div></div>
+  <div class="card" style="border-left:3px solid var(--p)"><div class="c-e">🔀</div><div class="c-t" style="color:var(--p)">Condicional</div><div class="c-b">Bifurcação baseada em dado. SE proposta aceita → avança; SE rejeitada → aciona negociação.</div></div>
+  <div class="card" style="border-left:3px solid var(--y)"><div class="c-e">⏳</div><div class="c-t" style="color:var(--y)">Espera/Tempo</div><div class="c-b">Aguarda prazo ou resposta antes de prosseguir. D+1, D+3, 48h, 30 dias — cronômetro automático.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">Processos Modelados — Explore cada fluxo completo</div>
+<div class="process-tabs">
+  <div class="ptab on" data-p="venda">🎯 Ciclo de Venda</div>
+  <div class="ptab" data-p="cobranca">💰 Cobrança</div>
+  <div class="ptab" data-p="onboarding">🤝 Onboarding</div>
+</div>
+<div class="process-flow" id="pf-body">${renderProcess('venda')}</div>
+</div>`;
+}
+
+// ── panel 3: automação ──────────────────────────────────────
+function p3(){
+const wfs = [
+  {num:'WF01',cat:'comercial',catLabel:'Comercial',icon:'🎯',title:'Distribuição Inteligente de Leads',
+   trigger:'Novo lead cadastrado',action:'Qualifica por ICP, distribui ao vendedor por round-robin/carga, inicia cronômetro de contato',savings:'~20h/mês economizadas',color:'var(--g)',
+   steps:['Lead cadastrado no sistema','Verificação automática de critérios ICP','Score de qualificação calculado','Atribuição ao vendedor por regra','Notificação ao vendedor + criação de tarefa']},
+  {num:'WF02',cat:'comercial',catLabel:'Comercial',icon:'📧',title:'Sequência de Follow-up de Proposta',
+   trigger:'Proposta enviada sem resposta',action:'E-mail D+1 (valor), D+3 (prova social), D+7 (urgência). Para quando cliente responde',savings:'~40h/mês economizadas',color:'var(--g)',
+   steps:['Proposta enviada → status "aguardando"','D+1: e-mail de valor agregado','D+3: e-mail com prova social (caso de sucesso)','D+7: e-mail de urgência leve','D+10: tarefa para ligação do vendedor']},
+  {num:'WF03',cat:'comercial',catLabel:'Comercial',icon:'⚠️',title:'Alerta de Deal Inativo',
+   trigger:'Deal sem atividade por X dias',action:'Notifica vendedor, cria tarefa de ação. Alerta gestor se inatividade continuar por mais 3 dias',savings:'Deals perdidos por esquecimento: eliminados',color:'var(--g)',
+   steps:['Deal no pipeline há X dias sem movimento','Notificação push ao vendedor responsável','Tarefa de ação urgente criada automaticamente','Se +3 dias sem movimento: alerta ao gestor','Relatório de deals em risco gerado semanalmente']},
+  {num:'WF04',cat:'comercial',catLabel:'Comercial',icon:'🤝',title:'Ativação do Onboarding',
+   trigger:'Venda marcada como fechada',action:'Cria deal de onboarding, atribui CS, inicia sequência D+0 a D+30, agenda review no D+30',savings:'8h por cliente → 30 min de supervisão',color:'var(--g)',
+   steps:['Venda fechada no CRM','Deal de onboarding criado automaticamente','CS responsável atribuído + notificado','Sequência D+0 a D+30 iniciada','Reunião de review agendada no D+30']},
+  {num:'WF05',cat:'financeiro',catLabel:'Financeiro',icon:'🧾',title:'Geração Automática de NF e Boleto',
+   trigger:'Venda fechada ou contrato assinado',action:'Emissão automática de NF com dados do contrato + geração de boleto + envio ao cliente',savings:'~16h/mês | Erros de emissão: -98%',color:'var(--b)',
+   steps:['Venda fechada → integração com sistema de NF','Dados do contrato puxados automaticamente','NF emitida com dados corretos','Boleto ou link de pagamento gerado','E-mail enviado ao cliente com NF + boleto']},
+  {num:'WF06',cat:'financeiro',catLabel:'Financeiro',icon:'💳',title:'Cobrança Sequencial de Inadimplência',
+   trigger:'Boleto vencido',action:'Sequência automática D+1 (lembrete), D+3 (segunda via), D+7 (formal), D+10 (tarefa), D+15 (proposta), D+30 (jurídico)',savings:'~12h/mês | Recuperação: +35%',color:'var(--b)',
+   steps:['Boleto vencido detectado via integração','D+1: lembrete amigável + segunda via','D+3: WhatsApp/SMS + segunda via','D+7: e-mail formal com juros + renegociação','D+10: tarefa para ligação do financeiro']},
+  {num:'WF07',cat:'financeiro',catLabel:'Financeiro',icon:'📊',title:'Relatório Financeiro Mensal',
+   trigger:'Dia 5 de cada mês às 08h',action:'Coleta dados do mês, gera DRE + fluxo de caixa + variação vs. meta em PDF, envia para gestão',savings:'3h/mês → Zero',color:'var(--b)',
+   steps:['Gatilho de tempo: dia 5 às 08h','Dados do mês anterior coletados via integrações','DRE e fluxo de caixa calculados automaticamente','Variação vs. meta calculada + insights da IA','PDF gerado e enviado para os destinatários definidos']},
+  {num:'WF08',cat:'atendimento',catLabel:'Atendimento',icon:'🎫',title:'Triagem e Roteamento de Tickets',
+   trigger:'Novo chamado recebido',action:'Categoriza por palavras-chave, atribui ao responsável correto, envia confirmação ao cliente com protocolo e SLA',savings:'1h/dia do suporte → 5 min de supervisão',color:'var(--t)',
+   steps:['Chamado recebido por e-mail, WhatsApp ou formulário','Categorização automática por palavras-chave','Verificação de prioridade (SLA)','Atribuição ao responsável correto por categoria','Confirmação ao cliente com protocolo e prazo']},
+  {num:'WF09',cat:'atendimento',catLabel:'Atendimento',icon:'⭐',title:'Coleta Automática de NPS',
+   trigger:'Venda concluída D+3 ou ticket encerrado',action:'Formulário NPS de 1 pergunta + 1 qualitativa. Notas <6 geram alerta + tarefa imediata para CS',savings:'NPS coletado de 100% dos clientes',color:'var(--t)',
+   steps:['Gatilho: venda fechada ou ticket resolvido','Espera configurável (padrão: 3 dias)','Formulário NPS enviado por e-mail ou WhatsApp','Resposta registrada no dashboard de NPS','Notas 0–6: alerta imediato + tarefa de contato para CS']},
+  {num:'WF10',cat:'gestao',catLabel:'Gestão',icon:'📈',title:'Relatório de KPIs Semanal',
+   trigger:'Toda segunda-feira às 07h',action:'Coleta KPIs dos últimos 7 dias, compara com meta, gera insight da IA e envia para o empresário',savings:'2h/semana do gestor → Zero',color:'var(--p)',
+   steps:['Gatilho de tempo: segunda-feira 07h','KPIs dos últimos 7 dias coletados via integrações','Comparação vs. semana anterior e vs. meta do ciclo','Card de insight da IA gerado com análise','Relatório enviado por e-mail + notificação no dashboard']},
+  {num:'WF11',cat:'gestao',catLabel:'Gestão',icon:'🔔',title:'Alerta de Desvio Estratégico',
+   trigger:'KPI ultrapassa threshold de alerta',action:'IA analisa contexto, gera mensagem com causa provável e ação recomendada, notifica no dashboard e push',savings:'Desvios detectados em horas, não em meses',color:'var(--p)',
+   steps:['KPI monitorado cruza threshold configurado','IA analisa dados contextuais e histórico','Causa provável identificada automaticamente','Ação recomendada gerada com impacto estimado','Alerta enviado: push + e-mail + dashboard']},
+  {num:'WF12',cat:'gestao',catLabel:'Gestão',icon:'👥',title:'Check-in Semanal da Equipe',
+   trigger:'Toda segunda-feira às 08h',action:'3 perguntas para cada membro (concluí / estou fazendo / está me bloqueando). Respostas consolidadas no dashboard',savings:'Reunião de status de 1h → dashboard atualizado',color:'var(--p)',
+   steps:['Gatilho de tempo: segunda-feira 08h','Formulário de 3 perguntas enviado para cada colaborador','Prazo para resposta: até 10h','Respostas consolidadas automaticamente no dashboard','Bloqueios destacados para ação imediata do gestor']},
+];
+
+function renderWF(w){
+  const catColors = {comercial:'var(--g)',financeiro:'var(--b)',atendimento:'var(--t)',gestao:'var(--p)'};
+  const catBg = {comercial:'rgba(0,192,138,.12)',financeiro:'rgba(19,84,204,.12)',atendimento:'rgba(8,128,160,.12)',gestao:'rgba(114,48,220,.12)'};
+  const stepColors = ['var(--g)','var(--b)','var(--t)','var(--p)','var(--o)'];
+  return`
+  <div class="wf-card ${w.cat}" onclick="this.classList.toggle('open')">
+    <div class="wf-head">
+      <span class="wf-num">${w.num}</span>
+      <span class="wf-cat" style="background:${catBg[w.cat]};color:${catColors[w.cat]}">${w.catLabel}</span>
+    </div>
+    <div style="font-size:22px;margin-bottom:7px">${w.icon}</div>
+    <div class="wf-title">${w.title}</div>
+    <div class="wf-trigger">⚡ Gatilho: <span>${w.trigger}</span></div>
+    <div class="wf-action">${w.action}</div>
+    <div class="wf-savings">⏱ ${w.savings}</div>
+    <div class="wf-expanded">
+      <div style="font-size:10px;font-weight:700;color:var(--mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Etapas do Workflow</div>
+      <div class="wf-step-list">
+        ${w.steps.map((s,i)=>`
+        <div class="wf-step">
+          <div class="wf-step-dot" style="background:${stepColors[i%5]}22;color:${stepColors[i%5]};border:1.5px solid ${stepColors[i%5]}">${i+1}</div>
+          <span style="color:var(--txt);line-height:1.5">${s}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">⚡</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Automação</div>
+    <div class="sh-title">Os 12 Workflows Essenciais — Catálogo Completo</div>
+    <div class="sh-desc">Clique em qualquer card para expandir e ver as etapas detalhadas. Cada workflow tem gatilho, ação e economia de tempo calculada.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">Maturidade e Workflows — Progressão por Nível</div>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Workflows Recomendados</th><th>Objetivo</th></tr></thead><tbody>
+<tr><td><span class="badge br">Nível 1</span></td><td>WF05 (NF automática) + WF06 (cobrança) + WF09 (NPS)</td><td>Estabilizar caixa e começar a medir satisfação</td></tr>
+<tr><td><span class="badge bo">Nível 2</span></td><td>+ WF01 (leads) + WF02 (follow-up) + WF10 (KPIs semanais)</td><td>Estruturar processo comercial e visibilidade</td></tr>
+<tr><td><span class="badge by">Nível 3</span></td><td>+ WF04 (onboarding) + WF07 (relatório financeiro) + WF08 (tickets)</td><td>Padronizar entrega e atendimento</td></tr>
+<tr><td><span class="badge bb">Nível 4</span></td><td>+ WF03 (deal inativo) + WF11 (alerta estratégico) + WF12 (check-in)</td><td>Escalar operação com controle total</td></tr>
+<tr><td><span class="badge bg">Nível 5</span></td><td>Todos os workflows + automações personalizadas por setor</td><td>Operação autônoma com IA gerenciando o dia a dia</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Catálogo Completo — Clique para expandir as etapas</div>
+<div class="wf-grid">${wfs.map(renderWF).join('')}</div>
+</div>`;
+}
+
+// ── panel 4: benefícios ──────────────────────────────────────
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Benefícios</div>
+    <div class="sh-title">O Impacto Real no Negócio</div>
+    <div class="sh-desc">Cada workflow tem um ROI calculado — em horas, em dinheiro e em pontos de score. A automação não é custo: é o investimento com maior retorno operacional disponível.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">ROI por Workflow — Economia Calculada</div>
+<div class="roi-grid">
+  ${[
+    {num:'WF01',name:'Distribuição de Leads',h:'20h/mês',r:'R$1.600/mês',extra:'Leads perdidos por atraso: eliminados'},
+    {num:'WF02',name:'Follow-up de Propostas',h:'40h/mês',r:'R$3.200/mês',extra:'+8–12% na taxa de fechamento'},
+    {num:'WF05',name:'NF e Boleto Automático',h:'16h/mês',r:'R$1.280/mês',extra:'Erros de emissão: -98%'},
+    {num:'WF06',name:'Cobrança Sequencial',h:'12h/mês',r:'R$960/mês',extra:'Recuperação de inadimplentes: +35%'},
+    {num:'WF07',name:'Relatório Financeiro',h:'3h/mês',r:'R$240/mês',extra:'DRE sempre no prazo'},
+    {num:'WF10',name:'KPIs Semanais',h:'8h/mês',r:'R$640/mês',extra:'Gestor decide com dados, não intuição'},
+  ].map(r=>`
+  <div class="roi-card">
+    <div class="roi-wf">${r.num}</div>
+    <div class="roi-name">${r.name}</div>
+    <div class="roi-row"><span class="roi-label">⏱ Tempo economizado</span><span class="roi-val" style="color:var(--g)">${r.h}</span></div>
+    <div class="roi-row"><span class="roi-label">💰 Custo evitado</span><span class="roi-val" style="color:var(--b)">${r.r}</span></div>
+    <div class="roi-row"><span style="font-size:11px;color:var(--mid);font-style:italic">${r.extra}</span></div>
+  </div>`).join('')}
+</div>
+<div class="roi-total">
+  <div><div class="roi-total-label">Total economizado/mês — 6 workflows principais</div>
+  <div style="font-size:12px;color:var(--mid);margin-top:2px">119 horas · equivalente a 1,5 funcionário de tempo integral redirected para crescimento</div></div>
+  <div class="roi-total-val">R$9.520</div>
+</div></div>
+<div class="blk"><div class="blk-h">Escalabilidade Não-Linear — O Benefício Estratégico</div>
+<div class="tw"><table><thead><tr><th>Cenário</th><th>Operação Manual</th><th>Operação Automatizada</th></tr></thead><tbody>
+<tr><td>50 → 200 clientes ativos</td><td>3 → 12 pessoas de CS para atender</td><td>1 → 2 pessoas de CS + workflows automáticos</td></tr>
+<tr><td>100 → 500 novos leads/mês</td><td>1 → 5 SDRs para qualificação e distribuição</td><td>1 SDR revisando + automação processando tudo</td></tr>
+<tr><td>Relatórios para 5 áreas</td><td>1 analista por área gerando manualmente</td><td>Todos os relatórios gerados automaticamente</td></tr>
+<tr><td>Faturamento dobra</td><td>Backoffice financeiro precisaria crescer proporcionalmente</td><td>Mesma estrutura — processos financeiros já automatizados</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Impacto no Score Empresarial EGE</div>
+<div class="tw"><table><thead><tr><th>Automações Implementadas</th><th>Dimensão Impactada</th><th>Ganho no Score</th></tr></thead><tbody>
+<tr><td>Processo comercial (WF01 + WF02 + WF03)</td><td>Vendas (12%)</td><td><span class="badge bg">+15 a +25 pts</span></td></tr>
+<tr><td>Financeiro automatizado (WF05 + WF06 + WF07)</td><td>Financeiro (15%)</td><td><span class="badge bg">+18 a +28 pts</span></td></tr>
+<tr><td>Atendimento automatizado (WF08 + WF09)</td><td>Processos (10%)</td><td><span class="badge bg">+12 a +20 pts</span></td></tr>
+<tr><td>Gestão automatizada (WF10 + WF11 + WF12)</td><td>Gestão (12%)</td><td><span class="badge bg">+10 a +18 pts</span></td></tr>
+<tr><td><strong>Todos os 12 workflows implementados</strong></td><td>Múltiplas dimensões</td><td><span class="badge bg" style="font-size:12px">+55 a +90 pts globais em 6 meses</span></td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Melhoria Contínua — Como a IA Otimiza os Processos</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">📉</div><div class="c-t">Análise de Gargalos</div>
+  <div class="c-b">A IA identifica as etapas com maior tempo médio e maior taxa de abandono — os dois principais sinais de processo subótimo.</div></div>
+  <div class="card"><div class="c-e">🧪</div><div class="c-t">A/B Testing</div>
+  <div class="c-b">Testa dois fluxos simultaneamente e compara resultados — qual e-mail de follow-up tem maior taxa de resposta.</div></div>
+  <div class="card"><div class="c-e">🏆</div><div class="c-t">Benchmark Setorial</div>
+  <div class="c-b">Compara métricas de processo com empresas do mesmo setor — revelando se seu ciclo de vendas está acima ou abaixo da média.</div></div>
+</div></div>`;}
+
+const panels=[p0,p1,p2,p3,p4];
+
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+  },150);
+}
+show(0);
+</script>
+</body>
+</html>

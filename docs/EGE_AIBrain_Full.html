@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — AI Brain · Decision Intelligence Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.06),transparent),radial-gradient(ellipse 50% 50% at 96% 90%,rgba(114,48,220,.05),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(28px,5vw,56px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:680px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}
+.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+/* NAV — 10 tabs in 2 rows */
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:36px}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:11px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after,.n0h::after{background:var(--g)}.n1::after,.n1h::after{background:var(--b)}.n2::after,.n2h::after{background:var(--p)}.n3::after,.n3h::after{background:var(--t)}.n4::after,.n4h::after{background:var(--o)}
+.n5::after{background:var(--r)}.n6::after{background:var(--y)}.n7::after{background:var(--g)}.n8::after{background:var(--t)}.n9::after{background:var(--p)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--mid);margin-bottom:4px}
+.nb-t{font-size:10.5px;font-weight:700;color:var(--txt);line-height:1.25}
+/* content */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:34px;flex-shrink:0}
+.sh-tag{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.7;max-width:700px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:13px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.code-head{background:var(--s3);padding:7px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em}
+.code-body{padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.85;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.ty{color:var(--b)}.st{color:var(--g)}.nm{color:var(--o)}.cm{color:var(--mid);font-style:italic}
+/* arch diagram */
+.arch{background:var(--s2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.arch-layer{border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;gap:12px;transition:background .2s}
+.arch-layer:last-child{border-bottom:none}
+.arch-layer:hover{background:var(--s3)}
+.arch-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;min-width:70px;flex-shrink:0}
+.arch-name{font-size:13px;font-weight:700;min-width:180px;flex-shrink:0}
+.arch-desc{font-size:12px;color:var(--mid);flex:1;line-height:1.55}
+.arch-tech{font-family:'JetBrains Mono',monospace;font-size:9.5px;margin-left:auto;flex-shrink:0;text-align:right}
+/* flow cards */
+.flow{display:flex;flex-direction:column;gap:0}
+.fl{display:flex;gap:12px;position:relative}
+.fl::before{content:'';position:absolute;left:15px;top:36px;bottom:-4px;width:2px;background:var(--bd)}
+.fl:last-child::before{display:none}
+.fl-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0;background:var(--bg);z-index:1;margin-top:4px}
+.fl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 15px;margin-bottom:8px}
+.fl-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fl-desc{font-size:12px;color:var(--mid);line-height:1.55}
+/* learning cycles */
+.learn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:600px){.learn-grid{grid-template-columns:1fr}}
+.lc{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.lc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.lc0::before{background:var(--g)}.lc1::before{background:var(--b)}.lc2::before{background:var(--o)}.lc3::before{background:var(--p)}
+.lc-cycle{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;margin-bottom:5px}
+.lc-name{font-size:14px;font-weight:800;margin-bottom:6px}
+.lc-desc{font-size:12px;color:var(--mid);line-height:1.6}
+/* decision chain */
+.dc{display:flex;align-items:stretch;gap:0;margin:16px 0;overflow-x:auto}
+.dc-step{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 14px;text-align:center;flex:1;min-width:100px;position:relative}
+.dc-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--mid);font-size:16px;z-index:2}
+.dc-step:last-child::after{display:none}
+.dc-icon{font-size:24px;margin-bottom:6px}
+.dc-label{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.dc-name{font-size:13px;font-weight:800}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>AI Brain · Decision Intelligence Engine</div>
+  <h1>The AI Brain<br><span>EGE Platform</span></h1>
+  <p class="sub">Motor de inteligência de decisão que transforma dados brutos em insights estratégicos, diagnósticos precisos, recomendações acionáveis e roadmaps de crescimento adaptados ao estágio de cada empresa.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">8</div><div class="sl">Camadas de arquitetura</div></div>
+  <div class="st sb"><div class="sv">10</div><div class="sl">Seções do documento</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Mecanismos de aprendizado</div></div>
+  <div class="st so"><div class="sv">3</div><div class="sl">Modos de operação</div></div>
+  <div class="st st2"><div class="sv">0.3</div><div class="sl">Temperatura padrão IA</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">🎯 Purpose</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">📥 Data Inputs</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">🔬 Analysis</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">💡 Rec Engine</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">📈 Growth</div></div>
+  <div class="nb n5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">🚨 Monitoring</div></div>
+  <div class="nb n6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">💬 Interaction</div></div>
+  <div class="nb n7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">🧠 Learning</div></div>
+  <div class="nb n8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">⚡ Decision IQ</div></div>
+  <div class="nb n9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">🏗 Architecture</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const C={g:'var(--g)',b:'var(--b)',p:'var(--p)',o:'var(--o)',t:'var(--t)',r:'var(--r)',y:'var(--y)'};
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 01 — Purpose</div>
+    <div class="sh-title">O Propósito do AI Brain</div>
+    <div class="sh-desc">Não é um chatbot com memória — é um motor de inteligência de decisão que observa cada empresa continuamente e entrega diagnósticos precisos, recomendações priorizadas por impacto e roadmaps adaptados ao estágio de maturidade de cada negócio.</div>
+  </div>
+</div>
+<div class="cll">"O gap entre dados disponíveis e decisões de qualidade é exatamente onde o AI Brain opera. Não é mais uma ferramenta de coleta — é o sistema que transforma o que já foi coletado em inteligência utilizável, no momento certo, para a pessoa certa tomar uma ação concreta."</div>
+
+<div class="blk"><div class="blk-h">Os 3 Modos de Operação Simultâneos</div>
+<div class="grid3">
+  ${[
+    {e:'💬',t:'Modo Reativo',c:C.g,d:'Responde às perguntas do empresário com raciocínio estratégico embasado nos dados reais da empresa. Temperatura 0.4 — equilibra precisão e criatividade.'},
+    {e:'📡',t:'Modo Proativo',c:C.b,d:'Monitora continuamente e inicia alertas e insights sem que o empresário precise perguntar. Temperatura 0.3 — alta precisão.'},
+    {e:'📊',t:'Modo Sintético',c:C.p,d:'Produz análises profundas, relatórios de ciclo e roadmaps estruturados de forma periódica. Temperatura 0.3 — máxima consistência.'},
+  ].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Os 4 Trabalhos do AI Brain</div>
+<div class="tw"><table><thead><tr><th>Trabalho</th><th>Descrição</th><th>Input Principal</th><th>Output Gerado</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Compreensão</span></td><td>Ajuda o empresário a entender o que está acontecendo — causas e conexões, não apenas números</td><td>Score + KPIs + pipeline</td><td>Diagnóstico narrativo com evidências</td></tr>
+<tr><td><span class="badge bb">Identificação</span></td><td>Sinaliza problemas antes que se tornem crises e oportunidades antes que a janela feche</td><td>Série temporal + benchmark</td><td>Alertas e oportunidades priorizadas</td></tr>
+<tr><td><span class="badge bp">Decisão</span></td><td>Fornece raciocínio estratégico para tomar decisões difíceis com mais confiança</td><td>Pergunta + contexto completo</td><td>Análise + rec + ação + critério</td></tr>
+<tr><td><span class="badge bo">Aceleração</span></td><td>Conecta decisões ao plano de execução — insights viram ação, ação vira resultado medido</td><td>Plano + iniciativas + progresso</td><td>Ajuste de prioridades + próxima ação</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Camadas do Sistema — Visão Executiva</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Componente</th><th>Função Central</th><th>Tecnologia</th></tr></thead><tbody>
+${[['1 — Ingestão','Data Aggregator','Coleta e normaliza dados de todas as fontes','PostgreSQL + RLS',C.g],['2 — Contexto','Context Builder','Monta o pacote de contexto por empresa','Redis + Prisma',C.b],['3 — Análise','Pattern Engine','Detecta padrões, anomalias e gargalos','Claude API + pgvector',C.p],['4 — Recomendação','Rec Generator','Transforma análise em ações priorizadas','Claude API temp 0.3',C.t],['5 — Crescimento','Growth Planner','Cria e adapta roadmaps por maturidade','Claude API + regras',C.o],['6 — Monitoramento','Monitor Engine','KPI tracking, anomalia, alertas P0–P3','Redis + node-cron',C.r],['7 — Interação','Interaction Layer','Chat SSE, relatórios, alertas, dashboard','Socket.IO + REST',C.y],['8 — Aprendizado','Learning Engine','Fine-tuning com padrões de sucesso','pgvector + embeddings',C.g]].map(([c,n,f,t,cl])=>`<tr><td><span class="badge" style="background:${cl}1A;color:${cl}">${c}</span></td><td>${n}</td><td>${f}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:${cl}">${t}</td></tr>`).join('')}
+</tbody></table></div></div>`}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">📥</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 02 — Data Inputs</div>
+    <div class="sh-title">Todas as Fontes de Dados — 6 Domínios</div>
+    <div class="sh-desc">Cada domínio alimenta diferentes componentes do motor de análise. KPIs em tempo real para alertas, diagnóstico em batch para scoring, benchmark sob demanda para contextualização. Qualidade dos dados = qualidade dos outputs.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Domínios de Dados e Aplicação no AI Brain</div>
+<div class="tw"><table><thead><tr><th>Domínio</th><th>Dados Coletados</th><th>Frequência</th><th>Aplicação no AI Brain</th></tr></thead><tbody>
+${[
+  ['🔬 Diagnóstico','Score global, scores por dimensão, nível maturidade, percentil, histórico de ciclos','Por ciclo (12 sem)','Calibra profundidade das respos e seleciona repertório de ações'],
+  ['💰 Financeiro','MRR, LTV/CAC, runway de caixa, margem, churn de receita','Semanal / mensal','Análise de causa raiz em variações + alertas de runway crítico'],
+  ['🤝 CRM / Pipeline','Stage distribution, velocity, win rate, deal size, lead source','Contínuo (por deal)','Identifica gargalo comercial e oportunidades de conversão'],
+  ['⚙️ Operacional','Progresso de iniciativas, throughput de tarefas, SLA, utilização da equipe','Semanal','Detecta ineficiências e single points of failure'],
+  ['📊 Mercado','Benchmarks setoriais, tendências, sazonalidade, movimentos competitivos','Mensal / quinzenal','Contextualiza decisões e identifica oportunidades externas'],
+  ['👁 Comportamental','Módulos usados, insights aceitos, recomendações executadas','Por sessão','Personaliza IA + alimenta Learning Engine'],
+].map((r,i)=>`<tr><td style="font-size:13px;font-weight:700">${r[0]}</td><td>${r[1]}</td><td><span class="badge bt">${r[2]}</span></td><td>${r[3]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Sinais Financeiros — O que o AI Brain Monitora</div>
+<div class="tw"><table><thead><tr><th>KPI Financeiro</th><th>Sinal Monitorado</th><th>Limiar de Alerta</th><th>Resposta</th></tr></thead><tbody>
+<tr><td>MRR variação MoM</td><td>Desaceleração 3 meses consecutivos</td><td><span class="badge br">-10% vs. anterior</span></td><td>Análise de causa + revisão de pricing</td></tr>
+<tr><td>LTV / CAC ratio</td><td>Ratio abaixo de 3:1</td><td><span class="badge br">< 2:1</span></td><td>Revisão imediata do modelo de aquisição</td></tr>
+<tr><td>Runway de caixa</td><td>Redução para zona de risco</td><td><span class="badge br">< 60 dias = P0</span></td><td>Alerta emergencial + 3 ações de preservação</td></tr>
+<tr><td>Margem de contribuição</td><td>Queda enquanto receita sobe</td><td><span class="badge by">< 30% no setor</span></td><td>Análise de mix de produto ou cliente</td></tr>
+<tr><td>Churn de receita</td><td>Aceleração por 2 meses</td><td><span class="badge br">> 8%/mês</span></td><td>Diagnóstico de retenção + ações de salvamento</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Pipeline Comercial — Sinais do CRM</div>
+<div class="grid2">
+  ${[
+    {e:'📋',t:'Stage Distribution',c:C.b,d:'Concentração em prospecção com pipeline seco em negociação → problema de qualificação de leads identificado automaticamente.'},
+    {e:'⏱',t:'Velocity por Estágio',c:C.p,d:'Tempo médio vs. benchmark por estágio → identifica onde os deals morrem ou ficam presos desnecessariamente.'},
+    {e:'📉',t:'Win Rate Histórico',c:C.o,d:'Queda sustentada na taxa de conversão → indica mudança de mercado ou processo antes de virar crise de receita.'},
+    {e:'💎',t:'Lead Source ROI',c:C.g,d:'Canal que gera clientes que mais convertem, pagam mais e ficam mais tempo — não apenas mais volume bruto.'},
+  ].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">🔬</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 03 — Analysis Engine</div>
+    <div class="sh-title">Motor de Análise Estratégica — 5 Dimensões</div>
+    <div class="sh-desc">Busca relações causais, não apenas correlações. Padrões sistêmicos, não apenas anomalias pontuais. Cada achado é contextualizado dentro da maturidade, do setor e do momento do ciclo da empresa.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Dimensão 1 — Identificação de Gargalos (Teoria das Restrições)</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Bottleneck Detection Algorithm</span></div>
+<div class="code-body"><span class="kw">function</span> <span class="st">identifyBottleneck</span>(company_context) {
+  <span class="kw">const</span> dims = company_context.dimension_scores;
+  <span class="kw">const</span> gaps = Object.entries(dims).<span class="ty">map</span>(([k,v]) => ({
+    dimension: k,
+    gap_vs_potential: company_context.total_potential - v,
+    gap_vs_sector:    company_context.sector_avg[k] - v,
+    weight:           DIMENSION_WEIGHTS[k]  <span class="cm">// financeiro pesa mais</span>
+  }));
+  <span class="kw">return</span> gaps.sort((a,b) =>
+    (b.gap_vs_potential * b.weight) - (a.gap_vs_potential * a.weight))[<span class="nm">0</span>];
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">Dimensão 2 — Oportunidades de Crescimento</div>
+<div class="tw"><table><thead><tr><th>Tipo de Oportunidade</th><th>Sinal Identificador</th><th>Fonte</th><th>Potencial de Impacto</th></tr></thead><tbody>
+<tr><td>Expansão de receita</td><td>Ticket médio 30%+ abaixo do teto setorial</td><td>Benchmark</td><td><span class="badge bg">Alto — sem custo de aquisição</span></td></tr>
+<tr><td>Canal não explorado</td><td>CAC orgânico 5x melhor que pago</td><td>CRM + KPIs</td><td><span class="badge bg">Alto — alavancagem de eficiência</span></td></tr>
+<tr><td>Retenção subaproveitada</td><td>NPS alto mas upsell rate baixo</td><td>CRM + KPIs</td><td><span class="badge by">Médio-alto — base confiante</span></td></tr>
+<tr><td>Capacidade ociosa</td><td>Throughput 30%+ abaixo da capacidade</td><td>Dados operacionais</td><td><span class="badge by">Médio — resultado sem contratação</span></td></tr>
+<tr><td>Segmento subatendido</td><td>Win rate alto para perfil específico</td><td>Análise CRM</td><td><span class="badge bg">Alto — foco estratégico</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Dimensão 4 — Decomposição Causal de Receita</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Revenue Causal Analysis</span></div>
+<div class="code-body">revenue = new_customers × avg_ticket × avg_duration - churned_revenue
+
+<span class="cm">// Se MRR caiu 15% — 4 cenários possíveis:</span>
+<span class="kw">if</span> (new_customers_dropped)  → <span class="st">problema de AQUISIÇÃO</span>
+<span class="kw">if</span> (avg_ticket_dropped)     → <span class="st">problema de PRICING ou mix</span>
+<span class="kw">if</span> (avg_duration_dropped)   → <span class="st">problema de RETENÇÃO</span>
+<span class="kw">if</span> (churned_revenue_spiked) → <span class="st">ACELERAÇÃO de churn</span>
+<span class="cm">// O AI Brain identifica QUAL cenário está ativo — não apenas que caiu</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Dimensão 5 — Mapa de Riscos Estratégicos</div>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Sinal de Alerta Precoce</th><th>Janela de Ação</th><th>Resposta do AI Brain</th></tr></thead><tbody>
+<tr><td><span class="badge br">Concentração de receita</span></td><td>Top 3 clientes > 50% do MRR</td><td>6–12 meses</td><td>Plano de diversificação de base de clientes</td></tr>
+<tr><td><span class="badge br">Dependência de canal</span></td><td>80%+ de leads de uma única fonte</td><td>3–6 meses</td><td>Ativação de canal secundário com prazo</td></tr>
+<tr><td><span class="badge br">Key person risk</span></td><td>Fundador em 90%+ das vendas</td><td>Imediato</td><td>Documentação e transferência de processo</td></tr>
+<tr><td><span class="badge by">Erosão de margem</span></td><td>Margem caindo 3pp/trimestre</td><td>4–8 meses</td><td>Revisão de custo + pricing</td></tr>
+<tr><td><span class="badge by">Obsolescência de produto</span></td><td>NPS caindo sem mudança operacional</td><td>6–18 meses</td><td>Pesquisa de produto + roadmap urgente</td></tr>
+</tbody></table></div></div>`}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">💡</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 04 — Recommendation Engine</div>
+    <div class="sh-title">Como a IA Gera Recomendações — Pipeline de 5 Estágios</div>
+    <div class="sh-desc">Cada recomendação passa por 5 estágios antes de chegar ao empresário. Filtragem por maturidade e recursos. Priorização por impact score. Formatação em estrutura padrão de 5 elementos — sempre acionável.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Fórmula de Priorização de Recomendações</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Priority Score Algorithm</span></div>
+<div class="code-body">priority_score =
+  (impact_on_score     × <span class="nm">0.35</span>) +  <span class="cm">// quanto melhora o score de maturidade</span>
+  (speed_to_result     × <span class="nm">0.25</span>) +  <span class="cm">// semanas até resultado mensurável</span>
+  (evidence_strength   × <span class="nm">0.25</span>) +  <span class="cm">// % empresas similares com resultado +</span>
+  (resource_efficiency × <span class="nm">0.15</span>)    <span class="cm">// resultado / esforço requerido</span>
+
+<span class="cm">// Recomendação só chega ao empresário se priority_score > 0.60</span></div></div></div>
+
+<div class="blk"><div class="blk-h">Estrutura Padrão — 5 Elementos Obrigatórios em Toda Recomendação</div>
+<div class="flow">
+${[
+  {n:'1',t:'Diagnóstico',c:C.g,d:"O que está acontecendo e por quê — com evidências dos dados da empresa. Ex: 'Sua conversão caiu de 22% para 15% em 6 semanas — o tempo de resposta ao lead subiu de 4h para 11h'"},
+  {n:'2',t:'Causa Raiz',c:C.b,d:"O problema real por trás do sintoma observado. Ex: 'O gargalo não é geração de leads — é a velocidade de follow-up após a entrada do lead'"},
+  {n:'3',t:'Recomendação',c:C.p,d:"A ação específica recomendada com base no contexto. Ex: 'Implementar automação de follow-up em até 30min após lead entrar no CRM'"},
+  {n:'4',t:'Ação Concreta',c:C.o,d:"O primeiro passo executável agora. Ex: 'Ativar Workflow 02 no n8n — configuração leva 45 minutos com o template EGE'"},
+  {n:'5',t:'Critério de Sucesso',c:C.t,d:"Como medir se funcionou e em quanto tempo. Ex: '+5pp na conversão em 30 dias — se não atingir, revisar o roteiro do follow-up'"},
+].map(s=>`<div class="fl"><div class="fl-dot" style="border-color:${s.c};color:${s.c}">${s.n}</div><div class="fl-body"><div class="fl-title" style="color:${s.c}">${s.t}</div><div class="fl-desc">${s.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Filtragem por Contexto — O que Nunca é Recomendado</div>
+<div class="tw"><table><thead><tr><th>Filtro</th><th>Critério</th><th>Exemplo de Bloqueio</th></tr></thead><tbody>
+<tr><td><span class="badge bp">Maturidade</span></td><td>Ações de nível 4+ bloqueadas para empresas nível 1–2</td><td>OKR não recomendado para empresa sem processos básicos documentados</td></tr>
+<tr><td><span class="badge br">Recursos</span></td><td>Runway &lt; 90 dias bloqueia ações com investimento</td><td>Contratação ou expansão não recomendada com caixa crítico</td></tr>
+<tr><td><span class="badge by">Capacidade</span></td><td>Throughput no limite bloqueia novas iniciativas</td><td>Não adicionar 4ª iniciativa com equipe já sobrecarregada</td></tr>
+<tr><td><span class="badge bt">Momento do ciclo</span></td><td>Semana 10+ bloqueia ações &gt; 3 semanas de execução</td><td>Ação de longo prazo não recomendada no final do ciclo ativo</td></tr>
+</tbody></table></div></div>`}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 05 — Growth Engine</div>
+    <div class="sh-title">Roadmap de Crescimento Adaptativo — Por Nível de Maturidade</div>
+    <div class="sh-desc">Roadmaps fundamentalmente diferentes por nível. A mesma recomendação que acelera uma empresa nível 4 pode destruir uma empresa nível 1. Exatamente 3 iniciativas por ciclo de 12 semanas — disciplina de foco.</div>
+  </div>
+</div>
+<div class="cll">"O Growth Engine não tenta prever o futuro — cria a estrutura para executar o presente de forma eficiente e medir os resultados com precisão suficiente para tomar decisões melhores no próximo ciclo."</div>
+
+<div class="blk"><div class="blk-h">Roadmap por Nível de Maturidade</div>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Score</th><th>Foco do Roadmap</th><th>Iniciativas Típicas</th><th>Horizonte</th></tr></thead><tbody>
+<tr><td><span class="badge br">Nível 1</span></td><td>0–20</td><td>Fundação e sobrevivência</td><td>DRE mensal, papéis definidos, CRM básico</td><td>3–6 meses</td></tr>
+<tr><td><span class="badge bo">Nível 2</span></td><td>21–40</td><td>Processos e previsibilidade</td><td>Playbook de vendas, budget, SLA de atendimento</td><td>3–6 meses</td></tr>
+<tr><td><span class="badge by">Nível 3</span></td><td>41–60</td><td>Crescimento estruturado</td><td>Funil de marketing, canal, gestão por OKR</td><td>6–9 meses</td></tr>
+<tr><td><span class="badge bb">Nível 4</span></td><td>61–80</td><td>Escala e eficiência</td><td>Automação, novo mercado, liderança distribuída</td><td>6–12 meses</td></tr>
+<tr><td><span class="badge bg">Nível 5</span></td><td>81–100</td><td>Inovação e ecossistema</td><td>Novos modelos de receita, M&A, internacional</td><td>12–24 meses</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Exatamente 3 Iniciativas por Ciclo — A Disciplina do Foco</div>
+<div class="grid3">
+  ${[
+    {e:'🎯',t:'Iniciativa 1',sub:'Alto impacto + alta urgência',c:C.r,d:'Ataca o gargalo dominante identificado pelo Analysis Engine. É a iniciativa que mais move o needle se executada com foco total.'},
+    {e:'🚀',t:'Iniciativa 2',sub:'Alto impacto + média urgência',c:C.b,d:'Oportunidade de crescimento identificada. Pode esperar um ciclo se necessário, mas não dois sem custo estratégico.'},
+    {e:'🛡',t:'Iniciativa 3',sub:'Médio impacto + baixa urgência',c:C.t,d:'Manutenção e consolidação. Garante que os ganhos dos ciclos anteriores não se percam com o foco nas novas iniciativas.'},
+  ].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t">${m.t}</div><div style="font-size:10px;color:${m.c};font-weight:700;margin-bottom:6px">${m.sub}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Exemplo — Objetivo Gerado para Empresa Nível 2</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Growth Engine Output — Cycle Objective</span></div>
+<div class="code-body">primary_objective: {
+  title: <span class="st">'Criar processo comercial previsível'</span>,
+  why:   <span class="st">'score comercial 28/100 — gargalo dominante da empresa'</span>,
+  target_score_gain: <span class="nm">+12</span>,  <span class="cm">// pontos esperados no score comercial</span>
+  success_criteria: <span class="st">'win_rate > 20% e cycle_time < 21 dias no mês 3'</span>
+}
+support_objectives: [
+  { title: <span class="st">'Manter saúde financeira'</span>, kpi: <span class="st">'runway > 120 dias'</span> },
+  { title: <span class="st">'Reter equipe chave'</span>,      kpi: <span class="st">'eNPS > 30'</span>          }
+]</div></div></div>`}
+
+function p5(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">🚨</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 06 — Continuous Monitoring</div>
+    <div class="sh-title">Vigilância Permanente — 4 Sistemas em Paralelo</div>
+    <div class="sh-desc">KPI tracking em tempo real, detecção de anomalias estatísticas, alertas P0–P3 com análise embutida, e benchmarking semanal automático. O Monitor Engine não espera o empresário abrir a plataforma.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Sistema de Alertas — P0 a P3</div>
+<div class="tw"><table><thead><tr><th>Severity</th><th>Critério de Ativação</th><th>Notificação</th><th>Análise da IA Incluída</th></tr></thead><tbody>
+<tr><td><span class="badge br">P0 Crítico</span></td><td>Runway &lt; 60d · Churn &gt; 8%/mês · KPI -30% em 7d</td><td>Push + Email + WhatsApp &lt; 5min</td><td>Causa provável + 3 ações imediatas + impacto</td></tr>
+<tr><td><span class="badge bo">P1 Alto</span></td><td>KPI -15% em 14d · Iniciativa com risco crítico</td><td>Push + Email &lt; 30min</td><td>Tendência + 2 ações corretivas com prazo</td></tr>
+<tr><td><span class="badge by">P2 Médio</span></td><td>KPI abaixo da meta por 3 semanas consecutivas</td><td>Push in-app &lt; 2h</td><td>Contexto + 1 ação de investigação</td></tr>
+<tr><td><span class="badge bg">P3 Info</span></td><td>KPI acima do alvo · Iniciativa concluída</td><td>In-app no próximo acesso</td><td>Reconhecimento + sugestão de próximo passo</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Threshold Check — Executado Sincronamente</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Monitor Engine — Real-time Threshold Check</span></div>
+<div class="code-body"><span class="kw">async function</span> <span class="st">checkThresholds</span>(kpi_id, new_value, company_id) {
+  <span class="kw">const</span> config  = <span class="kw">await</span> getKPIConfig(kpi_id);
+  <span class="kw">const</span> history = <span class="kw">await</span> getKPIHistory(kpi_id, <span class="nm">90</span>);
+  <span class="kw">const</span> dynamic = calcDynamicThreshold(history); <span class="cm">// mean ± 2σ</span>
+
+  <span class="kw">if</span> (new_value &lt; config.alert_min ||
+      new_value &lt; dynamic.lower_bound) {
+    <span class="kw">await</span> createAlert({
+      severity: calcSeverity(deviation), kpi_id, company_id
+    });
+    <span class="kw">await</span> enqueueAIAnalysis({ type: <span class="st">'kpi_alert'</span>, context: {kpi_id} });
+  }
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">Detecção de Anomalias Estatísticas — 4 Métodos</div>
+<div class="grid2">
+  ${[
+    {e:'📉',t:'Z-Score Dinâmico',c:C.r,d:'Valores além de 2 desvios padrão da média histórica recente são sinalizados para análise da IA imediatamente.'},
+    {e:'📐',t:'Trend Change Detection',c:C.b,d:'Mudança na inclinação da série temporal: crescimento → estagnação → queda. Detectado antes do threshold ser atingido.'},
+    {e:'🗓',t:'Missing Seasonality',c:C.o,d:'KPI que historicamente sobe no mês X não subiu este ano. Sinal antecipado antes de qualquer alerta tradicional.'},
+    {e:'🔗',t:'Correlation Break',c:C.p,d:'Dois KPIs que se movem juntos historicamente divergem. Frequentemente precede uma crise sistêmica em semanas.'},
+  ].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p6(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.y}"></div>
+  <div class="sh-icon">💬</div>
+  <div><div class="sh-tag" style="color:${C.y}">Seção 07 — Interaction Model</div>
+    <div class="sh-title">Como Empresários Interagem com a IA — 5 Superfícies</div>
+    <div class="sh-desc">O AI Brain não vive apenas no chat. 5 superfícies distintas, cada uma otimizada para um tipo de interação e momento de uso. A inteligência é entregue proativamente — no contexto certo, na interface certa, no momento certo.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">5 Superfícies de Interação</div>
+<div class="tw"><table><thead><tr><th>Superfície</th><th>Tipo de Interação</th><th>Frequência</th><th>Valor Primário</th></tr></thead><tbody>
+<tr><td><span class="badge bp">Chat Estratégico</span></td><td>Conversa profunda sob demanda com SSE streaming</td><td>3–5x/semana</td><td>Resposta a perguntas estratégicas complexas</td></tr>
+<tr><td><span class="badge bg">Dashboard Insight Card</span></td><td>Consumo passivo — leitura, não conversa</td><td>Todo acesso</td><td>Manter empresário informado sem esforço</td></tr>
+<tr><td><span class="badge br">Alertas com Análise</span></td><td>Notificação ativa com diagnóstico embutido</td><td>Conforme eventos</td><td>Prevenir crises e capturar oportunidades</td></tr>
+<tr><td><span class="badge bb">Plano com Raciocínio</span></td><td>Contexto explicado por baixo de cada iniciativa</td><td>Revisão semanal</td><td>Confiança e adesão ao plano estratégico</td></tr>
+<tr><td><span class="badge by">Relatório Narrado</span></td><td>Síntese automática em linguagem natural</td><td>Mensal + por ciclo</td><td>Reflexão e alinhamento de gestão</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">A Gramática da Conversa — 5 Princípios Invioláveis</div>
+<div class="grid2">
+  ${[
+    {e:'1️⃣',t:'Uma ação por resposta',c:C.g,d:'Cada resposta termina com UMA ação concreta — nunca uma lista de possibilidades. Listas não são executadas.'},
+    {e:'❓',t:'Qualificação antes de generalizar',c:C.b,d:'Para perguntas abertas, a IA faz uma pergunta específica antes de responder — nunca duas perguntas de uma vez.'},
+    {e:'📊',t:'Dados reais como âncora',c:C.p,d:'Toda análise usa dados reais da empresa como ponto de partida — nunca estatísticas genéricas descontextualizadas.'},
+    {e:'🤷',t:'Incerteza declarada',c:C.o,d:'Quando dados são insuficientes, a IA declara o que falta — não adivinha nem gera falsa confiança.'},
+    {e:'🤝',t:'Tom de parceiro sênior',c:C.t,d:'Linguagem direta, sem jargão desnecessário, sem condescendência — como um sócio experiente fala com o fundador.'},
+    {e:'🎚',t:'3 modos de profundidade',c:C.y,d:'Quick (2–4 linhas), Standard (1–2 parágrafos + ação), Deep (documento estruturado). Modo adaptado ao contexto da pergunta.'},
+  ].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p7(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🧠</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 08 — Learning System</div>
+    <div class="sh-title">Como o AI Brain Evolui com o Tempo — 4 Mecanismos</div>
+    <div class="sh-desc">O mais rápido responde em 1 semana. O mais lento opera em ciclos trimestrais. Aprende dos erros individuais e dos padrões de toda a base. O sistema fica mais preciso para cada empresa com o tempo.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">4 Mecanismos de Aprendizado Paralelos</div>
+<div class="learn-grid">
+${[
+  {cls:'lc0',cycle:'Ciclo: 1 SEMANA',name:'Feedback Explícito do Usuário',desc:'Polegar cima/baixo + categoria do erro. Feedback negativo acumulado dispara revisão do prompt relevante. Positivo aumenta frequência do tipo de insight aprovado.'},
+  {cls:'lc1',cycle:'Ciclo: 30–90 DIAS',name:'Correlação Ação → Resultado',desc:'Quando empresário implementa uma recomendação, o sistema monitora os KPIs. Após a janela de observação, o impacto é calculado. impact_score > 0.65 entra no banco de few-shot examples.'},
+  {cls:'lc2',cycle:'Ciclo: MENSAL',name:'Padrões Agregados da Base',desc:'Anonimizados e agregados. Padrões de crescimento por setor, preditores de churn com 60+ dias de antecedência, benchmark dinâmico, configurações que precedem crises.'},
+  {cls:'lc3',cycle:'Ciclo: TRIMESTRAL',name:'Atualização do Sistema Base',desc:'System prompt, banco de few-shot examples, benchmarks setoriais, limiares de anomalia e pesos do motor de priorização — tudo atualizado com evidências dos 3 meses anteriores.'},
+].map(l=>`
+<div class="lc ${l.cls}">
+  <div class="lc-cycle" style="color:${l.cls==='lc0'?C.g:l.cls==='lc1'?C.b:l.cls==='lc2'?C.o:C.p}">${l.cycle}</div>
+  <div class="lc-name">${l.name}</div>
+  <div class="lc-desc">${l.desc}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Rastreamento de Impacto — Como Recomendações Viram Dados de Treinamento</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Recommendation Impact Tracking</span></div>
+<div class="code-body">recommendation_impact = {
+  action_type:       <span class="st">'follow_up_automation'</span>,
+  company_profile:   { sector, size, maturity_level },
+  baseline_kpis:     { conversion_rate: <span class="nm">0.18</span>, avg_cycle: <span class="nm">21</span> },
+  observed_kpis_30d: { conversion_rate: <span class="nm">0.23</span>, avg_cycle: <span class="nm">17</span> },
+  impact_score:      <span class="nm">0.78</span>,  <span class="cm">// normalizado 0–1</span>
+  added_to_fewshot_bank: <span class="kw">true</span>  <span class="cm">// se impact_score > 0.65</span>
+}</div></div></div>
+
+<div class="blk"><div class="blk-h">O que Melhora em Cada Atualização Trimestral</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>O que Muda</th><th>Impacto Esperado</th></tr></thead><tbody>
+<tr><td>System prompt base</td><td>Incorpora padrões e erros dos 3 meses anteriores</td><td>Melhora qualidade geral das respostas</td></tr>
+<tr><td>Banco de few-shot examples</td><td>Adiciona casos de sucesso confirmados, remove obsoletos</td><td>Precisão para situações específicas</td></tr>
+<tr><td>Benchmarks setoriais</td><td>Dados da base de clientes do trimestre</td><td>Comparações mais precisas e atuais</td></tr>
+<tr><td>Limiares de anomalia</td><td>Recalibra thresholds dinâmicos por setor</td><td>Reduz falsos positivos e negativos</td></tr>
+<tr><td>Pesos de priorização</td><td>Ajusta baseado na correlação ação-resultado</td><td>Recomendações de maior impacto confirmado</td></tr>
+</tbody></table></div></div>`}
+
+function p8(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">⚡</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 09 — Decision Intelligence</div>
+    <div class="sh-title">Do Dado à Execução — 4 Transformações Encadeadas</div>
+    <div class="sh-desc">A maioria das plataformas resolve apenas o primeiro problema: coletar dados. O EGE resolve o problema completo: transformar dados em decisões executadas e medidas. Sem a última milha, é apenas mais um software de planejamento.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">A Cadeia Completa de Decision Intelligence</div>
+<div class="dc">
+  ${[['📊','Dados','Fatos brutos'],['💡','Insights','Fatos com significado'],['🧭','Recomendações','O que fazer'],['✅','Decisões','Compromisso com ação'],['⚙️','Execução','Ação + medição']].map(([e,l,s])=>`<div class="dc-step"><div class="dc-icon">${e}</div><div class="dc-label">${l}</div><div class="dc-name" style="font-size:11px;color:var(--mid)">${s}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">As 4 Transformações — O que Muda em Cada Estágio</div>
+<div class="flow">
+${[
+  {n:'T1',t:'Dados → Insights',c:C.g,d:"'O MRR cresceu 8%' é um dado. 'O MRR cresceu 8% mas a margem caiu 4pp — a empresa está crescendo sem rentabilidade' é um insight. O AI Brain adiciona contexto histórico, benchmark setorial e implicação estratégica."},
+  {n:'T2',t:'Insights → Recomendações',c:C.b,d:"Insights descrevem o que está acontecendo. Recomendações prescrevem o que fazer. Exige raciocínio causal: entender a causa raiz que, se endereçada, resolve o problema de forma sustentável."},
+  {n:'T3',t:'Recomendações → Decisões',c:C.p,d:"Recomendações viram decisões quando o empresário tem confiança suficiente. Construída por 3 elementos: transparência do raciocínio, evidência histórica de sucesso em empresas similares, baixo custo de revisão."},
+  {n:'T4',t:'Decisões → Execução',c:C.o,d:"A maioria das decisões falha por falta de execução, não por falta de inteligência. O AI Brain fecha esse loop: cria a tarefa, vincula ao plano, monitora o progresso, alerta quando em risco. Decisão é entrada; resultado medido é saída."},
+].map(s=>`<div class="fl"><div class="fl-dot" style="border-color:${s.c};color:${s.c}">${s.n}</div><div class="fl-body"><div class="fl-title" style="color:${s.c}">${s.t}</div><div class="fl-desc">${s.d}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">O Ciclo Completo — Cada Estágio com Input e Output</div>
+<div class="tw"><table><thead><tr><th>Estágio</th><th>Input</th><th>Processo</th><th>Output</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Coleta</span></td><td>KPIs, diagnóstico, CRM, tarefas</td><td>Normalização e enriquecimento</td><td>Dados limpos com contexto</td></tr>
+<tr><td><span class="badge bb">Análise</span></td><td>Dados enriquecidos</td><td>Pattern matching + benchmarking</td><td>Insights priorizados</td></tr>
+<tr><td><span class="badge bp">Recomendação</span></td><td>Insights + contexto empresa</td><td>Raciocínio causal via Claude API</td><td>3–5 recomendações ranqueadas</td></tr>
+<tr><td><span class="badge by">Decisão</span></td><td>Recomendações + raciocínio</td><td>Empresário valida e decide</td><td>Decisão registrada + tarefa criada</td></tr>
+<tr><td><span class="badge bo">Execução</span></td><td>Tarefas + responsáveis + prazo</td><td>Monitor Engine acompanha</td><td>Progresso medido semanalmente</td></tr>
+<tr><td><span class="badge bg">Aprendizado</span></td><td>Resultado vs. previsto</td><td>Impact scoring + few-shot bank</td><td>Sistema mais preciso no próximo ciclo</td></tr>
+</tbody></table></div></div>`}
+
+function p9(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 10 — Final Architecture</div>
+    <div class="sh-title">Arquitetura Completa do AI Brain — 8 Camadas</div>
+    <div class="sh-desc">Data Processing → Context Building → Analysis Engine → Recommendation Engine → Growth Planning → Monitoring Engine → Interaction Layer → Learning Engine. Cada camada com tecnologia, latência-alvo e especificações de escala.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 8 Camadas — Especificações Técnicas</div>
+<div class="arch">
+${[
+  ['L1','Data Processing','PostgreSQL 15 + RLS + Prisma ORM. 50M+ rows com particionamento. Todas as 6 fontes de dados normalizadas em um único modelo.','< 50ms · 50M+ rows',C.g],
+  ['L2','Context Building','Redis Cache TTL 3min com invalidação ativa por evento. Monta pacote de 20KB com dados da empresa antes de cada request à IA.','< 30ms · cache hit',C.b],
+  ['L3','Analysis Engine','Claude API (claude-sonnet-4, temp 0.3) + pgvector para busca semântica de padrões históricos. Circuit breaker threshold 50%.','< 8s P99',C.p],
+  ['L4','Recommendation Engine','Pipeline de 5 estágios. Priority score algorithm. BullMQ concurrency: 5. Toda recomendação passa pelo filtro de maturidade e recursos.','< 10s total',C.t],
+  ['L5','Growth Planning','Claude API + regras de maturidade. Gera objetivos, 3 iniciativas e marcos semanais. Retrospectiva automática no fim do ciclo.','< 30s (async)',C.o],
+  ['L6','Monitoring Engine','Redis + node-cron + BullMQ. Threshold check síncrono por inserção de KPI. Anomaly detection async. P0 < 5min · P1 < 30min.','20 checks/seg',C.r],
+  ['L7','Interaction Layer','Socket.IO + SSE streaming + REST. Chat, insight cards, alertas com análise, plano narrado, relatório de ciclo.','< 3s 1° token SSE',C.y],
+  ['L8','Learning Engine','pgvector + OpenAI embeddings + batch jobs noturnos. 4 mecanismos paralelos. Atualização trimestral do sistema base.','Batch offline',C.g],
+].map(([n,name,desc,lat,c])=>`
+<div class="arch-layer">
+  <div class="arch-n" style="color:${c}">${n}</div>
+  <div class="arch-name" style="color:${c}">${name}</div>
+  <div class="arch-desc">${desc}</div>
+  <div class="arch-tech" style="color:${c}">${lat}</div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Métricas de Qualidade do AI Brain</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Definição</th><th>Meta</th><th>Alerta Se</th></tr></thead><tbody>
+<tr><td>Response relevance</td><td>% respostas avaliadas positivamente</td><td><span class="badge bg">≥ 80%</span></td><td>< 70% por 2 semanas</td></tr>
+<tr><td>Insight action rate</td><td>% de insights que geraram ação</td><td><span class="badge bg">≥ 35%</span></td><td>< 20% por 4 semanas</td></tr>
+<tr><td>Alert accuracy</td><td>% alertas P0/P1 que eram problemas reais</td><td><span class="badge bg">≥ 85%</span></td><td>< 70%</td></tr>
+<tr><td>Rec follow-through</td><td>% recomendações aceitas e implementadas</td><td><span class="badge bg">≥ 50%</span></td><td>< 30%</td></tr>
+<tr><td>Correlation accuracy</td><td>% previsões de impacto dentro de ±20%</td><td><span class="badge by">≥ 65%</span></td><td>< 50%</td></tr>
+<tr><td>First token latency</td><td>P99 do tempo para primeiro token SSE</td><td><span class="badge bg">< 4s</span></td><td>> 8s</td></tr>
+<tr><td>Session engagement</td><td>Duração média das sessões de chat</td><td><span class="badge by">≥ 8 min</span></td><td>< 3 min</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Fluxos de Dados Principais</div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Fluxo A — Reativo: Pergunta do Empresário</span></div>
+<div class="code-body">POST /v1/ai/conversations/:id/messages
+→ Context Builder  (Redis hit &lt;30ms || DB query &lt;50ms)
+→ Classificação da pergunta por categoria
+→ Claude API: system_prompt + contexto + pergunta → <span class="st">SSE stream</span>
+→ Resposta armazenada + feedback coletado
+→ Se ação aceita: <span class="st">task criada + monitoring loop iniciado</span></div></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Fluxo B — Proativo: Insight Semanal Automático</span></div>
+<div class="code-body">CRON domingo 23h → Worker executa para cada empresa ativa
+→ Context Builder monta snapshot semanal
+→ Pattern Engine compara com semana anterior + benchmarks
+→ Claude API gera 1 insight prioritário (temp 0.3)
+→ Insight armazenado → <span class="st">dashboard + e-mail se P1+</span></div></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">Fluxo C — Alerta: Threshold Violado</span></div>
+<div class="code-body">POST /v1/kpis/:id/values → <span class="st">threshold_check()</span> síncrono
+→ Violação detectada → alert criado no banco
+→ BullMQ: job de AI analysis (priority: <span class="nm">high</span>)
+→ Claude API: causa + 3 ações + impacto estimado
+→ Push notification + e-mail (P0: + <span class="st">WhatsApp</span>)</div></div></div>`}
+
+const panels=[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

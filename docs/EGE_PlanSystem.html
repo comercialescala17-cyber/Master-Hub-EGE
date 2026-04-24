@@ -1,0 +1,563 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Planejamento Estratégico Automatizado</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--dim:#324C68;--bd:#182E48;--bd2:#223C5A;--surf:#F2F8FC;--white:#FFFFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 65% 40% at 5% 10%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 55% 55% at 95% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1080px;margin:0 auto;padding:50px 20px 100px;position:relative;z-index:1}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:54px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(32px,5.5vw,62px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:16px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--b),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:600px;margin:0 auto;line-height:1.8}
+
+/* FLOW BAR */
+.flow{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:46px;flex-wrap:wrap;animation:up 1s .06s ease both}
+.fs{display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;font-size:12px;font-weight:700}
+.fa{font-size:16px;color:var(--dim);padding:0 8px}
+.fs-i{font-size:18px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:46px;animation:up 1s .08s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.sy::after{background:var(--y)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.sy .sv{color:var(--y)}
+
+/* NAV */
+.nav{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:40px;animation:up 1s .1s ease both}
+@media(max-width:780px){.nav{grid-template-columns:repeat(3,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)} .n1::after{background:var(--b)} .n2::after{background:var(--p)}
+.n3::after{background:var(--t)} .n4::after{background:var(--o)} .n5::after{background:var(--g)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+/* PANEL */
+.panel{display:none;animation:up .4s ease both}
+.panel.on{display:block}
+
+/* SEC HEAD */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:620px}
+
+/* BLKS */
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* TABLE */
+.tw{overflow-x:auto;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.014)}
+tbody tr:last-child td{border-bottom:none}
+
+/* CARDS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:9px}
+.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* CALLOUT */
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);
+  border-left:4px solid var(--g);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+
+/* FORMULA */
+.formula{background:rgba(19,84,204,.06);border:1px solid rgba(19,84,204,.2);
+  border-radius:11px;padding:13px 18px;margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;color:#6C9FEE;line-height:1.6}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}
+.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}
+.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}
+.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* PIPE */
+.pipe{display:flex;flex-direction:column}
+.ps{display:flex;position:relative}
+.ps::before{content:'';position:absolute;left:15px;top:34px;bottom:-10px;width:2px;background:var(--bd)}
+.ps:last-child::before{display:none}
+.ps-dot{width:32px;height:32px;border-radius:50%;border:2px solid;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  flex-shrink:0;z-index:1;background:var(--bg);margin-top:6px}
+.ps-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:13px 17px;margin-left:14px;margin-bottom:12px}
+.ps-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:3px}
+.ps-t{font-size:13.5px;font-weight:800;margin-bottom:4px}
+.ps-d{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;gap:10px}
+.tl-item{display:flex;gap:16px}
+.tl-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;margin-top:2px}
+.tl-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:12px 16px}
+.tl-week{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.tl-t{font-size:13px;font-weight:700;margin-bottom:3px}
+.tl-d{font-size:12px;color:var(--mid);line-height:1.55}
+
+/* AI CARD */
+.ai-card{background:linear-gradient(135deg,rgba(0,192,138,.06),rgba(19,84,204,.06));
+  border:1px solid rgba(0,192,138,.2);border-radius:16px;padding:22px;margin-bottom:14px}
+.ai-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ai-icon{font-size:32px}
+.ai-title{font-size:15px;font-weight:800}
+.ai-sub{font-size:12px;color:var(--mid)}
+.ai-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.ai-mode{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;text-align:center}
+.ai-mode-icon{font-size:22px;margin-bottom:7px}
+.ai-mode-name{font-size:12px;font-weight:700;margin-bottom:4px}
+.ai-mode-desc{font-size:11px;color:var(--mid);line-height:1.55}
+
+/* ALERT CARD */
+.alert-cards{display:flex;flex-direction:column;gap:10px}
+.ac{display:flex;align-items:flex-start;gap:14px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:15px 18px}
+.ac-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.ac-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.ac-msg{font-size:11.5px;color:var(--mid);line-height:1.65;font-style:italic}
+
+/* PROGRESS TRACKER */
+.tracker{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:22px;margin-bottom:16px}
+.tr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.tr-title{font-size:14px;font-weight:800}
+.tr-meta{font-size:12px;color:var(--mid);font-family:'JetBrains Mono',monospace}
+.initiative{margin-bottom:14px}
+.init-row{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.init-name{font-size:12.5px;font-weight:600;flex:1}
+.init-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.on-track{background:rgba(0,192,138,.12);color:var(--g)}
+.at-risk{background:rgba(184,114,0,.12);color:var(--y)}
+.delayed{background:rgba(192,32,32,.12);color:var(--r)}
+.done{background:rgba(19,84,204,.12);color:var(--b)}
+.init-bar-wrap{height:5px;background:var(--s3);border-radius:10px;overflow:hidden}
+.init-bar{height:100%;border-radius:10px}
+
+/* SMART TABLE */
+.smart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.smart-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.smart-letter{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;line-height:1;margin-bottom:6px}
+.smart-word{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:8px}
+.smart-def{font-size:12px;color:var(--txt);font-weight:600;margin-bottom:4px}
+.smart-ex{font-size:11.5px;color:var(--mid);line-height:1.55;font-style:italic}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Arquitetura do Sistema</div>
+  <h1>Planejamento Estratégico<br><span>Automatizado</span></h1>
+  <p class="sub">Do diagnóstico ao plano executável em 60 segundos — com IA consultora presente em cada etapa do ciclo de crescimento.</p>
+</div>
+
+<div class="flow">
+  <div class="fs"><span class="fs-i">🔍</span> <span>Diagnóstico</span></div>
+  <div class="fa">→</div>
+  <div class="fs"><span class="fs-i">📋</span> <span>Plano</span></div>
+  <div class="fa">→</div>
+  <div class="fs"><span class="fs-i">⚡</span> <span>Execução</span></div>
+  <div class="fa">→</div>
+  <div class="fs"><span class="fs-i">📊</span> <span>Monitoramento</span></div>
+  <div class="fa">→</div>
+  <div class="fs"><span class="fs-i">🏆</span> <span>Resultado</span></div>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">12</div><div class="sl">Semanas / ciclo</div></div>
+  <div class="st sb"><div class="sv">4</div><div class="sl">Ciclos / ano</div></div>
+  <div class="st so"><div class="sv">4</div><div class="sl">Obj. estratégicos</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Camadas de plano</div></div>
+  <div class="st sy"><div class="sv">3</div><div class="sl">Modos de IA</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📋 Geração do Plano</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🎯 Metas SMART</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">⚡ Execução</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">📊 Acompanhamento</div></div>
+  <div class="nb n5" onclick="show(5)"><div class="nb-n">SEÇÃO 06</div><div class="nb-t">🤖 Integração IA</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+function p0(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🎯</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div>
+      <div class="sh-title">O Ciclo Completo: Diagnóstico → Execução</div>
+      <div class="sh-desc">O sistema fecha o abismo que existe entre saber o que está errado e saber exatamente o que fazer — em que ordem, com quem e até quando.</div>
+    </div>
+  </div>
+  <div class="cll">"Diagnóstico sem plano é autopunição. Plano sem execução é otimismo. Execução sem acompanhamento é esperança. O sistema entrega os três — automaticamente."</div>
+  <div class="blk"><div class="blk-h">O Ciclo Completo de 5 Etapas</div>
+  <div class="pipe">
+    <div class="ps"><div class="ps-dot" style="border-color:var(--g);color:var(--g)">1</div>
+    <div class="ps-body"><div class="ps-lbl">Diagnóstico</div><div class="ps-t">50 Perguntas → Score 0–1000</div>
+    <div class="ps-d">IA identifica gargalos, oportunidades e dependências entre as 10 dimensões. Score global e por dimensão calculados automaticamente.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--b);color:var(--b)">2</div>
+    <div class="ps-body"><div class="ps-lbl">Geração do Plano</div><div class="ps-t">Algoritmo de Priorização → Plano em 60s</div>
+    <div class="ps-d">Objetivos estratégicos, metas SMART e iniciativas priorizadas gerados automaticamente. Calibrados ao nível de maturidade atual.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--p);color:var(--p)">3</div>
+    <div class="ps-body"><div class="ps-lbl">Execução</div><div class="ps-t">Tarefas, Responsáveis e Prazos</div>
+    <div class="ps-d">Tarefas criadas e atribuídas na plataforma. IA acompanha progresso, envia alertas e sugere ajustes táticos em tempo real.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--o);color:var(--o)">4</div>
+    <div class="ps-body"><div class="ps-lbl">Monitoramento</div><div class="ps-t">KPIs + Score + Iniciativas</div>
+    <div class="ps-d">Dashboard em tempo real com progresso de cada iniciativa. IA detecta desvios e propõe correções antes que virem crises.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--y);color:var(--y)">5</div>
+    <div class="ps-body"><div class="ps-lbl">Revisão Trimestral</div><div class="ps-t">Avaliação → Novo Ciclo</div>
+    <div class="ps-d">Score recalculado, resultados avaliados, plano do próximo ciclo gerado automaticamente. A IA aprende com cada ciclo.</div></div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Princípios do Sistema</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">🤖</div><div class="c-t">Automatização Personalizada</div><div class="c-b">Plano gerado automaticamente mas 100% personalizado ao score, setor e porte da empresa.</div></div>
+    <div class="card"><div class="c-e">⚡</div><div class="c-t">Priorização por Impacto</div><div class="c-b">Não lista tudo que pode melhorar — prioriza o que gera mais resultado dado o contexto atual.</div></div>
+    <div class="card"><div class="c-e">👁</div><div class="c-t">Execução Visível</div><div class="c-b">O plano não é um documento. É uma lista de iniciativas ativas com progresso visível em tempo real.</div></div>
+    <div class="card"><div class="c-e">🔄</div><div class="c-t">Revisão Contínua</div><div class="c-b">O plano evolui com a empresa. Nunca fica preso em uma versão desatualizada da realidade.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Antes vs. Depois do Sistema</div>
+  <div class="tw"><table><thead><tr><th>Realidade sem o Sistema</th><th>Realidade com o Sistema</th></tr></thead><tbody>
+  <tr><td>Diagnóstico que nunca vira plano</td><td>Plano gerado em 60s com base no diagnóstico</td></tr>
+  <tr><td>Plano que nunca vira ação</td><td>Tarefas criadas automaticamente e atribuídas</td></tr>
+  <tr><td>Ação sem visibilidade nem acompanhamento</td><td>Dashboard em tempo real + alertas proativos da IA</td></tr>
+  <tr><td>Planejamento anual que fica obsoleto no mês 2</td><td>Revisão trimestral automática — sempre atualizado</td></tr>
+  <tr><td>Empresário sem saber o que priorizar</td><td>IA define prioridade por impacto ponderado no score</td></tr>
+  </tbody></table></div></div>`;}
+
+function p1(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+    <div class="sh-icon">📋</div>
+    <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Geração do Plano</div>
+      <div class="sh-title">Como o Sistema Cria o Plano Estratégico</div>
+      <div class="sh-desc">Do diagnóstico ao plano completo em 60 segundos — com 3 algoritmos de priorização e 4 níveis de granularidade.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Algoritmo de Priorização — 3 Camadas</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">⚖️</div><div class="c-t">Camada 1 — Impacto Ponderado</div>
+    <div class="c-b">Calcula o potencial de ganho de score: (100 − score atual) × peso da dimensão. Maior resultado = entra primeiro no plano.</div></div>
+    <div class="card"><div class="c-e">🔗</div><div class="c-t">Camada 2 — Desbloqueio de Dependências</div>
+    <div class="c-b">Processos desbloqueado habilita Escalabilidade. Liderança desbloqueada habilita Gestão. A IA respeita a sequência.</div></div>
+    <div class="card"><div class="c-e">🎯</div><div class="c-t">Camada 3 — Viabilidade por Nível</div>
+    <div class="c-b">Filtra iniciativas pelo nível de maturidade atual. Empresa Nível 1 não recebe iniciativa de expansão de mercado.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Os 4 Níveis de Granularidade do Plano</div>
+  <div class="tw"><table><thead><tr><th>Nível</th><th>O que é</th><th>Horizonte</th><th>Quantidade</th></tr></thead><tbody>
+  <tr><td><span class="badge bg">Visão</span></td><td>Onde a empresa estará em 12 meses se o plano for executado</td><td>12 meses</td><td>1 por ciclo anual</td></tr>
+  <tr><td><span class="badge bb">Objetivos Estratégicos</span></td><td>O que precisa ser alcançado neste trimestre — vinculado ao score</td><td>3 meses</td><td>4 por ciclo</td></tr>
+  <tr><td><span class="badge bt">Iniciativas</span></td><td>Projetos de médio prazo que entregam cada objetivo</td><td>4–12 semanas</td><td>2–4 por objetivo</td></tr>
+  <tr><td><span class="badge bo">Tarefas</span></td><td>Ações individuais com responsável, prazo e critério de conclusão</td><td>Dias/semanas</td><td>3–10 por iniciativa</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Visão Estratégica — Exemplo Real</div>
+  <div class="formula">Empresa atual: Score 387 | Nível 2 — Organização | Faturamento R$ 85.000/mês
+  ↓
+  Visão em 12 meses: Score 560 | Nível 3 — Estruturação | Faturamento R$ 135.000/mês (+59%)
+  Dimensões foco: Financeiro (34→70) · Vendas (41→65) · Processos (28→60) · Gestão (45→62)</div></div>
+  <div class="blk"><div class="blk-h">Objetivos Estratégicos por Dimensão — Exemplo de Ciclo 1</div>
+  <div class="tw"><table><thead><tr><th>Dimensão</th><th>Score Atual</th><th>Objetivo do Ciclo</th><th>Ganho Estimado</th></tr></thead><tbody>
+  <tr><td>Financeiro <span class="badge br">Crítico</span></td><td>34</td><td>Implantar DRE mensal, separar PF/PJ e projetar fluxo de caixa 90 dias</td><td>+22 pts no score</td></tr>
+  <tr><td>Processos <span class="badge br">Crítico</span></td><td>28</td><td>Documentar os 3 processos críticos da operação com SOP</td><td>+18 pts no score</td></tr>
+  <tr><td>Vendas <span class="badge bo">Em Dev.</span></td><td>41</td><td>Estruturar processo comercial com CRM e pipeline visível</td><td>+16 pts no score</td></tr>
+  <tr><td>Gestão <span class="badge bo">Em Dev.</span></td><td>45</td><td>Implantar rotina semanal de KPIs com reunião estruturada</td><td>+12 pts no score</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Objetivos Típicos por Dimensão e Nível</div>
+  <div class="tw"><table><thead><tr><th>Dimensão</th><th>Objetivo Nível 1–2</th><th>Objetivo Nível 3–4</th><th>Objetivo Nível 5</th></tr></thead><tbody>
+  <tr><td>💰 Financeiro</td><td>Separar PF/PJ e implantar DRE básico</td><td>Planejar orçamento anual e margem por produto</td><td>Otimizar capital e planejar M&A</td></tr>
+  <tr><td>🎯 Vendas</td><td>Documentar processo e implantar CRM</td><td>Criar equipe com metas e treinamento</td><td>Canal de parceiros e modelo PLG</td></tr>
+  <tr><td>📋 Processos</td><td>Documentar os 3 processos críticos</td><td>Automatizar 40% das tarefas repetitivas</td><td>Centro de excelência operacional</td></tr>
+  <tr><td>⚙️ Gestão</td><td>Implantar reunião semanal de KPIs</td><td>OKRs com revisão trimestral</td><td>Governança e board de conselheiros</td></tr>
+  <tr><td>📣 Marketing</td><td>ICP definido e estratégia básica</td><td>Funil multicanal com CAC por canal</td><td>Ecossistema de marca e comunidade</td></tr>
+  </tbody></table></div></div>`;}
+
+function p2(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+    <div class="sh-icon">🎯</div>
+    <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Metas</div>
+      <div class="sh-title">Framework SMART Adaptativo</div>
+      <div class="sh-desc">Metas calibradas ao nível de maturidade atual — nem fáceis demais para estagnar, nem difíceis demais para desmotivar.</div>
+    </div>
+  </div>
+  <div class="cll">"Metas genéricas como 'crescer o faturamento' são inúteis. O sistema gera metas no formato SMART adaptadas ao nível atual — porque a meta perfeita exige esforço real e gera crescimento visível quando atingida."</div>
+  <div class="blk"><div class="blk-h">Componentes SMART — Como o Sistema Preenche Cada Um</div>
+  <div class="smart-grid">
+    <div class="smart-card"><div class="smart-letter" style="color:var(--g)">S</div><div class="smart-word">Específica</div>
+    <div class="smart-def">O que exatamente será feito</div>
+    <div class="smart-ex">Documentar o processo de vendas com etapas, scripts e critérios de qualificação</div></div>
+    <div class="smart-card"><div class="smart-letter" style="color:var(--b)">M</div><div class="smart-word">Mensurável</div>
+    <div class="smart-def">Qual indicador e como será coletado</div>
+    <div class="smart-ex">Taxa de conversão no CRM, medida semanalmente</div></div>
+    <div class="smart-card"><div class="smart-letter" style="color:var(--t)">A</div><div class="smart-word">Alcançável</div>
+    <div class="smart-def">Crescimento calibrado ao nível atual</div>
+    <div class="smart-ex">De 18% para 28% de conversão — não de 18% para 60%</div></div>
+    <div class="smart-card"><div class="smart-letter" style="color:var(--o)">R</div><div class="smart-word">Relevante</div>
+    <div class="smart-def">Impacto no score e no negócio</div>
+    <div class="smart-ex">Dimensão Vendas (peso 12%) — impacto direto no Score Global</div></div>
+    <div class="smart-card"><div class="smart-letter" style="color:var(--p)">T</div><div class="smart-word">Temporal</div>
+    <div class="smart-def">Prazo + marco intermediário</div>
+    <div class="smart-ex">Meta final mês 6, verificação intermediária no mês 3</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Categoria 1 — Metas de Crescimento de Faturamento</div>
+  <div class="tw"><table><thead><tr><th>Nível</th><th>Meta Típica Gerada</th><th>Horizonte</th><th>Iniciativas Vinculadas</th></tr></thead><tbody>
+  <tr><td><span class="badge br">Nível 1</span></td><td>Estabilizar faturamento — variação mensal &lt;20%</td><td>3 meses</td><td>Controles de caixa, faturamento regular</td></tr>
+  <tr><td><span class="badge bo">Nível 2</span></td><td>Crescer 15–25% em 12 meses com processo comercial</td><td>12 meses</td><td>CRM + processo de vendas + 1 canal de leads</td></tr>
+  <tr><td><span class="badge by">Nível 3</span></td><td>Crescer 30–50% com múltiplos canais ativos</td><td>12 meses</td><td>Marketing estruturado + vendas otimizadas</td></tr>
+  <tr><td><span class="badge bb">Nível 4</span></td><td>Crescer 50–100% com expansão de mercado</td><td>18 meses</td><td>Novos canais, segmentos e equipe escalada</td></tr>
+  <tr><td><span class="badge bg">Nível 5</span></td><td>Crescer 2–5x com alavancagem e parcerias</td><td>36 meses</td><td>Ecossistema, PLG, expansão geográfica</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Categoria 2 — Metas de Processo | Categoria 3 — Metas de Vendas</div>
+  <div class="grid2">
+    <div>
+      <div class="tw"><table><thead><tr><th>Área</th><th>Exemplo de Meta SMART</th></tr></thead><tbody>
+      <tr><td>Onboarding</td><td>Documentar SOP e testar com próximos 5 clientes até dia 30</td></tr>
+      <tr><td>Atendimento</td><td>Reduzir resposta de 48h para 4h em 90 dias</td></tr>
+      <tr><td>Financeiro</td><td>Fechar DRE até dia 10 por 3 meses consecutivos</td></tr>
+      <tr><td>Operações</td><td>Automatizar emissão de NF — de 4h/semana para zero</td></tr>
+      </tbody></table></div>
+    </div>
+    <div>
+      <div class="tw"><table><thead><tr><th>Etapa do Funil</th><th>Exemplo de Meta</th></tr></thead><tbody>
+      <tr><td>Topo</td><td>40 leads/mês via LinkedIn e indicação estruturada</td></tr>
+      <tr><td>Meio</td><td>Conversão de 18% para 30% em 6 meses</td></tr>
+      <tr><td>Receita</td><td>MRR R$180k até mês 12 — crescimento 4%/mês</td></tr>
+      <tr><td>Retenção</td><td>NPS de 42 para 65 e churn de 8% para 3%</td></tr>
+      </tbody></table></div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Categoria 4 — Metas de Eficiência Operacional</div>
+  <div class="tw"><table><thead><tr><th>Indicador</th><th>Meta Gerada</th><th>Impacto</th></tr></thead><tbody>
+  <tr><td>Margem de Contribuição</td><td>Elevar de 28% para 38% em 9 meses via revisão de precificação</td><td>Rentabilidade e caixa direto</td></tr>
+  <tr><td>Retrabalho</td><td>Reduzir de 22% para &lt;5% via documentação + checklists</td><td>Capacidade operacional liberada</td></tr>
+  <tr><td>Custo por Lead (CPL)</td><td>Reduzir CPL de R$180 para R$90 em 6 meses</td><td>Dobrar leads com mesmo investimento</td></tr>
+  <tr><td>Ociosidade Operacional</td><td>Eliminar 3h+/semana de tarefas automatizáveis</td><td>Produtividade reinvestida em estratégia</td></tr>
+  </tbody></table></div></div>`;}
+
+function p3(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+    <div class="sh-icon">⚡</div>
+    <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Execução</div>
+      <div class="sh-title">Tarefas, Responsáveis, Prazos e Indicadores</div>
+      <div class="sh-desc">Da meta estratégica à tarefa do dia — a cadeia de execução completa com tudo que cada pessoa precisa para agir.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">A Cadeia de Execução — Do Objetivo à Ação</div>
+  <div class="formula">Objetivo Estratégico  →  Iniciativa (4–12 semanas)  →  Projeto  →  Tarefa  →  Subtarefa
+  Cada nível tem: escopo · responsável · prazo · critério de conclusão · impacto esperado</div></div>
+  <div class="blk"><div class="blk-h">Estrutura de uma Iniciativa Estratégica</div>
+  <div class="tw"><table><thead><tr><th>Campo</th><th>Conteúdo</th><th>Exemplo Real</th></tr></thead><tbody>
+  <tr><td>Nome</td><td>Título descritivo e específico</td><td>Implementação do processo de vendas estruturado</td></tr>
+  <tr><td>Objetivo Vinculado</td><td>Qual objetivo estratégico entrega</td><td>Estruturar processo comercial — Dimensão Vendas</td></tr>
+  <tr><td>Escopo</td><td>O que está e não está incluído</td><td>Inclui: etapas, scripts, CRM, treinamento. Exclui: contratação.</td></tr>
+  <tr><td>Responsável</td><td>Quem responde pelo resultado</td><td>Gerente Comercial / Fundador</td></tr>
+  <tr><td>Prazo</td><td>Início e conclusão</td><td>Semana 1 a Semana 8</td></tr>
+  <tr><td>Indicador de Sucesso</td><td>Como saberemos que está concluída</td><td>CRM ativo, equipe treinada, 30 dias de dados registrados</td></tr>
+  <tr><td>Impacto no Score</td><td>Ganho estimado na dimensão</td><td>Vendas: de 41 para 62 — +21 pontos</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Estrutura de uma Tarefa — 7 Campos Obrigatórios</div>
+  <div class="tw"><table><thead><tr><th>Campo</th><th>Descrição</th><th>Exemplo</th></tr></thead><tbody>
+  <tr><td>Título</td><td>Ação clara no infinitivo</td><td>Mapear etapas do processo de vendas em fluxograma</td></tr>
+  <tr><td>Contexto</td><td>Por que existe e o que impacta</td><td>Pré-requisito para documentar o SOP — Iniciativa 2</td></tr>
+  <tr><td>Responsável</td><td>Pessoa ou papel que executa</td><td>Gerente Comercial</td></tr>
+  <tr><td>Prazo</td><td>Data limite de conclusão</td><td>Sexta-feira, semana 1</td></tr>
+  <tr><td>Prioridade</td><td>Alta / Média / Baixa por impacto</td><td>Alta — caminho crítico da Iniciativa 2</td></tr>
+  <tr><td>Critério de Conclusão</td><td>O que define 100% feito</td><td>Fluxograma validado e salvo no Drive</td></tr>
+  <tr><td>Impacto Esperado</td><td>O que muda quando concluída</td><td>Permite iniciar documentação do SOP na semana 2</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Cronograma de 12 Semanas — Modelo de Ciclo</div>
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot" style="background:rgba(0,192,138,.15);color:var(--g)">1-2</div>
+    <div class="tl-body"><div class="tl-week">Semanas 1–2 — Arranque</div><div class="tl-t">Configuração e atribuição</div>
+    <div class="tl-d">Plano de ciclo confirmado, responsáveis atribuídos, ferramentas configuradas, kickoff com a equipe.</div></div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:rgba(19,84,204,.15);color:var(--b)">3-5</div>
+    <div class="tl-body"><div class="tl-week">Semanas 3–5 — Execução I</div><div class="tl-t">Fundações das iniciativas</div>
+    <div class="tl-d">Tarefas de alto impacto. Processos documentados, ferramentas implantadas, primeiros dados coletados.</div></div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:rgba(184,114,0,.15);color:var(--y)">6-7</div>
+    <div class="tl-body"><div class="tl-week">Semanas 6–7 — Check-in Intermediário</div><div class="tl-t">IA analisa e ajusta o plano</div>
+    <div class="tl-d">Relatório de meio de ciclo. Bloqueios identificados. Prioridades reajustadas se necessário. Alerta para iniciativas em risco.</div></div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:rgba(217,90,8,.15);color:var(--o)">8-10</div>
+    <div class="tl-body"><div class="tl-week">Semanas 8–10 — Execução II</div><div class="tl-t">Consolidação das iniciativas</div>
+    <div class="tl-d">Tarefas de médio prazo. Iniciativas primárias concluídas, indicadores registrados, time alinhado.</div></div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:rgba(114,48,220,.15);color:var(--p)">11-12</div>
+    <div class="tl-body"><div class="tl-week">Semanas 11–12 — Revisão e Próximo Ciclo</div><div class="tl-t">Score recalculado + novo plano gerado</div>
+    <div class="tl-d">Avaliação de resultados. Score recalculado. Metas verificadas. Plano do próximo ciclo gerado automaticamente.</div></div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Exemplo de Plano de Execução — Dimensão Financeiro (Score 34)</div>
+  <div class="tw"><table><thead><tr><th>Semana</th><th>Tarefa</th><th>Critério de Conclusão</th></tr></thead><tbody>
+  <tr><td>1–2</td><td>Separar conta bancária PF de conta PJ</td><td>Extrato separado por 30 dias consecutivos</td></tr>
+  <tr><td>2–3</td><td>Implantar planilha/software de DRE básico</td><td>DRE do mês atual fechado e revisado</td></tr>
+  <tr><td>3–4</td><td>Levantar despesas fixas e variáveis dos últimos 3 meses</td><td>Relatório de custos documentado</td></tr>
+  <tr><td>5–6</td><td>Calcular margem de contribuição por produto/serviço</td><td>Margem conhecida e documentada</td></tr>
+  <tr><td>7–8</td><td>Implantar rotina de fechamento financeiro mensal</td><td>Primeiro fechamento realizado no prazo</td></tr>
+  <tr><td>10–12</td><td>Projetar fluxo de caixa para os próximos 90 dias</td><td>Projeção documentada e revisada mensalmente</td></tr>
+  </tbody></table></div></div>`;}
+
+function p4(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+    <div class="sh-icon">📊</div>
+    <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Acompanhamento</div>
+      <div class="sh-title">Monitoramento Contínuo e Ajuste Estratégico</div>
+      <div class="sh-desc">3 camadas de acompanhamento — operacional, estratégico e trimestral — com alertas automáticos e dashboard em tempo real.</div>
+    </div>
+  </div>
+  <div class="cll">"O que não é visível não é gerenciado. O que não é gerenciado não melhora. O dashboard de execução torna visível cada iniciativa, cada KPI e cada resultado — sem que o empresário precise buscar essa informação."</div>
+  <div class="blk"><div class="blk-h">Mockup — Dashboard de Execução do Ciclo</div>
+  <div class="tracker">
+    <div class="tr-head"><div class="tr-title">Ciclo 1 — Q1 2026</div><div class="tr-meta">Semana 7/12 · Score 421 → Meta 520</div></div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--mid)">Progresso do ciclo</span><span style="font-size:12px;font-weight:700;color:var(--g)">58%</span></div>
+      <div style="height:8px;background:var(--s3);border-radius:10px;overflow:hidden"><div style="width:58%;height:100%;background:var(--g);border-radius:10px"></div></div>
+    </div>
+    ${[
+      ["Profissionalizar Financeiro","82%","on-track","On Track","var(--g)"],
+      ["Estruturar Processo Comercial","51%","at-risk","Em Risco","var(--y)"],
+      ["Documentar 3 Processos Críticos","67%","on-track","On Track","var(--g)"],
+      ["Implantar Rotina de KPIs Semanal","40%","at-risk","Em Risco","var(--y)"],
+    ].map(([n,pct,cls,lbl,col])=>`
+    <div class="initiative">
+      <div class="init-row">
+        <span class="init-name">${n}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${col};font-weight:700">${pct}</span>
+        <span class="init-status ${cls}">${lbl}</span>
+      </div>
+      <div class="init-bar-wrap"><div class="init-bar" style="width:${pct};background:${col}"></div></div>
+    </div>`).join('')}
+  </div></div>
+  <div class="blk"><div class="blk-h">3 Camadas de Acompanhamento</div>
+  <div class="tw"><table><thead><tr><th>Camada</th><th>Frequência</th><th>Foco</th><th>Ação da IA</th></tr></thead><tbody>
+  <tr><td><strong>Operacional</strong></td><td>Semanal / Diário</td><td>Tarefas, bloqueios, cadência de execução, alertas de prazo</td><td>Flag em tarefas paradas >3 dias, alerta de prazo com 2 dias de antecedência</td></tr>
+  <tr><td><strong>Estratégico</strong></td><td>Mensal</td><td>Score global, progresso das iniciativas, KPIs financeiros e comerciais</td><td>Relatório automático com análise de variação e próximas prioridades</td></tr>
+  <tr><td><strong>Revisão Trimestral</strong></td><td>A cada 12 semanas</td><td>Resultados vs. metas, novo diagnóstico parcial, plano do próximo ciclo</td><td>Score recalculado, plano gerado, aprendizados documentados</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Sistema de Alertas Automáticos — 4 Tipos</div>
+  <div class="alert-cards">
+    <div class="ac"><div class="ac-icon">🔴</div><div>
+      <div class="ac-title" style="color:var(--r)">Alerta Crítico — Iniciativa sem progresso por >7 dias</div>
+      <div class="ac-msg">"Atenção: a iniciativa 'Estruturar Processo Comercial' não teve progresso em 7 dias. Isso coloca a meta de Vendas em risco. Ação sugerida: revisar o bloqueio e atribuir a tarefa 'Configurar CRM' com prazo de amanhã."</div>
+    </div></div>
+    <div class="ac"><div class="ac-icon">🟡</div><div>
+      <div class="ac-title" style="color:var(--y)">Alerta de Atenção — Progresso <50% no ponto médio</div>
+      <div class="ac-msg">"A iniciativa 'Rotina de KPIs' está a 40% com 6 semanas restantes. Recomendo acelerar a tarefa de configuração do dashboard para recuperar o ritmo nos próximos 5 dias."</div>
+    </div></div>
+    <div class="ac"><div class="ac-icon">🟢</div><div>
+      <div class="ac-title" style="color:var(--g)">Alerta de Oportunidade — KPI acima da meta em >20%</div>
+      <div class="ac-msg">"A geração de leads está 28% acima da meta por 2 semanas consecutivas. Há oportunidade de aumentar a meta de conversão ou realocar energia para a dimensão Processos que está em risco."</div>
+    </div></div>
+    <div class="ac"><div class="ac-icon">ℹ️</div><div>
+      <div class="ac-title" style="color:var(--b)">Alerta Informativo — Marco concluído ou subida iminente</div>
+      <div class="ac-msg">"Iniciativa 'Profissionalizar Financeiro' concluída com 2 semanas de antecedência. Score Financeiro avançou de 34 para 58 este ciclo. Você está a 47 pontos de atingir o Nível 3."</div>
+    </div></div>
+  </div></div>`;}
+
+function p5(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🤖</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 06 — IA</div>
+      <div class="sh-title">A IA como Parceira Ativa de Execução</div>
+      <div class="sh-desc">Três modos de atuação — proativa, consultiva e corretiva — presentes em cada etapa do ciclo de crescimento.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Os 3 Modos de Atuação da IA</div>
+  <div class="ai-card">
+    <div class="ai-card-header"><div class="ai-icon">🧠</div><div><div class="ai-title">IA Consultora EGE</div><div class="ai-sub">Contexto completo da empresa · Histórico de todos os ciclos · Benchmarks do setor</div></div></div>
+    <div class="ai-modes">
+      <div class="ai-mode"><div class="ai-mode-icon">📡</div><div class="ai-mode-name" style="color:var(--g)">Proativa</div><div class="ai-mode-desc">Age sem ser chamada. Insights semanais, alertas automáticos e análises de variação de score.</div></div>
+      <div class="ai-mode"><div class="ai-mode-icon">💬</div><div class="ai-mode-name" style="color:var(--b)">Consultiva</div><div class="ai-mode-desc">Responde perguntas estratégicas com profundidade e contexto completo da empresa.</div></div>
+      <div class="ai-mode"><div class="ai-mode-icon">🔧</div><div class="ai-mode-name" style="color:var(--o)">Corretiva</div><div class="ai-mode-desc">Intervém ao detectar desvios — com o problema, o impacto projetado e a ação recomendada.</div></div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Modo Proativo — O que a IA Faz Sem Ser Chamada</div>
+  <div class="tw"><table><thead><tr><th>Frequência</th><th>Ação da IA</th><th>Entregável</th></tr></thead><tbody>
+  <tr><td>Segunda-feira</td><td>Renova o card de insight semanal com dados da semana anterior</td><td>3 prioridades da semana + 1 análise de risco</td></tr>
+  <tr><td>Diariamente</td><td>Monitora progresso de tarefas e dispara alertas para itens em risco</td><td>Notificações para responsáveis com ação sugerida</td></tr>
+  <tr><td>A cada novo dado</td><td>Recalcula impacto no score e atualiza as projeções</td><td>Score atualizado + projeção do ciclo revisada</td></tr>
+  <tr><td>Fim de cada iniciativa</td><td>Gera relatório de conclusão com impacto realizado vs. esperado</td><td>Análise + próximas iniciativas recomendadas</td></tr>
+  <tr><td>Fim do ciclo trimestral</td><td>Conduz revisão completa e gera plano do próximo ciclo</td><td>Relatório de resultados + plano do novo ciclo</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Modo Consultivo — Perguntas que o Empresário Pode Fazer</div>
+  <div class="tw"><table><thead><tr><th>Tipo</th><th>Pergunta Real</th><th>Como a IA Responde</th></tr></thead><tbody>
+  <tr><td><span class="badge bg">Estratégica</span></td><td>"Devo focar em vendas ou em processos este trimestre?"</td><td>Analisa impacto ponderado das duas dimensões e recomenda a prioridade com justificativa de dados</td></tr>
+  <tr><td><span class="badge bb">Tática</span></td><td>"Nossa conversão caiu de 28% para 19%. O que pode ser?"</td><td>Cruza com dados do pipeline, sazonalidade e padrões similares — sugere hipóteses e testes</td></tr>
+  <tr><td><span class="badge by">Financeira</span></td><td>"Posso contratar um vendedor agora com a margem atual?"</td><td>Calcula impacto no fluxo, payback esperado e recomenda com número concreto</td></tr>
+  <tr><td><span class="badge bo">Execução</span></td><td>"Essa iniciativa está atrasada — o que faço primeiro?"</td><td>Analisa o caminho crítico e sugere a ação mais eficiente para recuperar o prazo</td></tr>
+  <tr><td><span class="badge bt">Revisão</span></td><td>"O que devo manter, mudar ou parar este trimestre?"</td><td>Avalia cada iniciativa por resultado e esforço — entrega Keep/Change/Stop com justificativa</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Modo Corretivo — Quando a IA Intervém</div>
+  <div class="tw"><table><thead><tr><th>Situação Detectada</th><th>Intervenção da IA</th></tr></thead><tbody>
+  <tr><td>Score de dimensão caiu >8 pts em 30 dias</td><td>Alerta de regressão + análise das causas prováveis + plano de recuperação de 30 dias</td></tr>
+  <tr><td>Meta de faturamento 40% abaixo no mês 2</td><td>Análise do funil, identificação da etapa com maior perda e 3 ações táticas imediatas</td></tr>
+  <tr><td>Fundador responsável por >70% das tarefas</td><td>Alerta de centralização + lista de tarefas delegáveis com sugestão de a quem delegar</td></tr>
+  <tr><td>Iniciativa parada por 10 dias no caminho crítico</td><td>Alerta de bloqueio + pergunta direta sobre o impedimento + oferta de ajuda para desbloqueio</td></tr>
+  <tr><td>Empresa a menos de 50 pts do próximo nível</td><td>Alerta de oportunidade + sprint de 30 dias focado nas dimensões que travam a subida de nível</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">IA no Ciclo Completo — Da Coleta ao Próximo Ano</div>
+  <div class="tw"><table><thead><tr><th>Etapa</th><th>Atuação da IA</th><th>Resultado Entregue</th></tr></thead><tbody>
+  <tr><td>Diagnóstico</td><td>Processa scores, identifica padrões e dependências</td><td>Análise diagnóstica + top 3 gargalos</td></tr>
+  <tr><td>Geração do Plano</td><td>Aplica algoritmo, calibra ao nível, gera plano completo</td><td>Plano 12 meses, metas SMART, iniciativas priorizadas</td></tr>
+  <tr><td>Semanas 1–12</td><td>Monitoramento contínuo + alertas + consultoria</td><td>Visibilidade total + orientação a cada desvio</td></tr>
+  <tr><td>Check-in Semana 6</td><td>Relatório de meio de ciclo + ajustes recomendados</td><td>Plano ajustado para a segunda metade</td></tr>
+  <tr><td>Revisão Trimestral</td><td>Avaliação completa + score recalculado + novo ciclo</td><td>Relatório de resultados + plano novo pronto</td></tr>
+  <tr><td>Acumulado Anual</td><td>Análise dos 4 ciclos — padrões, velocidade, projeções</td><td>Relatório anual + projeção dos próximos 12 meses</td></tr>
+  </tbody></table></div></div>`;}
+
+const panels = [p0,p1,p2,p3,p4,p5];
+
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+  },150);
+}
+show(0);
+</script>
+</body>
+</html>

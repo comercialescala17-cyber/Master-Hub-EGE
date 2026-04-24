@@ -1,0 +1,687 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Master Integration Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 40% at 5% 5%,rgba(0,192,138,.08),transparent),radial-gradient(ellipse 50% 50% at 96% 94%,rgba(19,84,204,.07),transparent),radial-gradient(ellipse 40% 40% at 50% 50%,rgba(114,48,220,.03),transparent)}
+.wrap{max-width:1160px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up .9s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.28);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s infinite}
+h1{font-size:clamp(28px,6vw,62px);font-weight:900;line-height:1.03;letter-spacing:-.028em;margin-bottom:14px}
+h1 span{display:block;font-size:clamp(14px,2.5vw,22px);font-weight:600;color:var(--b);letter-spacing:.02em;margin-top:8px}
+.sub{font-size:13px;color:var(--mid);max-width:720px;margin:0 auto;line-height:1.9}
+em{font-style:normal;background:linear-gradient(130deg,var(--g) 0%,var(--t) 40%,var(--b) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:36px}
+@media(max-width:800px){.nav{grid-template-columns:repeat(4,1fr)}}
+.nb{padding:10px 4px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;cursor:pointer;transition:all .18s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .18s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}.n5::after{background:var(--r)}.n6::after{background:var(--y)}.n7::after{background:var(--g)}.n8::after{background:var(--b)}.n9::after{background:var(--p)}.n10::after{background:var(--t)}.n11::after{background:var(--o)}.n12::after{background:var(--g)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--mid);margin-bottom:3px}
+.nb-t{font-size:9.5px;font-weight:700;line-height:1.25}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}.sh-tag{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}.sh-desc{font-size:13px;color:var(--mid);line-height:1.75;max-width:740px}
+.blk{margin-bottom:28px}
+.blk-h{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em;white-space:nowrap}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.6}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;transition:transform .18s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:8px}.c-t{font-size:13px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.7}
+.cll{border-left:4px solid var(--g);background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left-width:4px;border-radius:0 12px 12px 0;padding:14px 20px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.8;color:var(--g)}
+.cll-b{border-left-color:var(--b)!important;border-color:rgba(19,84,204,.2)!important;background:rgba(19,84,204,.04)!important;color:var(--txt)!important}
+.cll-o{border-left-color:var(--o)!important;border-color:rgba(217,90,8,.2)!important;background:rgba(217,90,8,.04)!important;color:var(--txt)!important}
+.cll-r{border-left-color:var(--r)!important;border-color:rgba(192,32,32,.2)!important;background:rgba(192,32,32,.04)!important;color:var(--txt)!important}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.code-head{background:var(--s3);padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);letter-spacing:.1em;border-bottom:1px solid var(--bd)}
+.code-body{padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:2.1;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.st{color:var(--g)}.nm{color:var(--o)}.cm{color:var(--mid)}
+/* layers */
+.layers{display:flex;flex-direction:column;gap:0;margin-bottom:16px;border-radius:16px;overflow:hidden;border:1px solid var(--bd)}
+.layer{padding:14px 20px;border-bottom:1px solid var(--bd);position:relative;display:flex;gap:16px;align-items:flex-start}
+.layer:last-child{border-bottom:none}
+.layer-num{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;min-width:56px;padding-top:3px}
+.layer-body{flex:1}
+.layer-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.layer-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lc{background:var(--s3);border:1px solid var(--bd2);border-radius:6px;padding:3px 10px;font-size:11px}
+/* module map */
+.mmap{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.mm{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start}
+.mm-id{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;min-width:36px;padding-top:2px}
+.mm-body{flex:1}
+.mm-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.mm-desc{font-size:12px;color:var(--mid);line-height:1.6}
+.mm-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+/* flow */
+.flow{display:flex;flex-direction:column;gap:0;margin-bottom:16px}
+.fe{display:flex;align-items:stretch;gap:0}
+.fe-num{background:var(--s3);border:1px solid var(--bd);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:14px 12px;min-width:44px;display:flex;align-items:center;justify-content:center;border-right:none}
+.fe-body{background:var(--s1);border:1px solid var(--bd);border-left:none;padding:12px 16px;flex:1}
+.fe-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fe-desc{font-size:11.5px;color:var(--mid);line-height:1.6}
+.fe-arrow{display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--mid);padding:2px 0}
+/* build phases */
+.phases{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.ph{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.ph::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ph0::after{background:var(--g)}.ph1::after{background:var(--b)}.ph2::after{background:var(--p)}.ph3::after{background:var(--o)}
+.ph-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ph-title{font-size:15px;font-weight:800}
+.ph-items{display:flex;flex-direction:column;gap:5px}
+.ph-item{font-size:12px;color:var(--mid);display:flex;gap:8px;line-height:1.5}
+.ph-item::before{content:'→';color:inherit;flex-shrink:0}
+/* metrics */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:600px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center}
+.mc-label{font-size:10px;color:var(--mid);margin-bottom:6px;font-weight:600}
+.mc-vals{display:flex;justify-content:space-around}
+.mc-val{text-align:center}
+.mc-v{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.mc-p{font-size:9px;color:var(--mid);margin-top:2px}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Master Integration Blueprint · 21 Documentos Unificados</div>
+  <h1><em>Enterprise Growth Ecosystem</em><span>Master Integration Blueprint — Plataforma Pronta para Construção</span></h1>
+  <p class="sub">O ponto de convergência de 21 documentos de arquitetura. Não um redesign — uma unificação. Todos os módulos, camadas, fluxos e decisões técnicas consolidados em um único sistema coeso, sem duplicação, sem inconsistência, pronto para desenvolvimento.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">21</div><div class="sl">Docs integrados</div></div>
+  <div class="st sb"><div class="sv">9</div><div class="sl">Módulos canônicos</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Camadas do sistema</div></div>
+  <div class="st so"><div class="sv">885</div><div class="sl">Parágrafos técnicos</div></div>
+  <div class="st st2"><div class="sv">13</div><div class="sl">Seções do blueprint</div></div>
+</div>
+<div class="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">🎯 Visão</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">🏗 Arquitetura</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">🧩 Módulos</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">🔄 Fluxo</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">🤖 IA</div></div>
+  <div class="nb n5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">⚙️ BOS</div></div>
+  <div class="nb n6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">📊 DIE</div></div>
+  <div class="nb n7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">🌐 Ecosystem</div></div>
+  <div class="nb n8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">🚀 MVP</div></div>
+  <div class="nb n9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">💻 Tech</div></div>
+  <div class="nb n10" onclick="show(10)"><div class="nb-n">11</div><div class="nb-t">📋 Build</div></div>
+  <div class="nb n11" onclick="show(11)"><div class="nb-n">12</div><div class="nb-t">✅ Ready</div></div>
+  <div class="nb n12" onclick="show(12)"><div class="nb-n">13</div><div class="nb-t">🏆 Blueprint</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const C={g:'var(--g)',b:'var(--b)',p:'var(--p)',o:'var(--o)',t:'var(--t)',r:'var(--r)',y:'var(--y)'};
+
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🎯</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 01 — Visão Final</div>
+    <div class="sh-title">O Enterprise Growth Ecosystem — Sistema Operacional de Negócios para PMEs</div>
+    <div class="sh-desc">Não é mais um SaaS de gestão. É a infraestrutura operacional e cognitiva que uma PME precisa para crescer de forma estruturada — sem consultorias caras, sem dezenas de ferramentas desconectadas, e sem reinventar o que outras empresas já aprenderam.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">O Problema que o EGE Resolve — Fragmentação Operacional</div>
+<div class="tw"><table><thead><tr><th>Problema Atual das PMEs</th><th>Como o EGE Resolve</th><th>Módulo Responsável</th></tr></thead><tbody>
+<tr><td>Ferramentas desconectadas — dado em cada lugar</td><td>Sistema unificado com banco de dados central e API integrada</td><td><span class="badge bg">Platform Core + BOS</span></td></tr>
+<tr><td>Sem metodologia de gestão estruturada</td><td>BOS instala ritmo: reuniões, metas em cascata, ciclos de 12 semanas</td><td><span class="badge bb">Business Operating System</span></td></tr>
+<tr><td>Sem benchmark — não sabe se está bem ou mal</td><td>DIE gera benchmarks reais do mesmo setor e porte</td><td><span class="badge bt">Data Intelligence Engine</span></td></tr>
+<tr><td>Sem IA acessível para PMEs</td><td>AI Brain analisa dados e gera recomendações contextualizadas</td><td><span class="badge bp">AI Intelligence Layer</span></td></tr>
+<tr><td>Crescimento por tentativa e erro</td><td>Padrões de crescimento de 50k+ empresas direcionam decisões</td><td><span class="badge bg">DIE + AI Brain</span></td></tr>
+<tr><td>Isolamento — sem rede de negócios</td><td>Ecossistema de comunidade, parceiros e marketplace integrado</td><td><span class="badge bo">Ecosystem Layer</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 3 Níveis de Valor — Por que é Mais que SaaS</div>
+<div class="grid3">
+${[
+  {n:'N1',e:'🔧',t:'Ferramentas',c:C.g,d:'Software de gestão unificado que substitui 8-15 ferramentas desconectadas. Como Notion + CRM + BI em um só lugar com dados integrados.'},
+  {n:'N2',e:'⚙️',t:'Sistema Operacional',c:C.b,d:'BOS que instala metodologia de gestão nas empresas. Como o iOS do iPhone — o sistema que roda por baixo de tudo, independente de qualquer app.'},
+  {n:'N3',e:'🧠',t:'Inteligência Coletiva',c:C.p,d:'DIE que gera benchmarks e padrões de 50k+ empresas. Como Bloomberg para PMEs — intelligence que só existe em escala e que melhora com o tempo.'},
+].map(m=>`<div class="card" style="border-top:3px solid ${m.c}"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:${m.c};margin-bottom:6px">${m.n}</div><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="cll">"O EGE é a única plataforma que instala um sistema operacional de gestão em uma PME e, ao mesmo tempo, conecta essa empresa a uma rede de inteligência coletiva que melhora suas decisões com base em dados reais de milhares de empresas similares. Cada empresa que entra fica mais inteligente — e torna o ecossistema mais valioso para todas as outras."</div>
+
+<div class="blk"><div class="blk-h">Os 21 Documentos Integrados neste Blueprint</div>
+<div class="tw"><table><thead><tr><th>#</th><th>Documento</th><th>Função no Sistema Integrado</th></tr></thead><tbody>
+${[
+  ['01','EGE Architecture','Estrutura técnica original — consolidada no backend e infra'],
+  ['02','EGE Master Document','10 pilares — integrados como camadas da plataforma'],
+  ['03+17+18','AI Brain (3 versões)','Unificado como AI Intelligence Layer — Doc 18 é o canônico'],
+  ['04','Business Diagnostic','Módulo M2 — entrada e geração de score e plano'],
+  ['05','Score System','Motor de maturidade integrado ao BOS e ao DIE'],
+  ['06','Planning System','Strategic Planning integrado no BOS Layer como M3'],
+  ['07','Monitoring System','KPI monitoring integrado ao M4 — alertas ficam no M5'],
+  ['08','Automation System','M9 — suporte ao M4, sem UI própria, acionado por eventos'],
+  ['09','Market Intelligence','M7 — fonte externa do DIE, não módulo paralelo'],
+  ['10','UX Architecture','Design system final e fluxo de navegação'],
+  ['11','Platform Roadmap','Sequência de construção consolidada neste blueprint'],
+  ['12','Database Architecture','Schema canônico — 6 domínios, 28 tabelas'],
+  ['13','AI Architecture','AI System Integration — 8 camadas do AI Brain'],
+  ['14','API Architecture','API Gateway unificado — REST + WebSocket + SSE'],
+  ['15','Cloud Infrastructure','IaC para cada fase — Railway MVP → Kubernetes escala'],
+  ['16','Execution Plan','MVP e sequência de build integrados na S9 e S11'],
+  ['19','BOS','Business Operating System como camada de gestão M2+M3+M4'],
+  ['20','Network Effects','Ecosystem Layer M8 — growth loops e network effects'],
+  ['21','Data Intelligence Engine','DIE como camada cognitiva unificada M6'],
+].map((r,i)=>`<tr><td><span class="badge ${['bg','bb','bp','bt','bo','by','br','bg','bb','bp','bt','bo','by','br','bg','bb','bp','bt','bo'][i]}">${r[0]}</span></td><td style="font-weight:600">${r[1]}</td><td style="color:var(--mid)">${r[2]}</td></tr>`).join('')}
+</tbody></table></div></div>`}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">🏗</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 02 — Arquitetura Final</div>
+    <div class="sh-title">Arquitetura Unificada — 5 Camadas Integradas</div>
+    <div class="sh-desc">A dependência é unidirecional de baixo para cima na construção, mas bidirecional em operação. Cada camada produz outputs que enriquecem as camadas abaixo. Nenhum dado é inserido em vão.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 5 Camadas — Visão Definitiva</div>
+<div class="layers">
+${[
+  {n:'C5',title:'Ecosystem Layer',color:C.y,desc:'Comunidade de negócios, marketplace de serviços, parcerias algoritímicas, trust e reputação.',chips:['M8 — Ecosystem','Comunidade Setorial','Marketplace','Parcerias','Trust Score']},
+  {n:'C4',title:'AI Intelligence Layer',color:C.p,desc:'AI Brain com 8 camadas de processamento — análise, recomendação, alertas P0-P3, aprendizado.',chips:['M5 — AI Brain','Recommendation Engine','Alert System (P0-P3)','Learning Engine']},
+  {n:'C3',title:'Data Intelligence Engine',color:C.t,desc:'Benchmarks coletivos, modelos preditivos, pattern intelligence, analytics cross-company anonimizado.',chips:['M6 — DIE','M7 — Market Intel','Benchmark Engine','5 Modelos Preditivos']},
+  {n:'C2',title:'Business Operating System',color:C.b,desc:'Diagnóstico de maturidade, planejamento de ciclo, execução, KPI monitoring, ritmo de gestão.',chips:['M2 — Diagnostic','M3 — Planning','M4 — Execution','M9 — Automation']},
+  {n:'C1',title:'Platform Core',color:C.g,desc:'Infraestrutura multi-tenant, autenticação, API Gateway, banco de dados, design system.',chips:['M1 — Auth & Onboarding','PostgreSQL + RLS','API Gateway','Next.js + Supabase']},
+].map(l=>`<div class="layer" style="border-left:3px solid ${l.color}"><div class="layer-num" style="color:${l.color}">${l.n}</div><div class="layer-body"><div class="layer-title" style="color:${l.color}">${l.title}</div><div style="font-size:12px;color:var(--mid)">${l.desc}</div><div class="layer-chips">${l.chips.map(c=>`<span class="lc">${c}</span>`).join('')}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Tabela de Integração — O que Cada Camada Recebe e Entrega</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Função Principal</th><th>Entrada</th><th>Saída</th><th>Tecnologia</th></tr></thead><tbody>
+<tr><td><span class="badge bg">C1 Core</span></td><td>Infraestrutura e fundação</td><td>Signup, dados brutos</td><td>Acesso autenticado, dados estruturados</td><td>Next.js + Supabase + PostgreSQL</td></tr>
+<tr><td><span class="badge bb">C2 BOS</span></td><td>Gestão operacional</td><td>Dados da empresa, KPIs</td><td>Planos, scores, alertas, ritmo</td><td>React + dbt + BullMQ</td></tr>
+<tr><td><span class="badge bt">C3 DIE</span></td><td>Inteligência coletiva</td><td>KPIs de todas as empresas</td><td>Benchmarks, previsões, padrões</td><td>ClickHouse + Kafka + scikit-learn</td></tr>
+<tr><td><span class="badge bp">C4 AI</span></td><td>Inteligência interpretativa</td><td>Contexto DIE + BOS + UX</td><td>Recomendações, alertas, conversas</td><td>Claude API + pgvector + Redis</td></tr>
+<tr><td><span class="badge by">C5 Eco</span></td><td>Valor de rede</td><td>Dados da comunidade</td><td>Parcerias, conexões, GMV, NPS</td><td>Node.js + Socket.IO + n8n</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">O Princípio Unificador</div>
+<div class="cll cll-b">"Todo ação do usuário em qualquer módulo gera um evento que alimenta pelo menos uma outra camada. Nenhum dado é inserido em vão. O BOS alimenta o DIE. O DIE alimenta o AI Brain. O AI Brain alimenta o BOS. O Ecosystem alimenta os três. É um ciclo contínuo sem pontos mortos."</div></div>`}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">🧩</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 03 — Mapa de Módulos</div>
+    <div class="sh-title">Os 9 Módulos Canônicos — Pós-Integração e Consolidação</div>
+    <div class="sh-desc">Após integrar 21 documentos, a plataforma tem 9 módulos canônicos com fronteiras claras, responsabilidade única, e interfaces bem definidas. Toda feature pertence a exatamente um módulo.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 9 Módulos Canônicos</div>
+<div class="mmap">
+${[
+  {id:'M1',t:'Auth & Onboarding',c:C.g,layer:'C1 — Core',desc:'Cadastro, autenticação, onboarding de 5 passos, perfil da empresa. Porta de entrada do sistema.',tags:['Email + OAuth','Multi-tenant','Onboarding flow','Empresa profile']},
+  {id:'M2',t:'Business Diagnostic',c:C.b,layer:'C2 — BOS',desc:'Diagnóstico de maturidade em 9 dimensões (56 perguntas), cálculo de score 0-100, nível 1-5, percentil setorial e prioridades.',tags:['9 dimensões','Score 0-100','Nível 1-5','Percentil DIE']},
+  {id:'M3',t:'Strategic Planning',c:C.p,layer:'C2 — BOS',desc:'Planejamento do ciclo de 12 semanas, OKRs, 3 iniciativas prioritárias, cascata de metas e marco da semana 6.',tags:['Ciclo 12 semanas','OKRs','3 iniciativas','Marco S6']},
+  {id:'M4',t:'Execution & BOS',c:C.t,layer:'C2 — BOS',desc:'KPI tracking, gestão de tarefas vinculadas ao plano, sistema de reuniões (Daily/Weekly/Monthly/Quarterly), check-ins.',tags:['KPI Dashboard','Tarefas','4 cadências','Check-ins']},
+  {id:'M5',t:'AI Intelligence',c:C.o,layer:'C4 — AI Brain',desc:'AI Brain com 8 camadas — análise, recomendação, alertas P0-P3, conversa estratégica e learning engine.',tags:['Claude API','8 camadas','Alertas P0-P3','Learning']},
+  {id:'M6',t:'Data Intelligence',c:C.g,layer:'C3 — DIE',desc:'Benchmarks por setor/porte/nível, 5 modelos preditivos, pattern intelligence e analytics coletivos anonimizados.',tags:['Benchmarks','5 modelos ML','ClickHouse','Kafka']},
+  {id:'M7',t:'Market Intelligence',c:C.b,layer:'C3 — DIE+',desc:'Contexto externo — tendências setoriais, dados IBGE/BC, análise de mercado. Fonte de dados para o DIE, não módulo paralelo.',tags:['APIs externas','IBGE + BC','Tendências','Sazonalidade']},
+  {id:'M8',t:'Ecosystem',c:C.p,layer:'C5 — Ecosystem',desc:'Comunidade setorial, matching de parcerias, marketplace de serviços certificados, trust score e reputação.',tags:['Comunidade','Parcerias','Marketplace','Trust Score']},
+  {id:'M9',t:'Automation',c:C.t,layer:'C2 — BOS+',desc:'Workflows n8n, automações de processo, notificações, integrações com sistemas externos. Sem UI própria — configurado dentro do M4.',tags:['n8n workflows','Notificações','CRM integration','Sem UI própria']},
+].map(m=>`<div class="mm" style="border-left:3px solid ${m.c}"><div class="mm-id" style="color:${m.c}">${m.id}</div><div class="mm-body"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div class="mm-title" style="color:${m.c}">${m.t}</div><span class="badge" style="background:${m.c}15;color:${m.c};white-space:nowrap;font-size:9px">${m.layer}</span></div><div class="mm-desc">${m.desc}</div><div class="mm-row">${m.tags.map(g=>`<span class="lc" style="font-size:10px">${g}</span>`).join('')}</div></div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Sobreposições Resolvidas — Decisões Definitivas</div>
+<div class="tw"><table><thead><tr><th>Sobreposição Identificada</th><th>Decisão Definitiva</th></tr></thead><tbody>
+<tr><td>AI Brain Doc 03 + Doc 17 + Doc 18</td><td>Unificados em M5. Arquitetura de 8 camadas do Doc 18 é canônica. Docs 03 e 17 descartados.</td></tr>
+<tr><td>Monitoring (Doc 07) vs KPI tracking no BOS (Doc 19)</td><td>Ambos em M4-Execution. Alertas P0-P3 ficam no M5-AI Intelligence.</td></tr>
+<tr><td>Automation (Doc 08) vs BOS Execution (Doc 19)</td><td>M9 serve o M4. Sem UI própria — configurado dentro do M4 e acionado por eventos.</td></tr>
+<tr><td>Market Intelligence (Doc 09) vs DIE (Doc 21)</td><td>M7 é fonte de dados do DIE (M6), não módulo paralelo. DIE consolida e distribui.</td></tr>
+<tr><td>Network Effect System (Doc 20) vs Ecosystem (Doc 02)</td><td>Unificados em M8. Network Effect System descreve o mecanismo; M8 é a implementação.</td></tr>
+</tbody></table></div></div>`}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">🔄</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 04 — Fluxo de Dados</div>
+    <div class="sh-title">Fluxo End-to-End — O Ciclo de Valor Contínuo de 8 Estágios</div>
+    <div class="sh-desc">O fluxo não é linear — é cíclico. A cada ciclo de 12 semanas, a empresa melhora, o DIE acumula dados, e o ecossistema cresce. É o flywheel do crescimento estruturado.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 8 Estágios do Ciclo de Valor</div>
+<div class="flow">
+${[
+  {n:'E1',title:'Onboarding — M1',color:C.g,desc:'Cadastro, perfil da empresa (setor, porte, estágio), configuração inicial do tenant com RLS.',arrow:'→ Diagnóstico inicial obrigatório'},
+  {n:'E2',title:'Diagnóstico de Maturidade — M2',color:C.b,desc:'9 dimensões, 56 perguntas, score 0-100, nível 1-5, percentil setorial, relatório de prioridades.',arrow:'→ Planejamento automático do ciclo'},
+  {n:'E3',title:'Planejamento do Ciclo — M3',color:C.p,desc:'Ciclo de 12 semanas, OKRs, 3 iniciativas prioritárias, cascata de metas, marco da semana 6.',arrow:'→ Execução e monitoramento diário'},
+  {n:'E4',title:'Execução Semanal — M4',color:C.t,desc:'KPI values inseridos, tarefas criadas e concluídas, Daily de 15min, Weekly de 60min, check-ins.',arrow:'→ Análise de IA contínua'},
+  {n:'E5',title:'AI Brain Analisa — M5',color:C.o,desc:'Context package do DIE + BOS → recomendações priorizadas, alertas P0-P3, conversa estratégica.',arrow:'→ DIE atualiza benchmarks e modelos'},
+  {n:'E6',title:'DIE Processa — M6',color:C.g,desc:'Kafka ingestion → normalização → benchmarks atualizados → modelos preditivos → pattern feed ao AI Brain.',arrow:'→ Valor de rede no ecossistema'},
+  {n:'E7',title:'Ecossistema — M8',color:C.b,desc:'Empresa participa de grupos setoriais, contrata provedor do marketplace, faz parceria. Dados alimentam o DIE.',arrow:'→ Novo ciclo com empresa mais madura'},
+  {n:'E8',title:'Novo Diagnóstico — M2',color:C.p,desc:'Ao fim de 12 semanas: novo diagnóstico, score delta, evolução por dimensão, novo plano de crescimento.',arrow:'→ E3 — Próximo ciclo inicia'},
+].map((s,i)=>`<div class="fe"><div class="fe-num" style="color:${s.color}">${s.n}</div><div class="fe-body"><div class="fe-title" style="color:${s.color}">${s.title}</div><div class="fe-desc">${s.desc}<br><span style="color:${s.color};font-weight:600;font-size:11px">${s.arrow}</span></div></div></div>${i<7?'<div class="fe-arrow">↓</div>':''}`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">O Flywheel — Como o Valor Cresce com o Tempo</div>
+<div class="cll cll-b">"Mais empresas → mais dados → benchmarks mais precisos → recomendações melhores → empresas crescem mais rápido → mais empresas querem entrar. Este é o network effect que torna o EGE cada vez mais difícil de ser replicado por um concorrente que começa do zero."</div></div>`}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.p}"></div>
+  <div class="sh-icon">🤖</div>
+  <div><div class="sh-tag" style="color:${C.p}">Seção 05 — Sistema de IA</div>
+    <div class="sh-title">AI Intelligence Layer — Arquitetura Unificada do AI Brain</div>
+    <div class="sh-desc">Três documentos (Doc 03, 17, 18) unificados. A arquitetura de 8 camadas do Doc 18 é o design canônico. O AI Brain é uma camada de inteligência — não tem banco próprio, sempre acessa o DIE.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 8 Camadas do AI Brain (Doc 18 — Canônico)</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Função</th><th>Tecnologia</th><th>Latência</th></tr></thead><tbody>
+<tr><td><span class="badge bg">C1</span></td><td>Data Processing — PostgreSQL + RLS por tenant</td><td>PostgreSQL 15 + TimescaleDB</td><td>&lt; 50ms</td></tr>
+<tr><td><span class="badge bb">C2</span></td><td>Context Building — contexto da empresa em cache</td><td>Redis TTL 3min</td><td>&lt; 30ms</td></tr>
+<tr><td><span class="badge bp">C3</span></td><td>Analysis Engine — análise dos dados da empresa</td><td>Claude API temp 0.3</td><td>&lt; 8s P99</td></tr>
+<tr><td><span class="badge bt">C4</span></td><td>Recommendation Engine — priorização de ações</td><td>BullMQ concurrency:5</td><td>&lt; 10s</td></tr>
+<tr><td><span class="badge bo">C5</span></td><td>Growth Planning — roadmap por nível 1-5</td><td>Async task queue</td><td>&lt; 30s</td></tr>
+<tr><td><span class="badge br">C6</span></td><td>Monitor Engine — alertas P0-P3 proativos</td><td>CRON 5min</td><td>&lt; 5min P0</td></tr>
+<tr><td><span class="badge by">C7</span></td><td>Interaction Layer — conversa e entrega de insights</td><td>SSE streaming</td><td>&lt; 3s first token</td></tr>
+<tr><td><span class="badge bg">C8</span></td><td>Learning Engine — melhoria contínua do modelo</td><td>Batch noturno</td><td>Background</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Fórmula de Priorização de Recomendações</div>
+<div class="code-block"><div class="code-head">priority_score — Fórmula Definitiva</div>
+<div class="code-body">priority_score = (impact  × <span class="nm">0.35</span>) +
+                (speed    × <span class="nm">0.25</span>) +
+                (evidence × <span class="nm">0.25</span>) +
+                (efficiency × <span class="nm">0.15</span>)
+
+Threshold de publicação:  priority_score >= <span class="nm">0.60</span>
+Max recomendações:        <span class="nm">3</span> por ciclo ativo
+Revisão a cada:           <span class="nm">2</span> semanas dentro do ciclo</div></div></div>
+
+<div class="blk"><div class="blk-h">Sistema de Alertas — SLAs Definitivos</div>
+<div class="tw"><table><thead><tr><th>Nível</th><th>Condição</th><th>SLA</th><th>Canais</th><th>Exemplo</th></tr></thead><tbody>
+<tr><td><span class="badge br">P0</span></td><td>Threshold crítico violado — crise iminente</td><td>&lt; 5 minutos</td><td>Push + Email + WhatsApp</td><td>Caixa &lt; 30 dias de runway</td></tr>
+<tr><td><span class="badge bo">P1</span></td><td>Tendência de deterioração acelerada</td><td>&lt; 30 minutos</td><td>Push + Email</td><td>Churn +2pp em 2 semanas</td></tr>
+<tr><td><span class="badge bb">P2</span></td><td>Oportunidade de alto impacto detectada</td><td>&lt; 2 horas</td><td>In-app notification</td><td>Pipeline &gt; benchmark em 40%</td></tr>
+<tr><td><span class="badge bg">P3</span></td><td>Insight de otimização ou boas práticas</td><td>Próximo acesso</td><td>In-app badge</td><td>NPS abaixo da mediana setorial</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Como o AI Brain Aprende com o Tempo — 4 Mecanismos</div>
+<div class="grid2">
+${[
+  {e:'✅',t:'Feedback Explícito',c:C.g,d:'Aceitação ou rejeição de recomendações, com rastreamento de impacto em KPIs 90 dias depois.'},
+  {e:'📈',t:'Outcome Tracking',c:C.b,d:'Correlação entre ações executadas e KPIs resultantes — o que realmente funcionou vs. o que foi previsto.'},
+  {e:'📚',t:'Few-Shot Bank',c:C.p,d:'Exemplos de sucesso que entram no contexto das próximas chamadas — o AI Brain fica mais contextualizado com o tempo.'},
+  {e:'🔍',t:'Pattern Extraction',c:C.o,d:'Padrões identificados pelo DIE em batch semanal atualizam os prompts do sistema e os benchmarks de recomendação.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-e">${m.e}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p5(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">⚙️</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 06 — Business Operating System</div>
+    <div class="sh-title">O BOS — Sistema Operacional da Empresa Integrado</div>
+    <div class="sh-desc">O BOS não é um módulo — é o conjunto de módulos M2+M3+M4 implementando uma metodologia de gestão. A IA e o DIE tornam o BOS mais inteligente, mas o BOS funciona por si só como método de gestão estruturada.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 6 Componentes do BOS Integrado</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>Função</th><th>Cadência</th><th>Módulo</th></tr></thead><tbody>
+<tr><td><span style="font-weight:700;color:var(--g)">Cascata de Metas</span></td><td>Visão 3 anos → OKRs → Marcos semanais → Tarefas com responsável único</td><td>Trimestral + Semanal</td><td>M3</td></tr>
+<tr><td><span style="font-weight:700;color:var(--b)">Ciclo de Execução</span></td><td>Sprints de 12 semanas com marco obrigatório na semana 6</td><td>12 semanas</td><td>M3 + M4</td></tr>
+<tr><td><span style="font-weight:700;color:var(--p)">Sistema de Reuniões</span></td><td>Daily 15min + Weekly 60min + Monthly 120min + Quarterly meio dia</td><td>Diário até Trimestral</td><td>M4</td></tr>
+<tr><td><span style="font-weight:700;color:var(--t)">KPI Review</span></td><td>Dashboard de KPIs vs benchmark vs meta — alertas automáticos</td><td>Semanal + Automático</td><td>M4 + M5</td></tr>
+<tr><td><span style="font-weight:700;color:var(--o)">Process Ownership</span></td><td>SOPs, responsáveis, gatilhos de melhoria e automação de processos</td><td>Contínuo</td><td>M4 + M9</td></tr>
+<tr><td><span style="font-weight:700;color:var(--y)">Performance Management</span></td><td>Score por dimensão, evolução do nível, KPIs de time e indivíduo</td><td>Por ciclo</td><td>M2 + M4 + M5</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Os 4 Estágios de Evolução do BOS</div>
+<div class="tw"><table><thead><tr><th>Estágio</th><th>Score EGE</th><th>Característica</th><th>Foco do BOS</th></tr></thead><tbody>
+<tr><td><span class="badge br">Emergente</span></td><td>0 – 25</td><td>Operação caótica, sem ritmo, sem KPIs definidos</td><td>Instalar fundações: diagnóstico, primeiros KPIs, Daily 15min</td></tr>
+<tr><td><span class="badge bo">Estruturado</span></td><td>26 – 50</td><td>Ritmo básico instalado, dados inconsistentes, sem planejamento</td><td>Ciclo de 12 semanas, cascata de metas, Weekly estruturado</td></tr>
+<tr><td><span class="badge bb">Otimizado</span></td><td>51 – 75</td><td>Operação previsível, KPIs confiáveis, planejamento funcionando</td><td>Benchmark, predictive, Quarterly review, automação de processos</td></tr>
+<tr><td><span class="badge bg">Escalável</span></td><td>76 – 100</td><td>Máquina de crescimento — replicável, previsível e sustentável</td><td>Network effects, ecosystem expansion, B2B2B, M&A intelligence</td></tr>
+</tbody></table></div></div>
+
+<div class="cll cll-b">"O BOS é a metodologia, não o software. M2 diagnostica. M3 planeja. M4 executa. Juntos, eles instalam um ritmo de gestão que opera independentemente de qualquer IA ou benchmark. A IA e o DIE tornam o BOS mais inteligente — mas o BOS funciona por si só."</div>`}
+
+function p6(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">📊</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 07 — Data Intelligence Engine</div>
+    <div class="sh-title">DIE — A Camada Cognitiva Coletiva</div>
+    <div class="sh-desc">O DIE é o que diferencia o EGE de uma ferramenta de gestão isolada. Benchmarks de 50k+ empresas, 5 modelos preditivos, pattern intelligence e analytics cross-company — tudo anonimizado, tudo com Privacy by Design.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 5 Funções Definitivas do DIE</div>
+<div class="tw"><table><thead><tr><th>Função</th><th>Output Principal</th><th>Atualizado em</th></tr></thead><tbody>
+<tr><td><span style="font-weight:700;color:var(--g)">Benchmark Engine</span> — p25/50/75/90 por setor, porte, nível e modelo de negócio</td><td>Posição relativa de cada KPI de cada empresa</td><td>Diariamente (dbt)</td></tr>
+<tr><td><span style="font-weight:700;color:var(--b)">Predictive Models</span> — Revenue Forecast, Churn Risk, Op Risk, Opportunity, Maturity</td><td>Previsões com IC 80% e triggers de ação</td><td>Semanal + real-time</td></tr>
+<tr><td><span style="font-weight:700;color:var(--p)">Pattern Intelligence</span> — padrões de crescimento de empresas similares</td><td>Feed de padrões para o AI Brain few-shot bank</td><td>Semanalmente</td></tr>
+<tr><td><span style="font-weight:700;color:var(--t)">Market Intelligence Aggregator</span> — IBGE, BC, notícias setoriais</td><td>Contexto de mercado para o AI Brain</td><td>A cada 4 horas</td></tr>
+<tr><td><span style="font-weight:700;color:var(--y)">Value Loop Analytics</span> — K-factor, GMV, community activity, NPS</td><td>Health metrics do ecossistema</td><td>Diariamente</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Pipeline de 5 Estágios — Do Dado Bruto à Inteligência</div>
+<div class="code-block"><div class="code-head">Arquitetura do Pipeline — Decisões Definitivas</div>
+<div class="code-body">OLTP (PostgreSQL)  →  Kafka (ingestion)  →  Flink (stream)
+       ↓                                              ↓
+   Normalization                           ClickHouse (OLAP)
+       ↓                                              ↓
+   Anonymization                         dbt (aggregations)
+       ↓                                              ↓
+   [ FRONTEIRA OLTP/OLAP — company_id NUNCA cruza ]
+       ↓                                              ↓
+   AI Brain (context)           Benchmark tables (p25/50/75/90)
+   ML Models (scikit-learn)     Pattern store (weekly batch)</div></div></div>
+
+<div class="blk"><div class="blk-h">Privacidade — Decisões Arquiteturais Irreversíveis</div>
+<div class="grid2">
+${[
+  {t:'Row Level Security',c:C.g,d:'RLS ativo em toda tabela operacional. company_id = current_setting(). Impossível bypassar via bug na aplicação.'},
+  {t:'Fronteira OLTP/OLAP',c:C.b,d:'Nenhum company_id atravessa a fronteira entre PostgreSQL e ClickHouse. Dados entram no DIE sempre anônimos.'},
+  {t:'k-Anonymity',c:C.t,d:'n < 30: benchmark não publicado. n < 100: ruído ±5%. n ≥ 100: ruído ±1%. Nenhuma empresa re-identificável.'},
+  {t:'LGPD Compliance',c:C.r,d:'Consentimento granular. Portabilidade em 24h. Esquecimento em 72h. DPA com AWS, Supabase, OpenAI, Anthropic.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>`}
+
+function p7(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.y}"></div>
+  <div class="sh-icon">🌐</div>
+  <div><div class="sh-tag" style="color:${C.y}">Seção 08 — Ecosystem Layer</div>
+    <div class="sh-title">M8 Ecosystem — Comunidade, Marketplace e Network Effects</div>
+    <div class="sh-desc">Uma empresa pode usar M1-M7 sem nunca interagir com o ecossistema e receber enorme valor. Mas o ecossistema entrega o que os módulos anteriores não conseguem: acesso à rede, parcerias reais e inteligência coletiva contextual.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Os 4 Componentes do Ecosystem Layer</div>
+<div class="tw"><table><thead><tr><th>Componente</th><th>Função</th><th>Network Effect</th><th>Ativado com</th></tr></thead><tbody>
+<tr><td><span style="font-weight:700;color:var(--g)">Comunidade Setorial</span></td><td>Grupos de discussão, mastermind, eventos por setor e estágio</td><td>Knowledge network — valor cresce com cada nova empresa</td><td>500+ empresas ativas</td></tr>
+<tr><td><span style="font-weight:700;color:var(--b)">Business Partnerships</span></td><td>Matching algorítmico de empresas complementares</td><td>Business network — conexões que geram receita real</td><td>200+ por setor</td></tr>
+<tr><td><span style="font-weight:700;color:var(--p)">Marketplace de Serviços</span></td><td>Provedores certificados EGE — demanda gerada pelo diagnóstico</td><td>Marketplace network — liquidez aumenta com volume</td><td>50+ provedores ativos</td></tr>
+<tr><td><span style="font-weight:700;color:var(--o)">Trust e Reputação</span></td><td>Company Credibility Score + Provider Verification + Reviews</td><td>Social proof — reputação que só existe dentro do ecossistema</td><td>10+ transações por empresa</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Como o Ecosystem se Conecta ao Core</div>
+<div class="cll">"O diagnóstico (M2) gera demanda para o marketplace: uma empresa com score baixo em gestão financeira recebe automaticamente sugestão de provedor de CFO-as-a-Service certificado. As parcerias (M8) geram dados para o DIE (M6). A comunidade (M8) gera exemplos de sucesso para o AI Brain (M5). A conexão não é decorativa — é funcional e bidirecional."</div></div>
+
+<div class="blk"><div class="blk-h">Metas do Ecosystem Layer</div>
+<div class="metrics-grid">
+${[
+  {l:'Empresas Ativas',v1:'5.000',v3:'50.000+'},
+  {l:'K-factor Viral',v1:'0.25',v3:'0.40'},
+  {l:'GMV Marketplace',v1:'R$2M/mês',v3:'R$30M/mês'},
+  {l:'NPS Ecossistema',v1:'> 50',v3:'> 70'},
+  {l:'Setores c/ Benchmark',v1:'15',v3:'60+'},
+  {l:'Parcerias Ativas',v1:'200',v3:'5.000+'},
+  {l:'Provedores Certificados',v1:'50',v3:'500+'},
+  {l:'Taxa de Churn (eco)',v1:'&lt; 2%',v3:'&lt; 1%'},
+].map(m=>`<div class="mc"><div class="mc-label">${m.l}</div><div class="mc-vals"><div class="mc-val"><div class="mc-v" style="color:var(--b)">${m.v1}</div><div class="mc-p">1 ano</div></div><div class="mc-val"><div class="mc-v" style="color:var(--g)">${m.v3}</div><div class="mc-p">3 anos</div></div></div></div>`).join('')}
+</div></div>`}
+
+function p8(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.r}"></div>
+  <div class="sh-icon">🚀</div>
+  <div><div class="sh-tag" style="color:${C.r}">Seção 09 — MVP Final</div>
+    <div class="sh-title">Definição Final do MVP — 16 Semanas, Ciclo Mínimo Completo</div>
+    <div class="sh-desc">O MVP deve entregar o ciclo de valor mínimo completo: Diagnóstico → Planejamento → Execução → Insight de IA. Tudo o mais vem depois. Critério: a feature é necessária para que uma empresa complete o ciclo pelo menos uma vez?</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Incluído no MVP — O que Entra</div>
+<div class="tw"><table><thead><tr><th>Módulo</th><th>Features do MVP</th><th>Justificativa</th></tr></thead><tbody>
+<tr><td><span class="badge bg">M1</span></td><td>Signup, login (email + OAuth), onboarding 5 passos, perfil da empresa</td><td>Porta de entrada obrigatória</td></tr>
+<tr><td><span class="badge bb">M2</span></td><td>Diagnóstico 9 dimensões (56 perguntas), score 0-100, nível 1-5, relatório de prioridades</td><td>Primeiro momento de valor — empresa já sai com diagnóstico</td></tr>
+<tr><td><span class="badge bp">M3</span></td><td>Ciclo de 12 semanas, OKRs simplificados, 3 iniciativas, marco semana 6</td><td>Sem planejamento o diagnóstico é um relatório sem consequências</td></tr>
+<tr><td><span class="badge bt">M4</span></td><td>Dashboard KPIs (inserir e visualizar), gestão de tarefas, weekly check-in, Daily + Weekly básicos</td><td>Módulo mais usado diariamente — hub central do produto</td></tr>
+<tr><td><span class="badge bo">M5</span></td><td>AI Brain conectado ao contexto, chat estratégico, 3 alertas proativos por semana</td><td>Diferencial único — não pode ficar fora do MVP</td></tr>
+<tr><td><span class="badge bg">M6</span></td><td>Benchmarks básicos por setor e porte para KPIs principais (exige 50+ empresas beta)</td><td>Sem benchmark o AI Brain perde 60% do valor contextual</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Excluído do MVP — Postergado</div>
+<div class="tw"><table><thead><tr><th>Feature Postergada</th><th>Versão Alvo</th><th>Motivo</th></tr></thead><tbody>
+<tr><td>M7 — Market Intelligence (APIs externas)</td><td><span class="badge bb">V2</span></td><td>Adiciona complexidade sem ser bloqueante para o valor central</td></tr>
+<tr><td>M8 — Ecosystem completo (comunidade + marketplace)</td><td><span class="badge bb">V2</span></td><td>Requer massa crítica de usuários — sem ela não funciona</td></tr>
+<tr><td>M9 — Automation avançada (n8n workflows complexos)</td><td><span class="badge bb">V2</span></td><td>Notificações básicas no MVP; workflows complexos postergados</td></tr>
+<tr><td>Integração CRM externo (Salesforce, HubSpot)</td><td><span class="badge bb">V2</span></td><td>Dados podem ser inseridos manualmente no MVP</td></tr>
+<tr><td>Partnerships matching algorítmico completo</td><td><span class="badge bp">V3</span></td><td>Requer volume de dados e empresas que o MVP não terá</td></tr>
+<tr><td>Mobile app nativo (iOS + Android)</td><td><span class="badge bp">V3</span></td><td>PWA no MVP é suficiente; app nativo para escala</td></tr>
+</tbody></table></div></div>
+
+<div class="cll cll-r">"O critério de inclusão no MVP é simples: a feature é necessária para que uma empresa complete o ciclo Diagnóstico → Planejamento → Execução → Insight pelo menos uma vez? Se sim, está no MVP. Se não, postergada. Simplicidade não é falta de ambição — é foco cirúrgico."</div>`}
+
+function p9(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.b}"></div>
+  <div class="sh-icon">💻</div>
+  <div><div class="sh-tag" style="color:${C.b}">Seção 10 — Arquitetura Técnica Final</div>
+    <div class="sh-title">Stack Técnico Definitivo — Uma Decisão, Sem Revisar</div>
+    <div class="sh-desc">Stack definido ao longo de 21 documentos com total consistência. Esta é a referência definitiva. Qualquer proposta de mudança exige documentação de justificativa.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Stack Técnico Consolidado</div>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Tecnologia</th><th>Versão</th><th>Justificativa</th></tr></thead><tbody>
+${[
+  ['Frontend','Next.js + React','14 + 18','SSR + ISR para SEO e performance'],
+  ['Styling','Tailwind CSS + Radix UI','3.x + 2.x','Velocidade de dev; componentes acessíveis'],
+  ['State','React Query + Zustand','v5 + v4','Server state e client state separados'],
+  ['Backend','Node.js + Express','20 LTS','Ecossistema JS unificado com frontend'],
+  ['ORM','Prisma','5.x','Type-safe, migrations, compatível com Supabase'],
+  ['BaaS / Auth','Supabase','Latest','Auth, Storage, Realtime e PostgreSQL gerenciado'],
+  ['Banco OLTP','PostgreSQL','15','RLS + pgvector + TimescaleDB'],
+  ['Banco OLAP','ClickHouse','Latest','Queries analíticas < 50ms em bilhões de linhas'],
+  ['AI Principal','Claude API','claude-sonnet-4','Melhor em análise de negócios estruturada'],
+  ['Embeddings','OpenAI API','text-embedding-3-small','Semântica de alta qualidade a custo baixo'],
+  ['Queue','BullMQ','Latest','Redis-backed, priorities, concurrency control'],
+  ['Stream','Apache Kafka','Latest','50k+ eventos/seg para o DIE'],
+  ['Analytics','dbt + Metabase','Latest','Transformações analíticas + BI'],
+  ['Automação','n8n (self-hosted)','Latest','Workflows sem código; integração APIs externas'],
+  ['Deploy MVP','Railway + Vercel','Latest','Simples, rápido, sem Kubernetes overhead'],
+  ['Deploy Escala','Kubernetes + Helm','1.28+','HPA a partir de 5k empresas'],
+  ['Monitoramento','Sentry + Datadog','Latest','Error tracking + APM + logs unificados'],
+  ['Pagamentos','Stripe + Iugu','Latest','Internacional + PIX/Boleto para Brasil'],
+].map((r,i)=>`<tr><td style="font-weight:600;color:${['var(--g)','var(--b)','var(--p)','var(--t)','var(--o)','var(--y)','var(--g)','var(--b)','var(--p)','var(--t)','var(--o)','var(--y)','var(--g)','var(--b)','var(--p)','var(--t)','var(--o)','var(--y)'][i]}">${r[0]}</td><td><strong>${r[1]}</strong></td><td><span class="badge bg">${r[2]}</span></td><td style="color:var(--mid)">${r[3]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Schema de Banco — 6 Domínios Canônicos</div>
+<div class="grid2">
+${[
+  {n:'D1',t:'Identity',c:C.g,tables:'companies, users, user_companies, invitations, audit_log'},
+  {n:'D2',t:'Diagnostic',c:C.b,tables:'diagnostic_cycles, diagnostic_responses, dimension_scores, maturity_snapshots'},
+  {n:'D3',t:'Planning',c:C.p,tables:'strategic_cycles, objectives, key_results, initiatives, milestones'},
+  {n:'D4',t:'Execution',c:C.t,tables:'kpi_configs, kpi_values, tasks, task_dependencies, meeting_notes, check_ins'},
+  {n:'D5',t:'Intelligence',c:C.o,tables:'ai_conversations, ai_recommendations, recommendations_feedback, alert_queue'},
+  {n:'D6',t:'Ecosystem',c:C.y,tables:'partnerships, marketplace_listings, marketplace_orders, community_posts, trust_scores'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:${m.c};font-weight:700;margin-bottom:4px">${m.n}</div><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.8">${m.tables}</div></div>`).join('')}
+</div></div>`}
+
+function p10(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.t}"></div>
+  <div class="sh-icon">📋</div>
+  <div><div class="sh-tag" style="color:${C.t}">Seção 11 — Sequência de Build</div>
+    <div class="sh-title">Build Order Definitivo — 4 Fases + Gates de Validação</div>
+    <div class="sh-desc">Otimizado para 3 objetivos simultâneos: entregar valor aos betas o mais rápido possível, construir a fundação técnica correta, e validar hipóteses de produto com dados reais antes de avançar.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">As 4 Fases de Construção</div>
+<div class="phases">
+${[
+  {cls:'ph0',title:'Fase 1 — Foundation',time:'Semanas 1–4',color:C.g,items:[
+    'Supabase setup + schema PostgreSQL completo com RLS em todos os domínios',
+    'Autenticação completa (email + OAuth) + multi-tenant isolation verificado',
+    'Onboarding flow de 5 passos + perfil de empresa com setor e porte',
+    'CI/CD pipeline (GitHub Actions + Vercel + Railway) + Sentry + staging'
+  ]},
+  {cls:'ph1',title:'Fase 2 — Core Modules',time:'Semanas 5–12',color:C.b,items:[
+    'M2-Diagnostic completo — 56 perguntas, scoring engine, relatório de prioridades',
+    'M3-Planning — ciclo de 12 semanas, OKRs, 3 iniciativas, marco semana 6',
+    'M4-Execution — dashboard de KPIs, gestão de tarefas, weekly check-in',
+    'M4-Execution — calendário de reuniões (Daily, Weekly), notificações básicas'
+  ]},
+  {cls:'ph2',title:'Fase 3 — AI Integration',time:'Semanas 13–16',color:C.p,items:[
+    'M6-DIE básico — pipeline Kafka + ClickHouse + primeiros benchmarks com dados beta',
+    'M5-AI Brain — context package, Claude API integration, conversa básica',
+    'M5-AI Brain — recommendation engine com priority_score, 3 alertas proativos',
+    'M5-AI Brain — Monitor Engine (CRON 5min), sistema de alertas P0-P3'
+  ]},
+  {cls:'ph3',title:'Fase 4 — Ecosystem & Scale',time:'Semanas 17–24+',color:C.o,items:[
+    'M8-Ecosystem básico — perfis, comunidade setorial, primeiras conexões',
+    'M8-Marketplace — listagem de provedores, demanda gerada por diagnóstico',
+    'M9-Automation — workflows n8n, notificações, integração de CRM',
+    'Infraestrutura de escala — Railway → Kubernetes, Read Replicas, cache otimizado'
+  ]},
+].map(p=>`<div class="ph ${p.cls}"><div class="ph-header"><div class="ph-title" style="color:${p.color}">${p.title}</div><span class="badge" style="background:${p.color}15;color:${p.color}">${p.time}</span></div><div class="ph-items">${p.items.map(i=>`<div class="ph-item" style="color:var(--mid)">${i}</div>`).join('')}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Gates de Validação — Critérios para Avançar de Fase</div>
+<div class="tw"><table><thead><tr><th>Gate</th><th>Ao Final de</th><th>Critério de Sucesso</th><th>Se Falhar</th></tr></thead><tbody>
+<tr><td><span class="badge bg">G1</span></td><td>Fase 1</td><td>50 contas criadas + onboarding completo por 20+ usuários</td><td>Iterar no fluxo de onboarding antes de avançar</td></tr>
+<tr><td><span class="badge bb">G2</span></td><td>Fase 2</td><td>30 diagnósticos + 20 planos ativos + NPS core > 40</td><td>Focar usabilidade M2+M3 antes de avançar para IA</td></tr>
+<tr><td><span class="badge bp">G3</span></td><td>Fase 3</td><td>20 conversas ativas/semana + 1 recomendação aceita e executada</td><td>Revisar qualidade das recomendações antes de escalar</td></tr>
+<tr><td><span class="badge bo">G4</span></td><td>Mês 10</td><td>500 empresas pagas + MRR > R$80k + churn < 3%</td><td>Pausar expansão, focar em retenção antes do ecossistema</td></tr>
+</tbody></table></div></div>`}
+
+function p11(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.o}"></div>
+  <div class="sh-icon">✅</div>
+  <div><div class="sh-tag" style="color:${C.o}">Seção 12 — Implementation Readiness</div>
+    <div class="sh-title">Pré-Requisitos, Dependências e Hipóteses para Validar</div>
+    <div class="sh-desc">Tudo o que deve estar verdadeiro antes de escrever a primeira linha de código, tudo o que deve ser validado com dados reais, e todas as dependências técnicas críticas.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Pré-Requisitos Técnicos para Início</div>
+<div class="tw"><table><thead><tr><th>Pré-Requisito</th><th>Status Necessário</th><th>Prazo</th></tr></thead><tbody>
+<tr><td>Supabase project criado com schema inicial</td><td>Funcionando antes da Sprint 1.2</td><td><span class="badge bg">Semana 1</span></td></tr>
+<tr><td>API keys: Claude API + OpenAI</td><td>Contas ativas com rate limits adequados</td><td><span class="badge bg">Semana 1</span></td></tr>
+<tr><td>GitHub repo + branch strategy (main/staging/dev)</td><td>Configurado antes do primeiro commit</td><td><span class="badge br">Dia 1</span></td></tr>
+<tr><td>Domínio e SSL configurados</td><td>Railway + Vercel endpoints ativos</td><td><span class="badge bg">Semana 1</span></td></tr>
+<tr><td>Stripe + Iugu contas de sandbox</td><td>Para testes de pagamento desde o início</td><td><span class="badge bb">Semana 2</span></td></tr>
+<tr><td>Design system base (Figma + Tailwind + Radix)</td><td>Componentes base antes do front-end</td><td><span class="badge bb">Semana 2</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Dependências Técnicas Críticas</div>
+<div class="grid2">
+${[
+  {t:'DIE depende de Volume',c:C.g,d:'Benchmarks são válidos com n ≥ 30 por segmento. O beta precisa recrutar 100+ empresas diversificadas antes de ativar benchmarks públicos.'},
+  {t:'AI Brain depende do DIE',c:C.b,d:'Sem benchmarks, o AI Brain opera em modo degradado — sem contexto comparativo. O priority_score das recomendações cai significativamente.'},
+  {t:'Ecosystem depende de Massa Crítica',c:C.p,d:'Comunidade e marketplace só geram valor com 500+ empresas ativas. Não ativar antes de atingir esse threshold.'},
+  {t:'ClickHouse depende do Kafka',c:C.t,d:'No MVP com menos de 500 empresas, pode usar PostgreSQL como fonte temporária do DIE — migrar para Kafka antes de 500 empresas.'},
+].map(m=>`<div class="card" style="border-left:3px solid ${m.c}"><div class="c-t" style="color:${m.c}">${m.t}</div><div class="c-b">${m.d}</div></div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">5 Hipóteses de Produto para Validar no Beta</div>
+<div class="tw"><table><thead><tr><th>#</th><th>Hipótese</th><th>Métrica de Validação</th><th>Prazo</th></tr></thead><tbody>
+<tr><td><span class="badge bg">H1</span></td><td>Empresas percebem o diagnóstico como preciso e útil</td><td>Retorno para novo ciclo em 12 semanas: >60%</td><td>Mês 4</td></tr>
+<tr><td><span class="badge bb">H2</span></td><td>Empresas que completam o BOS (Daily + Weekly) continuam por 8+ semanas</td><td>Retenção semana 8: >70%</td><td>Mês 3</td></tr>
+<tr><td><span class="badge bp">H3</span></td><td>40%+ das recomendações do AI Brain resultam em ação em 14 dias</td><td>Recommendation acceptance rate: >40%</td><td>Mês 5</td></tr>
+<tr><td><span class="badge bt">H4</span></td><td>PMEs no tier Crescimento (R$397) renovam após mês 3</td><td>Churn mensal mês 3: <5%</td><td>Mês 6</td></tr>
+<tr><td><span class="badge bo">H5</span></td><td>Empresas na comunidade têm churn 30% menor</td><td>Churn eco vs. solo: delta >30%</td><td>Mês 12</td></tr>
+</tbody></table></div></div>`}
+
+function p12(){return`
+<div class="sh"><div class="sh-bar" style="background:${C.g}"></div>
+  <div class="sh-icon">🏆</div>
+  <div><div class="sh-tag" style="color:${C.g}">Seção 13 — Blueprint Final</div>
+    <div class="sh-title">O Sistema como Um Todo — Blueprint Definitivo de Construção</div>
+    <div class="sh-desc">O ponto de convergência de 21 documentos. Não um redesign — uma unificação. O EGE como sistema vivo com três propriedades fundamentais: ciclico, cumulativo e composto.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">O Stack de Valor — Como Cada Camada Amplifica as Outras</div>
+<div class="code-block"><div class="code-head">Efeito Composto das 5 Camadas</div>
+<div class="code-body"><span class="cm">ECOSYSTEM LAYER (M8)</span>
+  + Cada parceria gera dados de qualidade para o DIE
+  + Cada transação de marketplace valida padrões de demanda
+  + Cada conexão reduz o churn da plataforma
+
+<span class="cm">AI INTELLIGENCE LAYER (M5)</span>
+  + Recomendações melhores aumentam execução no BOS
+  + Alertas precisos previnem crises e reduzem churn
+  + Cada feedback de recomendação melhora o Learning Engine
+
+<span class="cm">DATA INTELLIGENCE ENGINE (M6)</span>
+  + Mais empresas = benchmarks mais precisos
+  + Mais ciclos = modelos preditivos mais acurados
+  + Mais dados = insights de IA mais contextualizados
+
+<span class="cm">BUSINESS OPERATING SYSTEM (M2+M3+M4)</span>
+  + Gestão estruturada gera KPIs confiáveis para o DIE
+  + Empresa mais madura usa mais features do Ecosystem
+  + Ciclos completados alimentam o Learning Engine da IA
+
+<span class="cm">PLATFORM CORE (M1)</span>
+  + Multi-tenant isolation garante privacidade de todos
+  + Auth robusto permite que empresas se conectem com confiança
+  + API Gateway centraliza todos os fluxos de dados</div></div></div>
+
+<div class="blk"><div class="blk-h">Decisões Arquiteturais Definitivas — Não Reverter</div>
+<div class="tw"><table><thead><tr><th>Decisão</th><th>Detalhe</th><th>Motivação</th></tr></thead><tbody>
+<tr><td><span class="badge bg">OLTP ≠ OLAP</span></td><td>PostgreSQL para operação, ClickHouse para analytics — nunca misturar</td><td>Workloads opostos degradam ambos no mesmo banco</td></tr>
+<tr><td><span class="badge bb">9 Módulos Canônicos</span></td><td>M1 a M9 — toda feature pertence a exatamente um módulo</td><td>Elimina duplicação de código e responsabilidade ambígua</td></tr>
+<tr><td><span class="badge bp">AI como Camada</span></td><td>O AI Brain não tem banco próprio — sempre acessa o DIE via context package</td><td>Dado centralizado, inteligência distribuída</td></tr>
+<tr><td><span class="badge bt">BOS como Metodologia</span></td><td>Não há módulo chamado BOS — é M2+M3+M4 implementando a metodologia</td><td>Evita módulo monolítico e acoplamento excessivo</td></tr>
+<tr><td><span class="badge bo">MVP sem Ecosystem</span></td><td>M8 não está no MVP — requer massa crítica de 500+ empresas</td><td>Ecosystem vazio não gera valor — pode gerar frustração</td></tr>
+<tr><td><span class="badge br">Privacy by Design</span></td><td>Anonimização antes da fronteira OLTP/OLAP — irreversível como princípio</td><td>LGPD compliance não pode ser adicionada depois sem reescrever o pipeline</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Métricas que Definem o Sucesso da Plataforma</div>
+<div class="tw"><table><thead><tr><th>Métrica</th><th>Meta Mês 6</th><th>Meta Mês 12</th><th>Meta Mês 36</th></tr></thead><tbody>
+${[
+  ['Empresas pagas','100','500','50.000+'],
+  ['MRR','R$ 30k','R$ 150k','R$ 15M+'],
+  ['Churn mensal','< 5%','< 3%','< 2%'],
+  ['Score médio EGE','30','44','55+'],
+  ['NPS do produto','40','55','70+'],
+  ['Setores com benchmark','5','15','60+'],
+  ['Recomendações AI aceitas','30%','40%','55%+'],
+  ['GMV marketplace','R$ 0','R$ 2M/mês','R$ 30M/mês'],
+].map((r,i)=>`<tr><td style="font-weight:600">${r[0]}</td><td style="color:var(--mid);font-family:'JetBrains Mono',monospace">${r[1]}</td><td style="color:var(--b);font-family:'JetBrains Mono',monospace">${r[2]}</td><td style="color:var(--g);font-family:'JetBrains Mono',monospace;font-weight:700">${r[3]}</td></tr>`).join('')}
+</tbody></table></div></div>
+
+<div class="cll">"O Enterprise Growth Ecosystem não é um produto que se constrói uma vez. É um sistema vivo que fica mais poderoso a cada empresa que entra, a cada ciclo completo, a cada recomendação que gera resultado, a cada parceria que cria valor real. A construção do MVP é apenas o nascimento do sistema. O verdadeiro valor emerge com o tempo, com o volume, e com a confiança das empresas que escolhem operar dentro do ecossistema."</div>
+
+<div style="background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;font-size:11px;color:var(--mid);font-family:'JetBrains Mono',monospace;line-height:2;margin-top:16px">
+EGE Master Integration Blueprint · v1.0 · Março 2026<br>
+21 documentos integrados · 9 módulos canônicos · 5 camadas · 885 parágrafos técnicos<br>
+Este documento substitui todos os documentos anteriores em caso de conflito.<br>
+Próxima revisão: Gate G2 ou 90 dias após esta data.
+</div>`}
+
+const panels=[p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .28s';el.style.opacity=1;},130);
+}
+show(0);
+</script>
+</body>
+</html>

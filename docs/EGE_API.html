@@ -1,0 +1,550 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Arquitetura de API</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;--g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;--txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(28px,5vw,56px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:4px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:680px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}.c-b{font-size:12px;color:var(--mid);line-height:1.65}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75;color:var(--txt)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em}
+.code-badge{margin-left:auto}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.85;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.ty{color:var(--b)}.cm{color:var(--mid);font-style:italic}.st{color:var(--g)}.nm{color:var(--o)}.mt{color:var(--t)}
+/* API endpoint cards */
+.ep-group{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:14px}
+.ep-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+.ep-icon{font-size:20px}.ep-name{font-size:14px;font-weight:800}.ep-prefix{font-family:'JetBrains Mono',monospace;font-size:11px;margin-left:auto;color:var(--mid)}
+.ep-list{display:flex;flex-direction:column}
+.ep-row{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ep-row:last-child{border-bottom:none}
+.ep-method{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;min-width:48px;text-align:center;flex-shrink:0}
+.GET{background:rgba(0,192,138,.12);color:var(--g)}.POST{background:rgba(19,84,204,.12);color:var(--b)}.PATCH{background:rgba(184,114,0,.12);color:var(--y)}.DELETE{background:rgba(192,32,32,.12);color:var(--r)}
+.ep-url{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt);min-width:220px;flex-shrink:0;margin-top:1px}
+.ep-desc{font-size:12px;color:var(--mid);flex:1;margin-top:1px;line-height:1.5}
+.ep-note{font-size:10px;color:var(--mid);margin-left:auto;flex-shrink:0;margin-top:2px}
+/* Middleware pipeline */
+.mw-pipeline{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.mw-step{display:flex;gap:12px;position:relative}
+.mw-step::before{content:'';position:absolute;left:15px;top:36px;bottom:-4px;width:2px;background:var(--bd)}
+.mw-step:last-child::before{display:none}
+.mw-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;background:var(--bg);position:relative;z-index:1;margin-top:2px}
+.mw-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:11px 16px;margin-bottom:8px}
+.mw-name{font-size:13px;font-weight:700;margin-bottom:3px}.mw-desc{font-size:12px;color:var(--mid);line-height:1.55}
+.mw-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--g);margin-top:5px;background:rgba(0,192,138,.07);padding:2px 8px;border-radius:4px;display:inline-block}
+/* WS channels */
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;margin:14px 0}
+.ws-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.ws-channel{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--g);margin-bottom:6px;word-break:break-all}
+.ws-events{font-size:11.5px;color:var(--mid);line-height:1.6}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Backend Architecture</div>
+  <h1>Arquitetura de<br><span>API da Plataforma EGE</span></h1>
+  <p class="sub">REST + WebSocket · JWT + RLS multi-tenant · SSE streaming para IA · Rate limiting em 2 camadas · OpenAPI 3.1. Previsível, segura e escalável desde o primeiro endpoint.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">8</div><div class="sl">Grupos de recurso</div></div>
+  <div class="st sb"><div class="sv">47</div><div class="sl">Endpoints documentados</div></div>
+  <div class="st sp"><div class="sv">SSE</div><div class="sl">Streaming da IA</div></div>
+  <div class="st so"><div class="sv">6</div><div class="sl">Etapas de middleware</div></div>
+  <div class="st st2"><div class="sv">RLS</div><div class="sl">Isolamento no banco</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🔌 Core APIs</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">🔄 Troca de Dados</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🔐 Autenticação</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">🔗 Integrações</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">📈 Escalabilidade</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const METHODS = {GET:'GET',POST:'POST',PATCH:'PATCH',DELETE:'DELETE'};
+function ep(method,url,desc,note=''){return`<div class="ep-row"><span class="ep-method ${method}">${method}</span><span class="ep-url">${url}</span><span class="ep-desc">${desc}</span>${note?`<span class="ep-note">${note}</span>`:''}</div>`;}
+
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🔌</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Core APIs</div>
+    <div class="sh-title">8 Grupos de Recurso — Endpoints, Métodos e Payloads</div>
+    <div class="sh-desc">REST sobre todos os recursos, WebSocket para tempo real, SSE para streaming da IA. Todos os endpoints seguem as mesmas convenções: envelope {data, meta, error}, cursor pagination, timestamps UTC, camelCase no JSON.</div>
+  </div>
+</div>
+<div class="cll">"Convenção global: versionamento por prefixo /v1/, paginação por cursor (performance com 50M+ rows), todos os timestamps em ISO 8601 UTC. Um desenvolvedor que conhece um endpoint conhece todos."</div>
+
+<div class="blk"><div class="blk-h">1.1 — Auth & User Management</div>
+<div class="ep-group">
+  <div class="ep-head"><div class="ep-icon">🔑</div><div class="ep-name">Auth & Users</div><div class="ep-prefix">/v1/auth · /v1/users</div></div>
+  <div class="ep-list">
+    ${ep('POST','/v1/auth/login','Login com email+senha ou OAuth token — retorna access_token (1h) + refresh_token (30d)','Pública')}
+    ${ep('POST','/v1/auth/logout','Revoga refresh_token — blacklist no Redis para invalidação imediata','JWT')}
+    ${ep('POST','/v1/auth/refresh','Gera novo access_token via refresh_token com rotação automática','Refresh token')}
+    ${ep('POST','/v1/auth/mfa/verify','Verifica código TOTP — obrigatório para roles owner e admin','JWT parcial')}
+    ${ep('GET','/v1/users/me','Retorna perfil do usuário com todas as memberships e roles','JWT')}
+    ${ep('PATCH','/v1/users/me','Atualiza nome, avatar, locale e preferências da conta','JWT')}
+    ${ep('GET','/v1/users/me/notifications','Lista notificações — filtros por tipo, lidas/não lidas, cursor pagination','JWT')}
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">1.2 — Companies (Tenant Root)</div>
+<div class="ep-group">
+  <div class="ep-head"><div class="ep-icon">🏢</div><div class="ep-name">Companies</div><div class="ep-prefix">/v1/companies/current</div></div>
+  <div class="ep-list">
+    ${ep('GET','/v1/companies/current','Dados da empresa ativa no contexto JWT — setor, porte, plano, metadata','viewer+')}
+    ${ep('PATCH','/v1/companies/current','Atualiza nome, setor, porte, metadata JSONB','owner')}
+    ${ep('GET','/v1/companies/current/members','Lista membros com roles e departamentos','admin+')}
+    ${ep('POST','/v1/companies/current/members/invite','Envia convite por e-mail com role pré-definido','admin+')}
+    ${ep('PATCH','/v1/companies/current/members/:user_id','Altera role ou departamento do membro','admin+')}
+    ${ep('DELETE','/v1/companies/current/members/:user_id','Remove membro — CASCADE nas permissões','admin+')}
+    ${ep('GET','/v1/companies/current/billing','Plano atual, uso do período, próxima cobrança','owner')}
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">1.3 — Diagnostics · 1.4 — Scores</div>
+<div class="ep-group">
+  <div class="ep-head"><div class="ep-icon">🔬</div><div class="ep-name">Diagnostics</div><div class="ep-prefix">/v1/diagnostics</div></div>
+  <div class="ep-list">
+    ${ep('POST','/v1/diagnostics/start','Cria diagnóstico — retorna 40 questões ordenadas por dimensão','manager+')}
+    ${ep('GET','/v1/diagnostics','Histórico de diagnósticos — cursor pagination, filtro por status','viewer+')}
+    ${ep('POST','/v1/diagnostics/:id/answers','Salva respostas em batch (até 10) — persiste incrementalmente','manager+')}
+    ${ep('POST','/v1/diagnostics/:id/complete','Finaliza — dispara cálculo de score assíncrono','manager+')}
+    ${ep('GET','/v1/diagnostics/questions','Catálogo de perguntas da versão ativa','manager+')}
+  </div>
+</div>
+<div class="ep-group" style="margin-top:10px">
+  <div class="ep-head"><div class="ep-icon">📊</div><div class="ep-name">Scores</div><div class="ep-prefix">/v1/scores</div></div>
+  <div class="ep-list">
+    ${ep('GET','/v1/scores/current','Score mais recente — usado no dashboard (Cache Redis 5min)','viewer+')}
+    ${ep('GET','/v1/scores/history','Série temporal — ?limit=8 · cursor pagination','viewer+')}
+    ${ep('GET','/v1/scores/benchmark','Percentil e comparativo setorial (Cache Redis 1h)','viewer+')}
+    ${ep('GET','/v1/scores/simulate','Simula score futuro dado delta por dimensão — não persiste','manager+')}
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">1.5 — Plans & Cycles · 1.6 — Tasks</div>
+<div class="ep-group">
+  <div class="ep-head"><div class="ep-icon">📋</div><div class="ep-name">Plans & Cycles</div><div class="ep-prefix">/v1/plans · /v1/cycles</div></div>
+  <div class="ep-list">
+    ${ep('GET','/v1/cycles/current','Ciclo ativo com progresso geral e semana atual (semana N de 12)','viewer+')}
+    ${ep('POST','/v1/cycles/:id/close','Encerra ciclo — dispara retrospectiva IA + cria próximo','owner')}
+    ${ep('GET','/v1/plans/current','Plano estratégico com iniciativas e progresso','viewer+')}
+    ${ep('POST','/v1/plans/generate','Gera novo plano via IA — usa score + contexto completo (async)','admin+')}
+    ${ep('PATCH','/v1/plans/:id/initiatives/:id','Atualiza responsável, status ou título da iniciativa','manager+')}
+  </div>
+</div>
+<div class="ep-group" style="margin-top:10px">
+  <div class="ep-head"><div class="ep-icon">✅</div><div class="ep-name">Tasks</div><div class="ep-prefix">/v1/tasks · WebSocket</div></div>
+  <div class="ep-list">
+    ${ep('GET','/v1/tasks','Lista tarefas — filtros: status, assigned_to, initiative_id, priority','viewer+')}
+    ${ep('POST','/v1/tasks','Cria tarefa — title, initiative_id, priority, due_date, assigned_to','operator+')}
+    ${ep('PATCH','/v1/tasks/:id','Atualiza campos — propaga via WebSocket para dashboards','operator+')}
+    ${ep('POST','/v1/tasks/bulk','Atualiza status de até 50 tarefas em uma operação','manager+')}
+    ${ep('POST','/v1/tasks/:id/comments','Adiciona comentário em Markdown — notifica thread','operator+')}
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">1.7 — KPIs & Alerts · 1.8 — AI Advisor</div>
+<div class="ep-group">
+  <div class="ep-head"><div class="ep-icon">📈</div><div class="ep-name">KPIs & Alerts</div><div class="ep-prefix">/v1/kpis · /v1/alerts</div></div>
+  <div class="ep-list">
+    ${ep('GET','/v1/kpis/dashboard','Snapshot consolidado de todos os KPIs (Cache Redis 1min)','viewer+')}
+    ${ep('POST','/v1/kpis','Cria KPI — name, unit, target, thresholds, frequency','manager+')}
+    ${ep('POST','/v1/kpis/:id/values','Registra valor — dispara threshold check síncrono','operator+')}
+    ${ep('POST','/v1/kpis/:id/values/batch','Ingestão em lote — até 1.000 valores com timestamps históricos','manager+')}
+    ${ep('GET','/v1/kpis/:id/values','Série temporal — ?from=ISO&to=ISO&interval=day|week|month','viewer+')}
+    ${ep('PATCH','/v1/alerts/:id/acknowledge','Marca alerta como visto — registra quem e quando','operator+')}
+  </div>
+</div>
+<div class="ep-group" style="margin-top:10px">
+  <div class="ep-head"><div class="ep-icon">🤖</div><div class="ep-name">AI Advisor</div><div class="ep-prefix">/v1/ai · SSE Streaming</div></div>
+  <div class="ep-list">
+    ${ep('POST','/v1/ai/conversations/:id/messages','Envia mensagem — resposta em SSE streaming token a token','<span class="badge bp">SSE</span>')}
+    ${ep('GET','/v1/ai/insights','Insights proativos ativos — filtro por tipo e prioridade','viewer+')}
+    ${ep('PATCH','/v1/ai/insights/:id/feedback','Registra up/down + categoria de erro opcional','viewer+')}
+    ${ep('POST','/v1/ai/analyze','Análise pontual sem conversa (async) — ex: análise de KPI','manager+')}
+    ${ep('POST','/v1/ai/plans/generate','Gera plano estratégico via Claude API (async)','admin+')}
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">SSE Streaming — AI Response in Real Time</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">POST /v1/ai/conversations/:id/messages — Server-Sent Events</span></div>
+  <div class="code-body"><span class="cm">// Request</span>
+{ <span class="st">"content"</span>: <span class="ty">"Por que meu caixa caiu se o faturamento subiu?"</span>, <span class="st">"mode"</span>: <span class="ty">"standard"</span> }
+
+<span class="cm">// Response stream — o cliente recebe token a token</span>
+<span class="kw">data:</span> {<span class="st">"type"</span>:<span class="ty">"start"</span>, <span class="st">"message_id"</span>:<span class="ty">"msg_uuid"</span>, <span class="st">"context_tokens"</span>:4200}
+<span class="kw">data:</span> {<span class="st">"type"</span>:<span class="ty">"delta"</span>, <span class="st">"content"</span>:<span class="ty">"Olhando os dados dos últimos"</span>}
+<span class="kw">data:</span> {<span class="st">"type"</span>:<span class="ty">"delta"</span>, <span class="st">"content"</span>:<span class="ty">" 30 dias, identifiquei"</span>}
+<span class="kw">data:</span> {<span class="st">"type"</span>:<span class="ty">"delta"</span>, <span class="st">"content"</span>:<span class="ty">" três fatores..."</span>}
+<span class="kw">data:</span> {<span class="st">"type"</span>:<span class="ty">"end"</span>, <span class="st">"tokens_used"</span>:847, <span class="st">"model"</span>:<span class="ty">"claude-sonnet-4"</span>}
+
+<span class="cm">// O usuário lê a resposta sendo gerada — sem esperar 20-30 segundos</span></div>
+</div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">🔄</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Data Exchange</div>
+    <div class="sh-title">Como os Módulos se Comunicam</div>
+    <div class="sh-desc">Regra clara: chamadas síncronas quando o resultado é necessário para completar o request atual. Assíncronas (event bus) para side effects que podem acontecer depois — geração de IA, notificações, recálculos de progresso.</div>
+  </div>
+</div>
+<div class="cll">"O módulo de IA pode ser escalado independentemente do módulo de KPIs, que pode ser escalado independentemente do CRM. A separação síncrono/assíncrono é o que torna isso possível."</div>
+
+<div class="blk"><div class="blk-h">Envelope Padrão de Resposta — Todos os Endpoints</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Response Envelope — invariável em todos os módulos</span></div>
+  <div class="code-body"><span class="cm">// Sucesso — qualquer endpoint</span>
+{
+  <span class="st">"data"</span>: { <span class="cm">/* payload do recurso */</span> },
+  <span class="st">"meta"</span>: {
+    <span class="st">"request_id"</span>: <span class="ty">"req_uuid_abc123"</span>,
+    <span class="st">"timestamp"</span>: <span class="ty">"2026-03-15T14:30:00.000Z"</span>,
+    <span class="st">"pagination"</span>: { <span class="st">"cursor"</span>: <span class="ty">"eyJpZCI6..."</span>, <span class="st">"has_more"</span>: <span class="kw">true</span>, <span class="st">"total"</span>: 247 }
+  }
+}
+
+<span class="cm">// Erro — mesmo formato independente do status HTTP</span>
+{
+  <span class="st">"error"</span>: {
+    <span class="st">"code"</span>: <span class="ty">"VALIDATION_ERROR"</span>,
+    <span class="st">"message"</span>: <span class="ty">"Campo obrigatório ausente"</span>,
+    <span class="st">"details"</span>: [{ <span class="st">"field"</span>: <span class="ty">"due_date"</span>, <span class="st">"message"</span>: <span class="ty">"must be a future date"</span> }],
+    <span class="st">"request_id"</span>: <span class="ty">"req_uuid_abc123"</span>
+  }
+}</div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Comunicação Síncrona vs. Assíncrona por Evento</div>
+<div class="tw"><table><thead><tr><th>Evento de Origem</th><th>Módulo Destino</th><th>Tipo</th><th>Ação Executada</th></tr></thead><tbody>
+<tr><td><code style="color:var(--g);font-size:10.5px">POST /diagnostics/:id/complete</code></td><td>Score Engine</td><td><span class="badge bg">Síncrona</span></td><td>Calcula e persiste o score antes do 200 OK</td></tr>
+<tr><td>Score calculado</td><td>AI Engine</td><td><span class="badge bb">Assíncrona</span></td><td>Gera 3 insights iniciais via Claude API</td></tr>
+<tr><td>Score calculado</td><td>Plan Generator</td><td><span class="badge bb">Assíncrona</span></td><td>Gera plano estratégico do ciclo em background</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">POST /kpis/:id/values</code></td><td>Alert Engine</td><td><span class="badge bg">Síncrona</span></td><td>Verifica thresholds e cria alert no mesmo request</td></tr>
+<tr><td>Alert criado (P0/P1)</td><td>Notification Service</td><td><span class="badge bb">Assíncrona</span></td><td>Push + e-mail + WhatsApp imediato</td></tr>
+<tr><td>Alert criado (P0)</td><td>AI Engine</td><td><span class="badge bb">Assíncrona</span></td><td>Análise de causa + ações recomendadas</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">PATCH /tasks/:id status=done</code></td><td>Progress Calculator</td><td><span class="badge bg">Síncrona</span></td><td>Recalcula % da iniciativa pai</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">POST /cycles/:id/close</code></td><td>Report Generator</td><td><span class="badge bb">Assíncrona</span></td><td>Retrospectiva IA + novo ciclo + novo plano</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Event Bus — Filas BullMQ (Redis-backed)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">BullMQ — Event Queue Configuration</span></div>
+  <div class="code-body"><span class="cm">// Publicar evento ao completar diagnóstico</span>
+<span class="kw">await</span> queues.ai.add(<span class="ty">'generate-initial-insights'</span>, {
+  company_id, diagnostic_id, score_id,
+  attempts: 3,
+  backoff: { type: <span class="ty">'exponential'</span>, delay: 2000 }
+});
+
+<span class="cm">// Filas configuradas com concorrências otimizadas:</span>
+<span class="cm">// queue:ai       — geração IA           (concurrency: 5, priority: high)</span>
+<span class="cm">// queue:scores   — cálculo de scores    (concurrency: 10, priority: critical)</span>
+<span class="cm">// queue:alerts   — threshold check      (concurrency: 20)</span>
+<span class="cm">// queue:notif    — push/email/WhatsApp  (concurrency: 50)</span>
+<span class="cm">// queue:reports  — relatórios mensais   (concurrency: 3)</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">WebSocket — Canais de Tempo Real por Room</div>
+<div class="ws-grid">
+${[
+  {ch:'company:{id}:tasks',events:'task:updated\ntask:created\ntask:deleted',who:'Todos os membros'},
+  {ch:'company:{id}:kpis',events:'kpi:value_added\nalert:created\nalert:resolved',who:'Acesso a KPIs'},
+  {ch:'company:{id}:ai',events:'insight:new\nanalysis:complete',who:'Acesso à IA'},
+  {ch:'conversation:{id}',events:'message:delta\nmessage:complete',who:'Participantes'},
+  {ch:'user:{id}',events:'notification:new\ninvitation:received',who:'Usuário específico'},
+].map(c=>`
+<div class="ws-card">
+  <div class="ws-channel">${c.ch}</div>
+  <div class="ws-events" style="white-space:pre-line;margin-bottom:6px">${c.events}</div>
+  <span class="badge bg" style="font-size:9px">${c.who}</span>
+</div>`).join('')}
+</div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">🔐</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Authentication</div>
+    <div class="sh-title">Autenticação JWT + RLS Multi-Tenant</div>
+    <div class="sh-desc">Pipeline de middleware invariável em todos os endpoints — 6 etapas em sequência fixa. JWT com blacklist no Redis. RLS no banco garante isolamento mesmo com bug de autorização na aplicação.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Pipeline de Middleware — 6 Etapas em Sequência Fixa</div>
+<div class="mw-pipeline">
+${[
+  {n:'1',name:'Rate Limiter',desc:'Verifica se IP ou API Key está dentro dos limites. Se excedeu: 429 Too Many Requests + header Retry-After.',code:'limiters.global.check(req.ip) → 429 | continue',color:'var(--g)'},
+  {n:'2',name:'JWT Verification',desc:'Extrai Bearer token do header Authorization. Verifica assinatura e expiração. 401 se inválido ou expirado.',code:'jwt.verify(token, secret) → {sub, company_id, role, jti}',color:'var(--b)'},
+  {n:'3',name:'Blacklist Check',desc:'Verifica no Redis se o jti (JWT ID) está na blacklist de tokens revogados. Proteção contra reuso após logout.',code:'redis.get(`blacklist:${jti}`) → 401 se existir',color:'var(--p)'},
+  {n:'4',name:'Context Injection',desc:'Injeta user_id, company_id e role no objeto request. Seta variáveis de sessão PostgreSQL para RLS funcionar automaticamente.',code:"SET app.current_company_id = 'uuid'",color:'var(--t)'},
+  {n:'5',name:'Permission Check',desc:'Verifica se o role tem permissão para o método + endpoint específico. 403 Forbidden se não tem acesso.',code:'RBAC.check(role, method, endpoint) → 403 | continue',color:'var(--o)'},
+  {n:'6',name:'Handler Execution',desc:'O handler do recurso executa. Todas as queries ao banco já estão filtradas pelo RLS — o banco nunca retorna dados de outra empresa.',code:'→ banco já filtrado por RLS automaticamente',color:'var(--g)'},
+].map(s=>`
+<div class="mw-step">
+  <div class="mw-dot" style="border-color:${s.color};color:${s.color}">${s.n}</div>
+  <div class="mw-body">
+    <div class="mw-name">${s.name}</div>
+    <div class="mw-desc">${s.desc}</div>
+    <div class="mw-code">${s.code}</div>
+  </div>
+</div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Estrutura do JWT Access Token</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">JWT Payload — access_token (1h)</span></div>
+  <div class="code-body">{
+  <span class="st">"sub"</span>:        <span class="ty">"user_uuid"</span>,           <span class="cm">// user ID</span>
+  <span class="st">"email"</span>:      <span class="ty">"joao@empresa.com"</span>,
+  <span class="st">"company_id"</span>: <span class="ty">"company_uuid"</span>,       <span class="cm">// tenant ativo</span>
+  <span class="st">"role"</span>:       <span class="ty">"owner"</span>,              <span class="cm">// role nesta empresa</span>
+  <span class="st">"jti"</span>:        <span class="ty">"unique_token_id"</span>,    <span class="cm">// para blacklist</span>
+  <span class="st">"iat"</span>:        1710500000,
+  <span class="st">"exp"</span>:        1710503600             <span class="cm">// +1h</span>
+}
+
+<span class="cm">// Header obrigatório em TODOS os requests autenticados</span>
+<span class="kw">Authorization</span>: <span class="ty">Bearer eyJhbGciOiJIUzI1NiJ9...</span>
+
+<span class="cm">// API Keys para integrações machine-to-machine</span>
+<span class="kw">X-EGE-API-Key</span>: <span class="ty">ege_live_Kj7n2PQm9xRt4vFz8...</span>
+<span class="kw">X-EGE-Company-ID</span>: <span class="ty">company_uuid</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Matriz de Permissões por Role e Recurso</div>
+<div class="tw"><table><thead><tr><th>Recurso</th><th>viewer</th><th>operator</th><th>manager</th><th>admin</th><th>owner</th></tr></thead><tbody>
+<tr><td>Diagnósticos</td><td><span class="badge bt">R</span></td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>Scores</td><td><span class="badge bt">R</span></td><td><span class="badge bt">R</span></td><td><span class="badge bt">R</span></td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td></tr>
+<tr><td>Planos Estratégicos</td><td><span class="badge bt">R</span></td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>Tarefas</td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>KPIs e Alertas</td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>IA Consultora</td><td>❌</td><td>❌</td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td></tr>
+<tr><td>CRM / Deals</td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>Membros da Equipe</td><td>❌</td><td>❌</td><td><span class="badge bt">R</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+<tr><td>Configurações da Empresa</td><td>❌</td><td>❌</td><td>❌</td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W+D</span></td></tr>
+</tbody></table></div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">🔗</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Integrations</div>
+    <div class="sh-title">Conectando com Sistemas Externos</div>
+    <div class="sh-desc">Webhooks bidirecionais assinados com HMAC-SHA256, endpoints de ingestão com API Key por escopo, n8n como middleware de orquestração. Zapier, CRMs, ERPs e sistemas financeiros sem código adicional no core.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">Mapa de Integrações por Categoria</div>
+<div class="tw"><table><thead><tr><th>Categoria</th><th>Sistemas</th><th>Tipo</th><th>Dados Trocados</th></tr></thead><tbody>
+<tr><td><span class="badge bg">CRM</span></td><td>HubSpot, RD Station, PipeRun</td><td>Bidirecional via webhook</td><td>Deals, contacts, activities sincronizados em tempo real</td></tr>
+<tr><td><span class="badge bb">Financeiro</span></td><td>Conta Azul, Omie, Asaas, Stripe</td><td>Entrada — EGE puxa via API</td><td>MRR, DRE, fluxo de caixa, CAC por canal</td></tr>
+<tr><td><span class="badge bp">Marketing</span></td><td>RD Station, Mailchimp, Google Ads</td><td>Entrada — push de métricas</td><td>Leads, conversões, CAC por canal de aquisição</td></tr>
+<tr><td><span class="badge bt">Comunicação</span></td><td>WhatsApp Business, Slack, E-mail</td><td>Saída — notificações</td><td>Alertas P0/P1 e relatórios automáticos</td></tr>
+<tr><td><span class="badge by">Produtividade</span></td><td>Google Workspace, Notion, Trello</td><td>Bidirecional</td><td>Tarefas e eventos de calendário sincronizados</td></tr>
+<tr><td><span class="badge bo">Automação</span></td><td>Zapier, Make (Integromat), n8n</td><td>Entrada via webhook</td><td>Qualquer evento EGE → ação em sistema externo</td></tr>
+<tr><td><span class="badge br">ERP</span></td><td>Totvs, SAP, ERPs customizados</td><td>Entrada via API pública</td><td>KPIs financeiros e operacionais via batch ingest</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Webhooks de Saída — Assinados com HMAC-SHA256</div>
+<div class="tw"><table><thead><tr><th>Evento</th><th>Payload Enviado</th><th>Caso de Uso</th></tr></thead><tbody>
+<tr><td><code style="color:var(--g);font-size:10.5px">diagnostic.completed</code></td><td>score, dimension_scores, company_id</td><td>CRM cria tag "diagnóstico concluído" no contato</td></tr>
+<tr><td><code style="color:var(--r);font-size:10.5px">alert.created</code></td><td>severity, kpi_name, value, threshold</td><td>Slack envia mensagem no canal do fundador</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">score.updated</code></td><td>new_score, old_score, delta, level</td><td>CRM atualiza score de maturidade no perfil da empresa</td></tr>
+<tr><td><code style="color:var(--y);font-size:10.5px">task.overdue</code></td><td>task_id, title, assigned_to, days_late</td><td>WhatsApp envia lembrete ao responsável</td></tr>
+<tr><td><code style="color:var(--b);font-size:10.5px">cycle.completed</code></td><td>cycle_summary, score_delta, initiatives</td><td>Slack posta retrospectiva do ciclo para o time</td></tr>
+<tr><td><code style="color:var(--p);font-size:10.5px">plan.generated</code></td><td>plan_id, initiatives, start_date</td><td>Notion cria página estruturada com o plano do ciclo</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Segurança dos Webhooks — Validação HMAC</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Webhook Security — HMAC-SHA256 Signature</span></div>
+  <div class="code-body"><span class="cm">// Headers enviados com cada webhook:</span>
+<span class="kw">X-EGE-Signature</span>: <span class="ty">sha256=Kj7n2PQm9xRt4vFz8hmacSignature...</span>
+<span class="kw">X-EGE-Timestamp</span>: 1710500000
+<span class="kw">X-EGE-Event</span>: <span class="ty">alert.created</span>
+
+<span class="cm">// Validação no receptor (Node.js):</span>
+<span class="kw">const</span> signature = crypto
+  .createHmac(<span class="ty">'sha256'</span>, webhookSecret)
+  .update(timestamp + <span class="ty">'.'</span> + rawBody)
+  .digest(<span class="ty">'hex'</span>);
+
+<span class="kw">if</span> (signature !== receivedSignature) {
+  <span class="kw">return</span> res.status(401).json({ error: <span class="ty">'Invalid signature'</span> });
+}
+
+<span class="cm">// Retry policy: 3 tentativas com backoff exponencial</span>
+<span class="cm">// Se falhar 3x: webhook desativado + owner notificado</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Ingestão de KPIs Externos — Batch API</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">POST /v1/kpis/batch-ingest — Carga Inicial ou Sincronização</span></div>
+  <div class="code-body"><span class="cm">// Headers para integração machine-to-machine:</span>
+<span class="kw">X-EGE-API-Key</span>: <span class="ty">ege_live_Kj7n2PQm9xRt4vFz8...</span>
+<span class="kw">X-EGE-Company-ID</span>: <span class="ty">company_uuid</span>
+
+<span class="cm">// Body — até 1.000 registros com timestamps históricos:</span>
+{
+  <span class="st">"source"</span>: <span class="ty">"conta_azul"</span>,
+  <span class="st">"values"</span>: [
+    { <span class="st">"kpi_external_id"</span>: <span class="ty">"receita_bruta"</span>, <span class="st">"value"</span>: 185000,
+      <span class="st">"recorded_at"</span>: <span class="ty">"2026-03-01T00:00:00Z"</span> },
+    { <span class="st">"kpi_external_id"</span>: <span class="ty">"cac"</span>, <span class="st">"value"</span>: 2100,
+      <span class="st">"recorded_at"</span>: <span class="ty">"2026-03-01T00:00:00Z"</span> }
+  ]
+}
+<span class="cm">// Response: { data: { processed: 2, skipped: 0, errors: [] } }</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">API Pública para Parceiros — OpenAPI 3.1</div>
+<div class="grid2">
+  <div class="card"><div class="c-e">📖</div><div class="c-t">Documentação Interativa</div><div class="c-b">Swagger UI em api.ege.app/docs — exemplos executáveis em tempo real. OpenAPI 3.1 completo com todos os schemas, exemplos e response codes.</div></div>
+  <div class="card"><div class="c-e">📦</div><div class="c-t">SDK Oficial</div><div class="c-b"><code style="color:var(--g);font-size:11px">npm install @ege/sdk</code> — TypeScript first com types completos. Python SDK também disponível. Auto-gerado a partir do OpenAPI spec.</div></div>
+  <div class="card"><div class="c-e">🧪</div><div class="c-t">Ambiente Sandbox</div><div class="c-b">api.sandbox.ege.app — dados fictícios, reset diário automático, sem custo. Ideal para desenvolvimento e testes de integração.</div></div>
+  <div class="card"><div class="c-e">🐛</div><div class="c-t">Webhook Debugger</div><div class="c-b">Dashboard de eventos com replay manual — o parceiro pode reenviar qualquer evento histórico para testar o receptor. Sem depender de ambiente de produção.</div></div>
+</div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Scalability</div>
+    <div class="sh-title">Suportando Crescimento de Grande Escala</div>
+    <div class="sh-desc">Stateless por design — qualquer instância serve qualquer request. Rate limiting em 2 camadas. Cache por TTL estratégico. Escalabilidade horizontal sem mudança de código. Circuit breaker para Claude API.</div>
+  </div>
+</div>
+<div class="cll">"Todos os servidores são completamente stateless — sessões, filas, cache e locks estão no Redis. Adicionar uma instância aumenta a capacidade. Sem código extra."</div>
+
+<div class="blk"><div class="blk-h">Rate Limiting — 2 Camadas Independentes</div>
+<div class="tw"><table><thead><tr><th>Camada</th><th>Escopo</th><th>Limite</th><th>Janela</th><th>Implementação</th></tr></thead><tbody>
+<tr><td><span class="badge br">IP</span></td><td>Todos os endpoints</td><td>300 req</td><td>1 minuto</td><td>Redis Token Bucket — anti DDoS</td></tr>
+<tr><td><span class="badge bg">JWT — Leitura</span></td><td>GET endpoints</td><td>600 req</td><td>1 minuto/empresa</td><td>Redis por company_id</td></tr>
+<tr><td><span class="badge bb">JWT — Escrita</span></td><td>POST/PATCH/DELETE</td><td>120 req</td><td>1 minuto/empresa</td><td>Redis por company_id</td></tr>
+<tr><td><span class="badge bp">JWT — IA</span></td><td>/v1/ai/*</td><td>20 req</td><td>1 minuto/empresa</td><td>Custo de token — limite mais baixo</td></tr>
+<tr><td><span class="badge by">API Key Standard</span></td><td>Todos os escopos</td><td>1.000 req</td><td>1 hora</td><td>Redis por api_key_hash</td></tr>
+<tr><td><span class="badge bo">API Key Enterprise</span></td><td>Todos os escopos</td><td>10.000 req</td><td>1 hora</td><td>Redis por api_key_hash</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Estratégia de Cache por Endpoint</div>
+<div class="tw"><table><thead><tr><th>Endpoint</th><th>Estratégia</th><th>TTL</th><th>Invalidação</th></tr></thead><tbody>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /scores/current</code></td><td>Cache-Aside (Redis)</td><td><span class="badge bg">5 min</span></td><td>Ao criar novo score</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /kpis/dashboard</code></td><td>Cache-Aside (Redis)</td><td><span class="badge bg">1 min</span></td><td>Ao inserir kpi_value</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /scores/benchmark</code></td><td>Cache Compartilhado</td><td><span class="badge by">1 hora</span></td><td>Atualização mensal</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /cycles/current</code></td><td>Cache-Aside (Redis)</td><td><span class="badge bg">2 min</span></td><td>Ao atualizar iniciativa</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /ai/insights</code></td><td>Cache-Aside (Redis)</td><td><span class="badge bg">15 min</span></td><td>Ao gerar novo insight</td></tr>
+<tr><td><code style="color:var(--g);font-size:10.5px">GET /plans/current</code></td><td>Cache-Aside (Redis)</td><td><span class="badge bg">5 min</span></td><td>Ao atualizar qualquer iniciativa</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Padrões de Resiliência — Circuit Breaker e Retry</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">Resilience Patterns — Claude API + Database</span></div>
+  <div class="code-body"><span class="cm">// Circuit Breaker para Claude API:</span>
+<span class="cm">// Se falhar >50% dos requests em 30s → circuit OPEN</span>
+<span class="cm">// Circuit OPEN → retorna resposta de fallback imediata</span>
+<span class="cm">// Após 60s → circuit HALF-OPEN → testa 1 request</span>
+<span class="cm">// Se ok → circuit CLOSED → volta ao normal</span>
+
+<span class="kw">const</span> aiBreaker = <span class="kw">new</span> CircuitBreaker(callClaudeAPI, {
+  threshold: <span class="nm">50</span>,         <span class="cm">// % de falha para abrir</span>
+  timeout: <span class="nm">30000</span>,        <span class="cm">// janela de observação (ms)</span>
+  resetTimeout: <span class="nm">60000</span>   <span class="cm">// tempo antes de testar novamente</span>
+});
+
+<span class="cm">// Retry com backoff exponencial (3 tentativas):</span>
+<span class="cm">// Tentativa 1: imediata</span>
+<span class="cm">// Tentativa 2: após 2s</span>
+<span class="cm">// Tentativa 3: após 4s</span>
+<span class="cm">// Falha total: job retorna para a fila com dead-letter</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Observabilidade — Métricas, Logs e Tracing</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">📊</div><div class="c-t">Métricas</div><div class="c-b">Datadog APM — latência P50/P95/P99 por endpoint, throughput req/s, error rate, queue depth por fila.</div></div>
+  <div class="card"><div class="c-e">📝</div><div class="c-t">Logs</div><div class="c-b">JSON estruturado com request_id, company_id, latência e status. Datadog Log Management com retenção de 30 dias.</div></div>
+  <div class="card"><div class="c-e">🔍</div><div class="c-t">Distributed Tracing</div><div class="c-b">OpenTelemetry — trace completo de request → middleware → handler → DB query → cache → response.</div></div>
+  <div class="card"><div class="c-e">🚨</div><div class="c-t">Error Tracking</div><div class="c-b">Sentry — stack trace completo com contexto do usuário. Alerta automático no Slack para erros novos.</div></div>
+  <div class="card"><div class="c-e">✅</div><div class="c-t">Uptime</div><div class="c-b">Datadog Synthetics — check a cada 60s nos endpoints críticos. Alerta se latência > 2s ou status != 200.</div></div>
+  <div class="card"><div class="c-e">💰</div><div class="c-t">AI Cost Monitor</div><div class="c-b">Tokens consumidos por empresa, custo por request, projeção mensal — dashboard interno de custo de IA.</div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Capacidade Estimada por Configuração</div>
+<div class="tw"><table><thead><tr><th>Configuração</th><th>Empresas Ativas</th><th>Req/seg (pico)</th><th>Custo/mês</th></tr></thead><tbody>
+<tr><td><span class="badge bg">Railway — 1 instance (MVP)</span></td><td>até 300</td><td>~200 rps</td><td>R$500–R$1.200</td></tr>
+<tr><td><span class="badge bb">Railway — 3 instances + Redis</span></td><td>até 3.000</td><td>~2.000 rps</td><td>R$3.000–R$7.000</td></tr>
+<tr><td><span class="badge bp">Kubernetes — 5 pods + Redis Cluster</span></td><td>até 20.000</td><td>~15.000 rps</td><td>R$15.000–R$35.000</td></tr>
+<tr><td><span class="badge bo">Kubernetes — 20 pods + CDN + Sharding</span></td><td>50.000+</td><td>100.000+ rps</td><td>R$80.000+</td></tr>
+</tbody></table></div></div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

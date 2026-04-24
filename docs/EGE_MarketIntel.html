@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Inteligência de Mercado</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 65% 40% at 3% 6%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 55% 55% at 97% 92%,rgba(114,48,220,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--p),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:600px;margin:0 auto;line-height:1.8}
+
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--t)}.n4::after{background:var(--g)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* ── RADAR DE MERCADO ─────────────────────────────── */
+.radar-board{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:16px;border-radius:16px;overflow:hidden;border:1px solid var(--bd)}
+.radar-quad{padding:18px;background:var(--s1);min-height:200px}
+.radar-quad:nth-child(2){background:rgba(192,32,32,.04)}
+.radar-quad:nth-child(3){background:rgba(19,84,204,.04)}
+.radar-quad:nth-child(4){background:rgba(184,114,0,.04)}
+.rq-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.rq-icon{font-size:18px}
+.rq-title{font-size:12px;font-weight:800}
+.rq-count{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;margin-left:auto}
+.radar-item{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:all .15s}
+.radar-item:hover{border-color:var(--bd2)}
+.ri-title{font-size:12px;font-weight:700;margin-bottom:3px}
+.ri-meta{font-size:10.5px;color:var(--mid);line-height:1.5}
+.ri-action{margin-top:6px;font-size:10.5px;padding:4px 9px;border-radius:5px;font-weight:600;display:inline-block}
+
+/* ── TREND TRACKER ───────────────────────────────── */
+.trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
+.trend-card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:16px;position:relative;overflow:hidden}
+.trend-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ts-emergente::before{background:var(--g)}.ts-confirmada::before{background:var(--b)}
+.ts-dominante::before{background:var(--p)}.ts-declinio::before{background:var(--r)}
+.tc-stage{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.tc-title{font-size:13px;font-weight:800;margin-bottom:5px}
+.tc-sector{font-size:10.5px;margin-bottom:8px;color:var(--mid)}
+.tc-bar-wrap{height:5px;background:var(--s3);border-radius:10px;overflow:hidden;margin-bottom:5px}
+.tc-bar{height:100%;border-radius:10px}
+.tc-momentum{font-size:10px;color:var(--mid)}
+
+/* ── COMPETITOR MAP ───────────────────────────────── */
+.comp-map{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:22px;margin-bottom:16px}
+.comp-map-title{font-size:12px;font-weight:700;color:var(--mid);letter-spacing:.07em;text-transform:uppercase;margin-bottom:16px}
+.axis-container{position:relative;width:100%;padding-bottom:60%;background:var(--s2);border-radius:12px;overflow:hidden;border:1px solid var(--bd2)}
+.axis-h{position:absolute;top:50%;left:0;right:0;height:1px;background:var(--bd2);transform:translateY(-50%)}
+.axis-v{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--bd2);transform:translateX(-50%)}
+.axis-label{position:absolute;font-size:9px;font-weight:700;color:var(--mid);letter-spacing:.07em;text-transform:uppercase}
+.al-top{top:8px;left:50%;transform:translateX(-50%)}.al-bot{bottom:8px;left:50%;transform:translateX(-50%)}
+.al-left{left:8px;top:50%;transform:translateY(-50%) rotate(-90deg)}.al-right{right:8px;top:50%;transform:translateY(-50%) rotate(90deg)}
+.quadrant-label{position:absolute;font-size:9px;font-weight:700;opacity:.35;pointer-events:none}
+.ql-tl{top:12px;left:12px;color:var(--g)}.ql-tr{top:12px;right:12px;color:var(--b)}
+.ql-bl{bottom:12px;left:12px;color:var(--o)}.ql-br{bottom:12px;right:12px;color:var(--r)}
+.comp-dot{position:absolute;transform:translate(-50%,-50%);cursor:pointer;transition:all .2s}
+.comp-dot:hover .cd-tooltip{opacity:1;pointer-events:auto}
+.cd-bubble{width:36px;height:36px;border-radius:50%;border:2.5px solid;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:800;background:var(--s1);transition:all .2s}
+.comp-dot:hover .cd-bubble{transform:scale(1.2)}
+.cd-label{font-size:9.5px;font-weight:700;text-align:center;margin-top:4px;white-space:nowrap}
+.cd-tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--s3);border:1px solid var(--bd2);border-radius:8px;padding:8px 12px;
+  font-size:11px;min-width:160px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+
+/* ── INSIGHT CARDS ────────────────────────────────── */
+.insight-feed{display:flex;flex-direction:column;gap:10px}
+.insight-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 18px;
+  cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.insight-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.ic-opp::before{background:var(--g)}.ic-threat::before{background:var(--r)}
+.ic-trend::before{background:var(--b)}.ic-pos::before{background:var(--p)}.ic-price::before{background:var(--y)}
+.insight-card:hover{border-color:var(--bd2)}
+.ic-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ic-icon{font-size:20px}.ic-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.ic-urgency{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:auto}
+.ic-title{font-size:13.5px;font-weight:800;margin-bottom:5px}
+.ic-evidence{font-size:12px;color:var(--mid);line-height:1.6;margin-bottom:8px}
+.ic-action{font-size:11.5px;padding:7px 12px;border-radius:8px;font-weight:600}
+
+/* ── AI INTEGRATION ──────────────────────────────── */
+.ai-chat{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.ai-chat-head{background:var(--s3);padding:12px 18px;display:flex;align-items:center;gap:10px}
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:82%;padding:10px 14px;border-radius:12px;font-size:12.5px;line-height:1.6}
+.msg.user{align-self:flex-end;background:rgba(19,84,204,.15);border:1px solid rgba(19,84,204,.2)}
+.msg.ai{align-self:flex-start;background:rgba(0,192,138,.06);border:1px solid rgba(0,192,138,.15)}
+.msg-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.msg.user .msg-label{color:var(--b);text-align:right}.msg.ai .msg-label{color:var(--g)}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Inteligência Estratégica</div>
+  <h1>Inteligência de<br><span>Mercado</span></h1>
+  <p class="sub">Tendências, análise competitiva e insights estratégicos — contexto externo completo integrado à IA Consultora para decisões que o mercado confirma.</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">3</div><div class="sl">Camadas de análise</div></div>
+  <div class="st sb"><div class="sv">6</div><div class="sl">Fontes monitoradas</div></div>
+  <div class="st so"><div class="sv">8</div><div class="sl">Eixos competitivos</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Tipos de insight</div></div>
+  <div class="st st2"><div class="sv">∞</div><div class="sl">Monitoramento contínuo</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📡 Análise de Mercado</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">⚔️ Concorrência</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">💡 Insights</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🤖 IA + Mercado</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🌐</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div>
+    <div class="sh-title">Crescer com Contexto de Mercado</div>
+    <div class="sh-desc">Empresas que operam sem inteligência de mercado são as primeiras a serem surpreendidas — e as últimas a se adaptar. O sistema EGE entrega visão contínua do ambiente externo.</div>
+  </div>
+</div>
+<div class="cll">"Inteligência de mercado não é sobre ter mais informação — é sobre ter a informação certa, no momento certo, transformada em ação estratégica."</div>
+<div class="blk"><div class="blk-h">Os 5 Papéis da Inteligência de Mercado no Crescimento</div>
+<div class="tw"><table><thead><tr><th>Papel</th><th>Como Ajuda a Crescer</th><th>Sem Inteligência de Mercado</th></tr></thead><tbody>
+<tr><td>🔍 Identificar Oportunidades</td><td>Detecta segmentos subatendidos e tendências emergentes antes dos concorrentes</td><td>A empresa descobre a oportunidade quando já tem concorrentes estabelecidos</td></tr>
+<tr><td>🛡 Evitar Ameaças</td><td>Monitora movimentos competitivos e disruptivos com antecedência</td><td>Surpreendida por mudanças previsíveis com monitoramento adequado</td></tr>
+<tr><td>🎯 Refinar Posicionamento</td><td>Revela como o mercado percebe a empresa vs. os concorrentes</td><td>Posicionamento baseado em autopercepção, não em como o mercado vê</td></tr>
+<tr><td>💰 Calibrar Pricing</td><td>Analisa faixas de preço, elasticidade e percepção de valor por segmento</td><td>Precificação baseada em custo + margem — não em valor percebido</td></tr>
+<tr><td>🗺 Orientar o Crescimento</td><td>Identifica em quais segmentos e canais crescer com maior probabilidade de sucesso</td><td>Crescimento é tentativa e erro sem validação de mercado prévia</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Arquitetura de 3 Camadas do Sistema</div>
+<div class="grid3">
+  <div class="card" style="border-left:3px solid var(--o)"><div class="c-e">📡</div><div class="c-t">Camada 1 — Dados</div>
+  <div class="c-b">Coleta e organiza sinais do ambiente externo. Web scraping, APIs sociais, Google Trends, dados setoriais e reviews públicos.</div></div>
+  <div class="card" style="border-left:3px solid var(--b)"><div class="c-e">🧠</div><div class="c-t">Camada 2 — Análise</div>
+  <div class="c-b">Processa com IA: NLP, análise de sentimento, clustering e identificação de padrões. Transforma dados brutos em análises temáticas.</div></div>
+  <div class="card" style="border-left:3px solid var(--g)"><div class="c-e">⚡</div><div class="c-t">Camada 3 — Ação</div>
+  <div class="c-b">Transforma análises em recomendações contextualizadas integradas ao plano estratégico e ao score atual da empresa.</div></div>
+</div></div>
+<div class="blk"><div class="blk-h">O que Muda na Tomada de Decisão</div>
+<div class="tw"><table><thead><tr><th>Decisão Estratégica</th><th>Sem Intel de Mercado</th><th>Com Intel de Mercado</th></tr></thead><tbody>
+<tr><td>Devo aumentar o preço?</td><td>Análise interna de margem e NPS</td><td>Margem + NPS + posição vs. 8 concorrentes + elasticidade do mercado</td></tr>
+<tr><td>Em qual segmento focar?</td><td>Clientes com maior LTV atual</td><td>LTV + quais segmentos estão subatendidos + onde os concorrentes não estão</td></tr>
+<tr><td>Como reagir a um novo entrante?</td><td>Recomendação genérica de defesa</td><td>Análise do posicionamento + gaps que ele deixa + ação para os próximos 90 dias</td></tr>
+</tbody></table></div></div>`;}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">📡</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Análise de Mercado</div>
+    <div class="sh-title">Tendências, Comportamento e Movimentações</div>
+    <div class="sh-desc">Monitoramento contínuo de sinais fracos que se tornam ondas — e classificação por estágio para saber quando agir.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">Tracker de Tendências — Classificação por Estágio</div>
+<div class="trend-grid">
+  ${[
+    {stage:'Emergente',cls:'ts-emergente',color:'var(--g)',title:'Agentes de IA Autônomos',sector:'Tecnologia / SaaS',pct:28,momentum:'+340% buscas em 8 semanas'},
+    {stage:'Emergente',cls:'ts-emergente',color:'var(--g)',title:'Social Commerce B2B',sector:'Serviços e E-commerce',pct:35,momentum:'+180% em engajamento LinkedIn'},
+    {stage:'Confirmada',cls:'ts-confirmada',color:'var(--b)',title:'Plataformas All-in-One',sector:'Software de Gestão',pct:62,momentum:'Cobertura em 14 publicações/mês'},
+    {stage:'Confirmada',cls:'ts-confirmada',color:'var(--b)',title:'Microlearning com Certificação',sector:'Educação Corporativa',pct:71,momentum:'Adotado por top 5 players'},
+    {stage:'Dominante',cls:'ts-dominante',color:'var(--p)',title:'Teleatendimento em Saúde',sector:'Saúde e Bem-estar',pct:88,momentum:'85% das empresas já implementaram'},
+    {stage:'Em Declínio',cls:'ts-declinio',color:'var(--r)',title:'Software sem Integração de IA',sector:'Tecnologia geral',pct:22,momentum:'-45% em NPS médio do setor'},
+  ].map(t=>`
+  <div class="trend-card ${t.cls}">
+    <div class="tc-stage" style="color:${t.color}">${t.stage}</div>
+    <div class="tc-title">${t.title}</div>
+    <div class="tc-sector">${t.sector}</div>
+    <div class="tc-bar-wrap"><div class="tc-bar" style="width:${t.pct}%;background:${t.color}"></div></div>
+    <div class="tc-momentum">${t.momentum}</div>
+  </div>`).join('')}
+</div></div>
+<div class="blk"><div class="blk-h">Fontes de Dados Monitoradas</div>
+<div class="tw"><table><thead><tr><th>Fonte</th><th>O que Monitora</th><th>Frequência</th><th>Sinal Detectado</th></tr></thead><tbody>
+<tr><td>Google Trends + Search Console</td><td>Volume de busca, termos emergentes, sazonalidade</td><td>Semanal</td><td>Demanda crescente ou decrescente por tema</td></tr>
+<tr><td>LinkedIn, Instagram, Twitter/X</td><td>Temas em alta, linguagem do consumidor, influenciadores</td><td>Diária</td><td>Narrativas emergentes e mudanças de discurso</td></tr>
+<tr><td>Publicações Setoriais e News APIs</td><td>Notícias, regulações, fusões, lançamentos, macro</td><td>Diária</td><td>Eventos estruturais que afetam o mercado</td></tr>
+<tr><td>Reviews Públicos (G2, Reclame Aqui)</td><td>Problemas recorrentes, elogios, padrões de churn</td><td>Semanal</td><td>Gaps que nenhum player resolve bem</td></tr>
+<tr><td>IBGE, SEBRAE, Associações</td><td>Dados de mercado, crescimento, segmentação</td><td>Mensal</td><td>Dimensionamento e tendências macro do setor</td></tr>
+<tr><td>Fóruns e Comunidades</td><td>Conversas não filtradas — dores e desejos reais do ICP</td><td>Semanal</td><td>Demandas latentes e linguagem autêntica</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Comportamento do Consumidor — Os 4 Componentes do Perfil Dinâmico</div>
+<div class="grid3" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+  <div class="card"><div class="c-e">🎯</div><div class="c-t">Jobs to be Done</div>
+  <div class="c-b">O que o consumidor está tentando realizar — não o que ele compra, mas o resultado que busca. Mapeado via entrevistas, reviews e comunidades.</div></div>
+  <div class="card"><div class="c-e">⚖️</div><div class="c-t">Drivers de Decisão</div>
+  <div class="c-b">Os critérios que determinam a escolha: preço, velocidade, confiança, reputação, suporte. Mapeados por setor, porte e estágio no funil.</div></div>
+  <div class="card"><div class="c-e">🚧</div><div class="c-t">Barreiras e Objeções</div>
+  <div class="c-b">O que impede ou atrasa a decisão. Identificadas em reviews negativos, análise de churn e pesquisas de saída dos concorrentes.</div></div>
+  <div class="card"><div class="c-e">💬</div><div class="c-t">Linguagem do Consumidor</div>
+  <div class="c-b">As palavras exatas que o ICP usa para descrever seus problemas — ouro para posicionamento, marketing e copy. Coletada sem filtro.</div></div>
+</div></div>`;}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">⚔️</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Análise de Concorrência</div>
+    <div class="sh-title">Mapa Competitivo — Posicionamento e Estratégias</div>
+    <div class="sh-desc">8 eixos de análise competitiva + mapa visual interativo. Tudo baseado em dados públicos — organizado sistematicamente para revelar onde há espaço.</div>
+  </div>
+</div>
+<div class="blk"><div class="blk-h">Mapa Competitivo — Preço vs. Especialização (clique nos concorrentes)</div>
+<div class="comp-map">
+  <div class="comp-map-title">Eixo X: Amplitude de Mercado (Nicho ← → Generalista) · Eixo Y: Nível de Preço (Alto ← → Baixo)</div>
+  <div class="axis-container" id="compmap">
+    <div class="axis-h"></div>
+    <div class="axis-v"></div>
+    <div class="axis-label al-top">PREÇO ALTO</div>
+    <div class="axis-label al-bot">PREÇO BAIXO</div>
+    <div class="axis-label al-left">NICHO</div>
+    <div class="axis-label al-right">GENERALISTA</div>
+    <div class="quadrant-label ql-tl">Premium Especializado</div>
+    <div class="quadrant-label ql-tr">Premium Generalista</div>
+    <div class="quadrant-label ql-bl">Acessível Nicho</div>
+    <div class="quadrant-label ql-br">Acessível Generalista</div>
+    ${[
+      {label:'SUA\nEMPRESA',x:30,y:38,color:'var(--g)',info:'Posição atual: preço médio + especialização moderada. Oportunidade: mover para premium especializado.'},
+      {label:'Concorrente\nA',x:72,y:22,color:'var(--r)',info:'Líder generalista premium. Alta visibilidade, suporte criticado em reviews.'},
+      {label:'Concorrente\nB',x:65,y:70,color:'var(--b)',info:'Generalista low-cost. Crescendo rápido com plano gratuito. CAC muito alto.'},
+      {label:'Concorrente\nC',x:20,y:28,color:'var(--p)',info:'Nicho premium. Forte em segmento industrial. Fraco em marketing.'},
+      {label:'Concorrente\nD',x:45,y:75,color:'var(--y)',info:'Posicionamento confuso. Preço baixo sem diferencial claro. Vulnerável.'},
+      {label:'Gap de\nMercado',x:18,y:68,color:'var(--g)',info:'🎯 OPORTUNIDADE: Nicho acessível — subatendido. Nenhum player bem posicionado aqui.'},
+    ].map(d=>`
+    <div class="comp-dot" style="left:${d.x}%;top:${d.y}%">
+      <div class="cd-bubble" style="border-color:${d.color};color:${d.color}">${d.label.split('\n')[0].substring(0,3)}</div>
+      <div class="cd-label" style="color:${d.color};font-size:9px">${d.label.replace('\n','<br>')}</div>
+      <div class="cd-tooltip" style="color:var(--txt)">${d.info}</div>
+    </div>`).join('')}
+  </div>
+</div></div>
+<div class="blk"><div class="blk-h">Os 4 Tipos de Concorrente</div>
+<div class="tw"><table><thead><tr><th>Tipo</th><th>Definição</th><th>Prioridade</th><th>Estratégia de Resposta</th></tr></thead><tbody>
+<tr><td><span class="badge br">Direto</span></td><td>Mesmo produto, mesmo segmento, mesma faixa de preço</td><td>Alta — monitoramento semanal</td><td>Diferenciação por experiência e resultado</td></tr>
+<tr><td><span class="badge bo">Indireto</span></td><td>Resolve o mesmo problema com solução diferente</td><td>Média — monitoramento mensal</td><td>Educar o mercado sobre as vantagens da sua abordagem</td></tr>
+<tr><td><span class="badge br">Substituto</span></td><td>Elimina a necessidade do produto completamente</td><td>Alta — radar estratégico</td><td>Evoluir a oferta antes que o substituto ganhe tração</td></tr>
+<tr><td><span class="badge by">Potencial</span></td><td>Empresa de mercado adjacente que pode entrar</td><td>Média — monitoramento trimestral</td><td>Construir barreiras de relacionamento e LTV alto</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Os 8 Eixos de Análise de Posicionamento</div>
+<div class="tw"><table><thead><tr><th>Eixo</th><th>O que é Analisado</th><th>Fonte</th><th>Output Estratégico</th></tr></thead><tbody>
+<tr><td>Proposta de Valor</td><td>Qual problema central o concorrente promete resolver</td><td>Site, anúncios, página de vendas</td><td>Mapa de propostas — onde há saturação e onde há espaço</td></tr>
+<tr><td>Segmento-Alvo</td><td>Para quem vende — porte, setor, cargo do comprador</td><td>Cases, depoimentos, linguagem do site</td><td>Heatmap de segmentos — quem está subatendido</td></tr>
+<tr><td>Faixa de Preço</td><td>Modelo de precificação e posição de valor</td><td>Páginas de preço, comparativos públicos</td><td>Mapa de pricing e elasticidade aparente</td></tr>
+<tr><td>Diferenciais</td><td>O que o concorrente afirma como diferencial</td><td>Site, LinkedIn, materiais</td><td>Quais diferenciais são commodities vs. únicos</td></tr>
+<tr><td>Percepção de Clientes</td><td>O que os clientes reais acham — autêntico</td><td>Reviews Google, G2, Reclame Aqui</td><td>Onde o concorrente falha que a empresa pode vencer</td></tr>
+<tr><td>Canais de Aquisição</td><td>Como o concorrente atrai clientes</td><td>SimilarWeb, SEMrush, Meta Ad Library</td><td>Canais não disputados e oportunidades de arbitragem</td></tr>
+<tr><td>Presença Digital</td><td>Tráfego, seguidores, engajamento, autoridade</td><td>SimilarWeb, redes sociais</td><td>Benchmark de presença e autoridade percebida</td></tr>
+<tr><td>Movimento Recente</td><td>O que mudou nos últimos 90 dias</td><td>Changelog, LinkedIn, site, notícias</td><td>Para onde o concorrente está apostando agora</td></tr>
+</tbody></table></div></div>`;}
+
+function p3(){
+const insights = [
+  {type:'opp',cls:'ic-opp',icon:'🟢',typeLabel:'Oportunidade',urgency:'ALTA',urgColor:'rgba(0,192,138,.15)',urgTxt:'var(--g)',
+   title:'Segmento de PMEs educacionais sem player especializado em automação financeira',
+   evidence:'847 buscas/mês por "software financeiro escola pequena" — nenhum concorrente direto bem posicionado. Reviews dos generalistas mostram que esse perfil de cliente está insatisfeito com a complexidade das soluções atuais.',
+   action:'Criar landing page segmentada + testar oferta adaptada — janela de 6–12 meses',actionColor:'rgba(0,192,138,.08)',actionTxt:'var(--g)'},
+  {type:'threat',cls:'ic-threat',icon:'🔴',typeLabel:'Ameaça',urgency:'IMEDIATA',urgColor:'rgba(192,32,32,.15)',urgTxt:'var(--r)',
+   title:'Concorrente A lançou plano gratuito focado no segmento de micro-empresas',
+   evidence:'Plano lançado há 11 dias. Já tem 340 avaliações positivas no G2. Representa 22% da sua base atual pelo perfil de porte. Os reviews destacam onboarding simples como principal vantagem — que é sua fraqueza atual.',
+   action:'Responder com comunicação de diferenciais de resultado e suporte — não com preço',actionColor:'rgba(192,32,32,.08)',actionTxt:'var(--r)'},
+  {type:'trend',cls:'ic-trend',icon:'🔵',typeLabel:'Tendência',urgency:'PREPARAR',urgColor:'rgba(19,84,204,.15)',urgTxt:'var(--b)',
+   title:'Agentes de IA autônomos saindo do estágio emergente para confirmado no setor',
+   evidence:'Volume de busca +340% em 8 semanas. Três dos cinco maiores players do seu setor já anunciaram roadmap de IA. Empresas que não tiverem estratégia de IA comunicada em 6 meses perderão relevância com o segmento tech-savvy.',
+   action:'Definir e comunicar posicionamento de IA nos próximos 60 dias',actionColor:'rgba(19,84,204,.08)',actionTxt:'var(--b)'},
+  {type:'pos',cls:'ic-pos',icon:'🟣',typeLabel:'Posicionamento',urgency:'OPORTUNIDADE',urgColor:'rgba(114,48,220,.15)',urgTxt:'var(--p)',
+   title:'Análise de sentimento revela gap: "suporte que realmente ajuda" — nenhum concorrente comunica bem',
+   evidence:'Análise de 2.847 reviews do setor: o tema "suporte que entende meu problema" aparece em 34% dos reviews negativos dos concorrentes. E em 71% dos reviews positivos de clientes que trocaram de fornecedor. Nenhum player está capitalizando isso na comunicação.',
+   action:'Reposicionar comunicação com foco em suporte especializado — usar depoimentos sobre resultado',actionColor:'rgba(114,48,220,.08)',actionTxt:'var(--p)'},
+  {type:'price',cls:'ic-price',icon:'🟡',typeLabel:'Pricing',urgency:'MÉDIO PRAZO',urgColor:'rgba(184,114,0,.15)',urgTxt:'var(--y)',
+   title:'Seu pricing está 28% abaixo da mediana do mercado com NPS 67 — possível subotimização',
+   evidence:'Mapa de pricing dos 9 concorrentes identificados: mediana em R$1.890/mês para o seu tier principal. Você cobra R$1.360. Seu NPS de 67 está entre os 3 maiores do setor. Clientes com NPS alto têm elasticidade de preço 2,4x maior.',
+   action:'Testar aumento de 15% em novos contratos — impacto no churn projetado: <3%',actionColor:'rgba(184,114,0,.08)',actionTxt:'var(--y)'},
+];
+return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">💡</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Insights</div>
+    <div class="sh-title">Do Dado à Decisão — 5 Tipos de Insight</div>
+    <div class="sh-desc">Dado não é insight. Insight não é decisão. O sistema percorre os 3 estágios automaticamente — o que aconteceu, por que significa, o que fazer.</div>
+  </div>
+</div>
+<div class="cll">"A empresa que entende o mercado melhor que os concorrentes não precisa ser maior, mais rápida ou mais barata. Precisa ser mais inteligente."</div>
+<div class="blk"><div class="blk-h">Radar de Mercado — Feed de Insights em Tempo Real</div>
+<div class="insight-feed">
+  ${insights.map(i=>`
+  <div class="insight-card ${i.cls}">
+    <div class="ic-header">
+      <span class="ic-icon">${i.icon}</span>
+      <span class="ic-type" style="color:${i.urgTxt}">${i.typeLabel}</span>
+      <span class="ic-urgency" style="background:${i.urgColor};color:${i.urgTxt}">${i.urgency}</span>
+    </div>
+    <div class="ic-title">${i.title}</div>
+    <div class="ic-evidence">${i.evidence}</div>
+    <div class="ic-action" style="background:${i.actionColor};color:${i.actionTxt}">→ ${i.action}</div>
+  </div>`).join('')}
+</div></div>`;}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🤖</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 05 — IA + Mercado</div>
+    <div class="sh-title">A IA com Visão do Mundo — Não Só da Empresa</div>
+    <div class="sh-desc">Com inteligência de mercado integrada, a IA passa de consultora interna para consultora completa — contexto interno e externo combinados em cada recomendação.</div>
+  </div>
+</div>
+<div class="cll">"A diferença entre uma IA que diz 'melhore o processo comercial' e uma que diz 'melhore o processo comercial porque o Concorrente A está avançando exatamente no seu segmento — e tem 90 dias de janela' é a inteligência de mercado integrada."</div>
+<div class="blk"><div class="blk-h">Chat com IA — Perguntas de Estratégia com Contexto de Mercado</div>
+<div class="ai-chat">
+  <div class="ai-chat-head">
+    <span style="font-size:22px">🤖</span>
+    <div><div style="font-size:13px;font-weight:700">IA Consultora EGE</div>
+    <div style="font-size:11px;color:var(--mid)">Score interno + KPIs + Intel de Mercado + Análise Competitiva em tempo real</div></div>
+  </div>
+  <div class="chat-body">
+    <div class="msg user"><div class="msg-label">Empresário</div>Em qual segmento devo focar agora para crescer?</div>
+    <div class="msg ai"><div class="msg-label">IA Consultora</div>Analisando seus dados internos e o mapa competitivo atual:<br><br>
+    <strong>Internamente:</strong> seus clientes de maior LTV (R$38k médio) são do segmento de <em>serviços profissionais com 10–50 colaboradores</em>. Esse ICP tem churn 67% menor que os demais.<br><br>
+    <strong>No mercado:</strong> identifiquei que nenhum concorrente direto está posicionado especificamente para esse perfil. O Concorrente A foca em empresas 200+. O B e D atendem qualquer porte sem especialização.<br><br>
+    <strong>Janela de oportunidade:</strong> o volume de busca por soluções nesse segmento cresceu 42% nos últimos 6 meses. Você tem 4–8 meses antes de alguém especializar nesse nicho.<br><br>
+    <strong>Recomendação:</strong> concentrar comunicação, cases e estratégia de conteúdo em serviços profissionais 10–50 colaboradores. Criar uma landing page específica para o segmento e testar 3 canais: LinkedIn orgânico, indicação estruturada e SEO nicho.</div>
+    <div class="msg user"><div class="msg-label">Empresário</div>O concorrente B acabou de lançar um plano mais barato. O que faço?</div>
+    <div class="msg ai"><div class="msg-label">IA Consultora</div>Analisei o lançamento do Concorrente B e cruzei com seus dados:<br><br>
+    <strong>Quem eles estão atacando:</strong> o plano deles foca clientes com 1–10 colaboradores, ticket abaixo de R$800/mês. Esse perfil representa 18% da sua base atual — mas apenas 7% da sua receita.<br><br>
+    <strong>O ponto fraco deles:</strong> os primeiros 340 reviews já mostram reclamações sobre onboarding confuso e falta de suporte especializado. Esse é exatamente o seu ponto forte (NPS 67, resolução em 3,2h média).<br><br>
+    <strong>O que NÃO fazer:</strong> não entre em guerra de preço. O modelo deles é de volume, não de resultado — é insustentável a longo prazo para o segmento que você quer.<br><br>
+    <strong>O que fazer:</strong> reforçar a comunicação de resultado e suporte nos próximos 30 dias. Criar um comparativo objetivo público. E usar os reviews negativos deles para criar conteúdo que educa o mercado sobre o custo real de um suporte ruim.</div>
+  </div>
+</div></div>
+<div class="blk"><div class="blk-h">Como os Dados de Mercado Enriquecem o Plano Estratégico</div>
+<div class="tw"><table><thead><tr><th>Dado Interno</th><th>Dado de Mercado</th><th>Impacto no Plano</th></tr></thead><tbody>
+<tr><td>Score Vendas: 48</td><td>Concorrente perdeu mercado — reviews negativos sobre suporte</td><td>Prioridade: estruturar vendas com suporte como diferencial — janela de 90 dias</td></tr>
+<tr><td>Score Marketing: 42 — poucos leads</td><td>LinkedIn orgânico crescendo 3x no setor</td><td>Iniciativa: conteúdo LinkedIn para o ICP — canal sem disputa com momentum</td></tr>
+<tr><td>LTV caindo 15% em 2 trimestres</td><td>Clientes migrando para concorrente com plano flexível</td><td>Revisão urgente do modelo de retenção — risco de aceleração do churn</td></tr>
+<tr><td>Score Financeiro: 67</td><td>Possível mudança regulatória fiscal em 12 meses</td><td>Preparação preventiva: estruturar para múltiplos cenários fiscais</td></tr>
+</tbody></table></div></div>
+<div class="blk"><div class="blk-h">Alertas Proativos de Mercado — Exemplos Reais</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+  ${[
+    {icon:'🟢',color:'var(--g)',bg:'rgba(0,192,138,.08)',title:'Oportunidade de Canal Identificada',msg:'"Volume de busca por [termo do seu segmento] cresceu 340% em 8 semanas. Pode indicar pico de demanda. Bom momento para campanha de aquisição com urgência."'},
+    {icon:'🔴',color:'var(--r)',bg:'rgba(192,32,32,.08)',title:'Movimento Competitivo Urgente',msg:'"O Concorrente A lançou produto que compete com seu serviço Y. Fraqueza identificada em suporte — exatamente onde você se destaca. Reforçar comunicação agora."'},
+    {icon:'🔵',color:'var(--b)',bg:'rgba(19,84,204,.08)',title:'Tendência Iminente no Setor',msg:'"A tendência de [X] está saindo de emergente para dominante. Empresas sem estratégia de adaptação nos próximos 6 meses correm risco de perda de relevância."'},
+  ].map(a=>`
+  <div style="display:flex;gap:12px;background:${a.bg};border:1px solid ${a.color}22;border-left:3px solid ${a.color};border-radius:0 12px 12px 0;padding:13px 16px">
+    <span style="font-size:20px;flex-shrink:0">${a.icon}</span>
+    <div>
+      <div style="font-size:12.5px;font-weight:700;color:${a.color};margin-bottom:4px">${a.title}</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.6;font-style:italic">${a.msg}</div>
+    </div>
+  </div>`).join('')}
+</div></div>`;}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+  },150);
+}
+show(0);
+</script>
+</body>
+</html>

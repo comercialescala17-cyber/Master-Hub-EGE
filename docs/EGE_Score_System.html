@@ -1,0 +1,569 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Score Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--dim:#324C68;
+  --bd:#182E48;--bd2:#223C5A;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 65% 40% at 5% 10%,rgba(0,192,138,.055),transparent),
+             radial-gradient(ellipse 55% 55% at 95% 90%,rgba(19,84,204,.045),transparent)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:50px 20px 100px;position:relative;z-index:1}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:58px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(34px,6vw,68px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:16px}
+h1 span{background:linear-gradient(120deg,var(--g),var(--b),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:15px;color:var(--mid);max-width:540px;margin:0 auto;line-height:1.75}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:52px;animation:up 1s .06s ease both}
+@media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.sy::after{background:var(--y)}
+.sv{font-size:28px;font-weight:900;line-height:1}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.sy .sv{color:var(--y)}
+.sl{font-size:11px;color:var(--mid);margin-top:3px}
+
+/* NAV */
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:42px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:14px 10px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after,.n1::after{background:var(--g)}
+.n2::after,.n3::after{background:var(--b)}
+.n4::after{background:var(--p)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:12px;font-weight:700;color:var(--txt);line-height:1.3}
+
+/* PANEL */
+.panel{display:none;animation:up .4s ease both}
+.panel.on{display:block}
+
+/* SECTION HEAD */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:18px;
+  margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:620px}
+
+/* BLOCK */
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* TABLE */
+.tw{overflow-x:auto;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;
+  padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.014)}
+tbody tr:last-child td{border-bottom:none}
+
+/* CARDS */
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:all .2s}
+.card:hover{transform:translateY(-2px);border-color:var(--bd2)}
+.c-e{font-size:26px;margin-bottom:9px}
+.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* DIMENSION CARDS */
+.dims{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:11px}
+.dc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;
+  transition:all .2s;position:relative;overflow:hidden}
+.dc:hover{transform:translateY(-2px)}
+.dc-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.dc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.dc-icon{font-size:22px}
+.dc-w{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:5px;background:var(--s2)}
+.dc-name{font-size:13.5px;font-weight:800;margin-bottom:5px}
+.dc-desc{font-size:12px;color:var(--mid);line-height:1.6;margin-bottom:9px}
+.dc-gap{padding:6px 10px;background:var(--s2);border-radius:7px;border-left:2px solid var(--r)}
+.dc-gl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--r);margin-bottom:2px}
+.dc-gt{font-size:11.5px;color:var(--mid)}
+
+/* SCORE WIDGET */
+.score-widget{background:var(--s1);border:1px solid var(--bd);border-radius:20px;
+  padding:32px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden}
+.score-widget::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+  width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,192,138,.08),transparent 70%);pointer-events:none}
+.sw-label{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-bottom:10px}
+.sw-score{font-family:'JetBrains Mono',monospace;font-size:88px;font-weight:900;
+  color:var(--g);line-height:1;margin-bottom:8px}
+.sw-level{font-size:18px;font-weight:800;margin-bottom:6px}
+.sw-meta{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.sw-m{font-size:12.5px;color:var(--mid)}
+.sw-m strong{color:var(--g)}
+
+/* LEVELS */
+.lvls{display:flex;flex-direction:column;gap:10px}
+.lv{display:flex;align-items:center;gap:14px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:13px;padding:14px 18px;cursor:pointer;
+  transition:all .2s}
+.lv:hover{background:var(--s2)}
+.lv-n{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:900;min-width:38px}
+.lv-info{flex:1}
+.lv-name{font-size:14px;font-weight:800;margin-bottom:2px}
+.lv-range{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;margin-bottom:3px}
+.lv-desc{font-size:12px;color:var(--mid);line-height:1.55}
+.lv-tag{font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap;min-width:120px;text-align:center}
+.lv-detail{display:none;padding:14px 18px 14px 70px;font-size:12px;color:var(--mid);line-height:1.7;border-top:1px solid var(--bd)}
+.lv-detail.open{display:block}
+.lv-detail ul{list-style:none;padding:0}
+.lv-detail li::before{content:"→ ";color:var(--g);font-weight:700}
+
+/* VIZ CARDS */
+.viz-cards{display:flex;flex-direction:column;gap:12px}
+.vc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;
+  padding:20px 22px;display:flex;gap:16px;align-items:flex-start}
+.vc-n{min-width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+.vc-t{font-size:14px;font-weight:800;margin-bottom:5px}
+.vc-d{font-size:12.5px;color:var(--mid);line-height:1.65}
+
+/* RADAR MOCK */
+.radar-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;margin-bottom:20px}
+.radar-title{font-size:12px;font-weight:700;color:var(--mid);text-align:center;margin-bottom:16px;letter-spacing:.08em;text-transform:uppercase}
+.radar-svg-wrap{display:flex;justify-content:center}
+svg.radar{width:320px;height:320px}
+
+/* PIPELINE */
+.pipe{display:flex;flex-direction:column}
+.ps{display:flex;position:relative}
+.ps::before{content:'';position:absolute;left:15px;top:34px;bottom:-10px;width:2px;background:var(--bd)}
+.ps:last-child::before{display:none}
+.ps-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--bd2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  flex-shrink:0;z-index:1;background:var(--bg);margin-top:6px}
+.ps-body{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:13px 17px;margin-left:14px;margin-bottom:12px}
+.ps-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:3px}
+.ps-t{font-size:13.5px;font-weight:800;margin-bottom:4px}
+.ps-d{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* FORMULA BOX */
+.formula{background:rgba(19,84,204,.06);border:1px solid rgba(19,84,204,.22);
+  border-radius:11px;padding:13px 18px;margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#6C9FEE}
+
+/* CALLOUT */
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);
+  border-left:4px solid var(--g);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}
+.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}
+.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}
+.br{background:rgba(192,32,32,.12);color:var(--r)}
+
+/* SCORE PROGRESS */
+.dim-progress{margin-bottom:10px}
+.dp-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.dp-name{font-size:11.5px;font-weight:600;min-width:110px;color:var(--txt)}
+.dp-bar-wrap{flex:1;height:7px;background:var(--s3);border-radius:10px;overflow:hidden}
+.dp-bar{height:100%;border-radius:10px;transition:width 1s ease}
+.dp-val{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;min-width:30px;text-align:right}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Arquitetura do Score</div>
+  <h1>Sistema de <span>Score</span><br>Empresarial</h1>
+  <p class="sub">10 dimensões ponderadas · Escala 0–1000 · 5 níveis de maturidade · Visualização em tempo real · IA calibrada ao nível</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">10</div><div class="sl">Dimensões</div></div>
+  <div class="st sb"><div class="sv">5</div><div class="sl">Níveis</div></div>
+  <div class="st so"><div class="sv">1000</div><div class="sl">Score Máximo</div></div>
+  <div class="st sp"><div class="sv">5</div><div class="sl">Visualizações</div></div>
+  <div class="st sy"><div class="sv">∞</div><div class="sl">Atualização contínua</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📐 10 Dimensões</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">⚖️ Pontuação e Níveis</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">📊 Visualização</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🤖 Uso pela IA</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script>
+const dims = [
+  {icon:"♟",col:"var(--g)",n:"01",name:"Estratégia",w:"12%",wc:"bg",
+   desc:"Clareza de direção, plano documentado, posicionamento diferenciado e revisão periódica.",
+   gap:"Opera no tático sem visão de médio prazo",
+   ind:"Plano estratégico 12 meses, OKRs, proposta de valor única, revisão trimestral"},
+  {icon:"⚙️",col:"var(--b)",n:"02",name:"Gestão",w:"12%",wc:"bb",
+   desc:"Qualidade das decisões, uso de KPIs, cadência de gestão e capacidade de execução.",
+   gap:"Gestão por crise — reativo sem indicadores",
+   ind:"KPIs semanais, reuniões estruturadas, decisões por dados, OKRs >70% executados"},
+  {icon:"📋",col:"var(--t)",n:"03",name:"Processos",w:"10%",wc:"bb",
+   desc:"Padronização, documentação e automação dos processos críticos da operação.",
+   gap:"Zero documentação — tudo na cabeça de 1 pessoa",
+   ind:"SOPs documentados, onboarding padronizado, automações, melhoria contínua"},
+  {icon:"🎯",col:"var(--o)",n:"04",name:"Vendas",w:"12%",wc:"bo",
+   desc:"Processo comercial repetível, CRM, previsibilidade de receita e desenvolvimento de equipe.",
+   gap:"Pipeline invisível, vendas dependem do fundador",
+   ind:"Processo documentado, CRM ativo, conversão por etapa, forecast <20% de erro"},
+  {icon:"📣",col:"var(--p)",n:"05",name:"Marketing",w:"10%",wc:"bp",
+   desc:"Geração de demanda estruturada, ICP definido e eficiência do CAC por canal.",
+   gap:"Depende exclusivamente de indicações",
+   ind:"ICP documentado, CAC por canal, leads previsíveis, NPS >50"},
+  {icon:"💰",col:"var(--y)",n:"06",name:"Financeiro",w:"15%",wc:"by",
+   desc:"Controle financeiro, rentabilidade real, fluxo de caixa projetado e planejamento orçamentário.",
+   gap:"Crescimento sem rentabilidade, mistura PF/PJ",
+   ind:"DRE mensal, margem conhecida, fluxo de caixa 90 dias, reserva 3 meses"},
+  {icon:"🧭",col:"var(--g)",n:"07",name:"Liderança",w:"10%",wc:"bg",
+   desc:"Capacidade de delegar, desenvolver outros líderes e tomar decisões estratégicas.",
+   gap:"Empresa não funciona sem o fundador",
+   ind:"Empresa funciona 2 semanas sem o dono, outros líderes autônomos"},
+  {icon:"🌱",col:"var(--g)",n:"08",name:"Cultura",w:"5%",wc:"bg",
+   desc:"Valores praticados no cotidiano, engajamento genuíno e propósito compartilhado.",
+   gap:"Valores no papel, alta rotatividade sem investigação",
+   ind:"NPS interno >7, turnover <20%, pesquisa de clima com ação"},
+  {icon:"💻",col:"var(--b)",n:"09",name:"Tecnologia",w:"8%",wc:"bb",
+   desc:"Adoção de ferramentas, automações e maturidade digital da operação.",
+   gap:"Opera em planilhas desconexas, processos manuais",
+   ind:"CRM, ERP integrado, dashboards, >30% das rotinas automatizadas"},
+  {icon:"🚀",col:"var(--g)",n:"10",name:"Escalabilidade",w:"6%",wc:"bg",
+   desc:"Capacidade estrutural de crescer sem colapsar a qualidade e a operação.",
+   gap:"Crescimento piora qualidade e sobrecarrega as mesmas pessoas",
+   ind:"Suporta +50% de demanda, processos independem de pessoas-chave"},
+];
+
+const levels = [
+  {n:1,name:"Sobrevivência",range:"0–199",col:"var(--r)",tag:"Estabilização",tagc:"br",
+   profile:"Empresa opera no caos. Sem processos, sem controles, sem estratégia. O fundador trabalha 12+ horas por dia apenas para manter o negócio de pé.",
+   items:["Finanças pessoais e empresariais completamente misturadas","Zero documentação — tudo na memória do fundador","Vendas dependem exclusivamente do relacionamento pessoal","Decisões 100% intuitivas, sem nenhum dado de suporte","Equipe sem direção, sem metas, sem avaliação"]},
+  {n:2,name:"Organização",range:"200–399",col:"var(--o)",tag:"Estruturação Básica",tagc:"bo",
+   profile:"Empresa começa a se organizar. Primeiras estruturas surgem — frágeis e inconsistentes. O fundador começa a delegar tarefas operacionais.",
+   items:["Controles financeiros básicos existem mas são irregulares","Alguns processos documentados, maioria ainda dependente de pessoas","Processo de vendas informal mas presente — alguma previsibilidade","Primeiras ferramentas de gestão adotadas (planilhas, CRM básico)","Equipe começa a ter responsabilidades mais claras"]},
+  {n:3,name:"Estruturação",range:"400–599",col:"var(--y)",tag:"Otimização",tagc:"by",
+   profile:"Empresa estruturada e funcional. Processos documentados, controles financeiros ativos. O fundador começa a sair do operacional.",
+   items:["DRE mensal e fluxo de caixa acompanhados regularmente","Processos críticos documentados — treinamento possível","CRM ativo com pipeline visível e conversão monitorada","Marketing com pelo menos 1 canal consistente de geração de leads","Estratégia documentada com revisão semestral"]},
+  {n:4,name:"Crescimento",range:"600–799",col:"var(--b)",tag:"Aceleração",tagc:"bb",
+   profile:"Empresa em crescimento estruturado. Dados guiam decisões, equipe autônoma, OKRs revisados trimestralmente. Fundador no estratégico.",
+   items:["Gestão financeira profissional com projeções e orçamento anual","Múltiplos canais com CAC, LTV e ROI por canal conhecidos","Equipe de liderança formada — empresa funciona sem o fundador","OKRs com taxa de execução consistentemente >70%","Automações em pelo menos 40% das tarefas repetitivas"]},
+  {n:5,name:"Escala",range:"800–1000",col:"var(--g)",tag:"Expansão Agressiva",tagc:"bg",
+   profile:"Empresa referência em seu setor. Crescimento previsível, cultura forte, liderança distribuída. Fundador é líder estratégico e visionário.",
+   items:["Crescimento previsível — variação <15% entre projeção e resultado","Cultura forte — valores vividos, turnover <15% ao ano","Múltiplas lideranças autônomas — resiliente à saída do fundador","Modelo com economias de escala — margens crescem com volume","Capacidade de replicação testada — pronto para expansão"]},
+];
+
+// ── RADAR MOCK ─────────────────────────────────────────────
+function buildRadar(scores){
+  const labels=["Estratégia","Gestão","Processos","Vendas","Marketing","Financeiro","Liderança","Cultura","Tecnologia","Escala"];
+  const bench= [68,72,65,70,66,75,70,60,65,60];
+  const cx=160,cy=160,r=120,n=10;
+  const pts = (vals,max=100) => vals.map((_,i)=>{
+    const a=(i*2*Math.PI/n)-Math.PI/2;
+    const v=(vals[i]/max)*r;
+    return [cx+v*Math.cos(a), cy+v*Math.sin(a)];
+  });
+  const poly = arr => arr.map(p=>p.join(",")).join(" ");
+  const gridLines = [20,40,60,80,100].map(v=>{
+    const p=pts(Array(10).fill(v));
+    return `<polygon points="${poly(p)}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
+  });
+  const axes = Array.from({length:n},(_,i)=>{
+    const a=(i*2*Math.PI/n)-Math.PI/2;
+    const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    const lx=cx+(r+22)*Math.cos(a), ly=cy+(r+22)*Math.sin(a);
+    const short = labels[i].length>8 ? labels[i].slice(0,7)+'.' : labels[i];
+    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+            <text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="rgba(180,200,240,.65)" font-size="8" font-family="Inter">${short}</text>`;
+  });
+  const sp=pts(scores), bp2=pts(bench);
+  return `<svg class="radar" viewBox="0 0 320 320">
+    ${gridLines.join('')}${axes.join('')}
+    <polygon points="${poly(bp2)}" fill="rgba(19,84,204,.15)" stroke="rgba(19,84,204,.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <polygon points="${poly(sp)}" fill="rgba(0,192,138,.18)" stroke="rgba(0,192,138,.9)" stroke-width="2"/>
+    ${sp.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--g)"/>`).join('')}
+    <text x="260" y="308" fill="rgba(0,192,138,.8)" font-size="8" font-family="Inter">● Empresa</text>
+    <text x="200" y="308" fill="rgba(19,84,204,.8)" font-size="8" font-family="Inter">⊹ Benchmark</text>
+  </svg>`;
+}
+
+// ── PANELS ─────────────────────────────────────────────────
+function p0(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🎯</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div>
+      <div class="sh-title">Por que Medir Maturidade Empresarial?</div>
+      <div class="sh-desc">O Score transforma a subjetividade da gestão em dados objetivos — criando a consciência que precede qualquer transformação real.</div>
+    </div>
+  </div>
+  <div class="cll">"Você não pode melhorar o que não mede. E não pode medir o que não está definido. O Score é a régua que transforma ambição vaga em evolução mensurável."</div>
+  <div class="blk"><div class="blk-h">O Problema que o Score Resolve</div>
+  <div class="tw"><table><thead><tr><th>Realidade Sem Score</th><th>Realidade Com Score</th></tr></thead><tbody>
+  <tr><td>Empresário não sabe onde está de fato</td><td>Visão objetiva e comparada do nível real</td></tr>
+  <tr><td>Melhora o que parece urgente hoje</td><td>Melhora o que tem maior impacto estratégico</td></tr>
+  <tr><td>Evolução invisível e subjetiva</td><td>Evolução quantificada, celebrada e motivadora</td></tr>
+  <tr><td>Sem benchmark — sem referência</td><td>Comparado com o mercado de forma anônima</td></tr>
+  <tr><td>IA dá conselhos genéricos para todos</td><td>IA calibra 100% ao nível atual da empresa</td></tr>
+  <tr><td>Motivação oscila com a emoção</td><td>Motivação sustentada por progresso visível</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Como o Score Gera Evolução</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">🔍</div><div class="c-t">Clareza de Posição</div><div class="c-b">Empresário sabe exatamente onde está em cada dimensão — sem achismos ou percepções filtradas.</div></div>
+    <div class="card"><div class="c-e">⚡</div><div class="c-t">Priorização por Dados</div><div class="c-b">O menor score com maior peso estratégico define onde agir primeiro — sem desperdício de energia.</div></div>
+    <div class="card"><div class="c-e">📈</div><div class="c-t">Motivação pelo Progresso</div><div class="c-b">Ver o score crescer de 387 para 423 em um mês é mais poderoso do que qualquer discurso.</div></div>
+    <div class="card"><div class="c-e">🏆</div><div class="c-t">Marco de Conquista</div><div class="c-b">Subir de nível — de Organização para Estruturação — é um evento concreto e celebrável.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Princípios de Design do Sistema</div>
+  <div class="tw"><table><thead><tr><th>Princípio</th><th>Descrição</th></tr></thead><tbody>
+  <tr><td><span class="badge bg">Objetividade</span></td><td>Elimina o viés de percepção — o score reflete a realidade dos dados</td></tr>
+  <tr><td><span class="badge bb">Acionabilidade</span></td><td>Cada dimensão com score baixo gera recomendação concreta de melhoria</td></tr>
+  <tr><td><span class="badge bo">Continuidade</span></td><td>Não é uma foto — é um filme. Revela a trajetória real da empresa</td></tr>
+  <tr><td><span class="badge bp">Granularidade</span></td><td>Escala 0–1000 torna pequeno progresso visível e motivador</td></tr>
+  <tr><td><span class="badge by">Integração</span></td><td>Alimenta o dashboard, a IA, as metas e o plano estratégico</td></tr>
+  </tbody></table></div></div>`;
+}
+
+function p1(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+    <div class="sh-icon">📐</div>
+    <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Dimensões</div>
+      <div class="sh-title">As 10 Dimensões de Maturidade</div>
+      <div class="sh-desc">Cada dimensão tem peso estratégico próprio, indicadores objetivos e gargalo típico identificado pelo algoritmo.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Visão Geral e Pesos</div>
+  <div class="tw"><table><thead><tr><th>#</th><th>Dimensão</th><th>Peso</th><th>Foco Principal</th><th>Score Máximo</th></tr></thead><tbody>
+  ${dims.map(d=>`<tr><td><span class="badge ${d.wc}">${d.n}</span></td><td>${d.icon} ${d.name}</td><td><strong>${d.w}</strong></td><td>${d.desc.split(',')[0]}</td><td>100 pts</td></tr>`).join('')}
+  <tr><td colspan="2"><strong>TOTAL</strong></td><td><strong>100%</strong></td><td>—</td><td><strong>1.000 pts</strong></td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Detalhamento das 10 Dimensões — clique para expandir</div>
+  <div class="dims">
+  ${dims.map(d=>`
+  <div class="dc">
+    <div class="dc-bar" style="background:${d.col}"></div>
+    <div class="dc-top"><span class="dc-icon">${d.icon}</span><span class="dc-w" style="color:${d.col}">${d.w}</span></div>
+    <div class="dc-name">Dimensão ${d.n} — ${d.name}</div>
+    <div class="dc-desc">${d.desc}</div>
+    <div style="font-size:11.5px;color:var(--mid);margin-bottom:8px"><strong style="color:var(--txt)">Indicadores:</strong> ${d.ind}</div>
+    <div class="dc-gap"><div class="dc-gl">⚠ Gargalo Típico</div><div class="dc-gt">${d.gap}</div></div>
+  </div>`).join('')}
+  </div></div>`;
+}
+
+function p2(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+    <div class="sh-icon">⚖️</div>
+    <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Pontuação</div>
+      <div class="sh-title">Modelo de Pontuação 0–1000 e 5 Níveis</div>
+      <div class="sh-desc">Fórmula ponderada, status de cada dimensão e os 5 níveis de maturidade com critérios detalhados.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Fórmulas de Cálculo</div>
+  <div class="formula">Score da Dimensão = (Σ respostas ÷ score máximo da dimensão) × 100</div>
+  <div class="formula">Score Global = Σ (Score Dimensão × Peso) × 10  →  [0 a 1.000 pontos]</div>
+  </div>
+  <div class="blk"><div class="blk-h">Status das Dimensões por Faixa</div>
+  <div class="tw"><table><thead><tr><th>Score (0–100)</th><th>Status</th><th>Cor</th><th>Comportamento da IA</th></tr></thead><tbody>
+  <tr><td>0–39</td><td><span class="badge br">Crítico 🔴</span></td><td>Vermelho</td><td>Alerta urgente + plano de 30 dias imediato</td></tr>
+  <tr><td>40–59</td><td><span class="badge bo">Em Desenvolvimento 🟡</span></td><td>Amarelo</td><td>Incluído no plano do próximo ciclo trimestral</td></tr>
+  <tr><td>60–74</td><td><span class="badge bb">Estruturado 🔵</span></td><td>Azul</td><td>Otimização e refinamento das práticas</td></tr>
+  <tr><td>75–89</td><td><span class="badge bg">Avançado 🟢</span></td><td>Verde</td><td>Manutenção e uso como alavanca estratégica</td></tr>
+  <tr><td>90–100</td><td><span class="badge by">Referência ⭐</span></td><td>Ouro</td><td>Benchmarking externo + potencial de modelagem</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Os 5 Níveis de Maturidade — clique para expandir</div>
+  <div class="lvls">
+  ${levels.map(lv=>`
+  <div>
+    <div class="lv" style="border-left:3px solid ${lv.col}" onclick="toggleLv(this)">
+      <div class="lv-n" style="color:${lv.col}">${lv.n}</div>
+      <div class="lv-info">
+        <div class="lv-name">${lv.name}</div>
+        <div class="lv-range" style="color:${lv.col}">Score: ${lv.range}</div>
+        <div class="lv-desc">${lv.profile}</div>
+      </div>
+      <div class="lv-tag ${lv.tagc}">${lv.tag}</div>
+    </div>
+    <div class="lv-detail" style="background:var(--s1);border:1px solid var(--bd);border-top:none;border-radius:0 0 13px 13px">
+      <ul>${lv.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    </div>
+  </div>`).join('')}
+  </div></div>
+  <div class="blk"><div class="blk-h">Gatilhos para Subir de Nível</div>
+  <div class="tw"><table><thead><tr><th>Transição</th><th>Condições Mínimas</th><th>Tempo Médio</th></tr></thead><tbody>
+  <tr><td>Nível 1 → 2</td><td>Financeiro ≥40 + Processos ≥30 + Vendas ≥30</td><td>3–8 meses</td></tr>
+  <tr><td>Nível 2 → 3</td><td>Score Global ≥400 + Financeiro ≥60 + Gestão ≥50 + Vendas ≥50</td><td>6–18 meses</td></tr>
+  <tr><td>Nível 3 → 4</td><td>Score Global ≥600 + todas as dimensões ≥50 + Liderança ≥65</td><td>12–30 meses</td></tr>
+  <tr><td>Nível 4 → 5</td><td>Score Global ≥800 + Escalabilidade ≥75 + Cultura ≥70 + Gestão ≥80</td><td>24–48 meses</td></tr>
+  </tbody></table></div></div>`;
+}
+
+function p3(){
+  const exScores = [72,65,48,80,55,63,70,52,45,58];
+  const dimNames = dims.map(d=>d.name);
+  const colors = ["var(--g)","var(--b)","var(--y)","var(--o)","var(--p)","var(--y)","var(--g)","var(--g)","var(--b)","var(--g)"];
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+    <div class="sh-icon">📊</div>
+    <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Visualização</div>
+      <div class="sh-title">Como o Score é Apresentado na Plataforma</div>
+      <div class="sh-desc">5 visualizações complementares — do macro ao granular — cada uma com propósito específico.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Visualização 1 — Score Global em Destaque</div>
+  <div class="score-widget">
+    <div class="sw-label">Score de Maturidade Empresarial</div>
+    <div class="sw-score">621</div>
+    <div class="sw-level">Nível 4 — Crescimento</div>
+    <div class="sw-meta">
+      <span class="sw-m">▲ <strong>+38 pts</strong> este mês</span>
+      <span class="sw-m">Próximo nível: <strong>+179 pts</strong></span>
+      <span class="sw-m">Benchmark do setor: <strong>488</strong></span>
+    </div>
+  </div>
+  <div style="font-size:12.5px;color:var(--mid);text-align:center;margin-top:-8px">↑ Mockup interativo do widget de score do dashboard</div></div>
+  <div class="blk"><div class="blk-h">Visualização 2 — Radar de Maturidade</div>
+  <div class="radar-wrap">
+    <div class="radar-title">Radar de Maturidade — Empresa vs. Benchmark do Setor</div>
+    <div class="radar-svg-wrap">${buildRadar(exScores)}</div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Visualização 3 — Painel de Dimensões com Cards</div>
+  <div class="dim-progress">
+  ${dimNames.map((name,i)=>{
+    const s=exScores[i];
+    const c = s<40?"var(--r)":s<60?"var(--o)":s<75?"var(--b)":"var(--g)";
+    return `<div class="dp-row">
+      <span class="dp-name">${name}</span>
+      <div class="dp-bar-wrap"><div class="dp-bar" style="width:${s}%;background:${c}"></div></div>
+      <span class="dp-val" style="color:${c}">${s}</span>
+    </div>`;
+  }).join('')}
+  </div></div>
+  <div class="blk"><div class="blk-h">Visualizações 4 e 5 — Linha do Tempo e Benchmarking</div>
+  <div class="viz-cards">
+    <div class="vc">
+      <div class="vc-n" style="background:rgba(19,84,204,.12);color:var(--b)">04</div>
+      <div><div class="vc-t">Linha do Tempo de Evolução</div>
+      <div class="vc-d">Gráfico de linha com a trajetória do Score Global desde o primeiro diagnóstico. Marcos de nível, diagnósticos e anotações automáticas da IA em momentos de grande variação. Projeção futura baseada no ritmo atual.</div></div>
+    </div>
+    <div class="vc">
+      <div class="vc-n" style="background:rgba(114,48,220,.12);color:var(--p)">05</div>
+      <div><div class="vc-t">Ranking e Benchmarking Setorial</div>
+      <div class="vc-d">Posição no quartil (Q1–Q4) por dimensão e globalmente. Distância da mediana do setor. Score do próximo quartil como meta motivadora. Ranking de quais dimensões estão acima ou abaixo do benchmark.</div></div>
+    </div>
+  </div></div>`;
+}
+
+function p4(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🤖</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 05 — IA</div>
+      <div class="sh-title">Uso do Score pela IA Consultora</div>
+      <div class="sh-desc">Como o score orienta cada recomendação, estratégia e acompanhamento da IA.</div>
+    </div>
+  </div>
+  <div class="cll">"Empresa nível 2 precisa de estruturação. Empresa nível 4 precisa de aceleração. A IA nunca confunde os dois — e o score é o que garante essa precisão em cada interação."</div>
+  <div class="blk"><div class="blk-h">Como a IA Prioriza Melhorias</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">⚖️</div><div class="c-t">Impacto Ponderado</div><div class="c-b">Financeiro a 35% com peso 15% = potencial de 9,75 pts no Score Global. Dimensão com maior impacto ponderado vem primeiro.</div></div>
+    <div class="card"><div class="c-e">🔗</div><div class="c-t">Cadeia de Dependência</div><div class="c-b">Processos fraco bloqueia Escalabilidade. Liderança fraca trava Gestão. A IA respeita a sequência de desbloqueio.</div></div>
+    <div class="card"><div class="c-e">🎯</div><div class="c-t">Viabilidade Contextual</div><div class="c-b">Não recomenda expansão internacional para empresa nível 3. Cada ação é viável no nível atual — sem pular etapas.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Tipo de Recomendação por Score da Dimensão</div>
+  <div class="tw"><table><thead><tr><th>Score</th><th>Tipo de Recomendação</th><th>Horizonte</th></tr></thead><tbody>
+  <tr><td><span class="badge br">0–39 Crítico</span></td><td>Alerta urgente + plano de 30 dias com as 3 ações básicas mais impactantes</td><td>Imediato</td></tr>
+  <tr><td><span class="badge bo">40–59 Em Dev.</span></td><td>Plano de estruturação no próximo ciclo trimestral</td><td>90 dias</td></tr>
+  <tr><td><span class="badge bb">60–74 Estruturado</span></td><td>Otimização e refinamento das práticas existentes</td><td>6 meses</td></tr>
+  <tr><td><span class="badge bg">75–89 Avançado</span></td><td>Usar como alavanca para elevar dimensões com scores mais baixos</td><td>12 meses</td></tr>
+  <tr><td><span class="badge by">90–100 Referência</span></td><td>Monitoramento e benchmarking externo</td><td>Contínuo</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Estratégia da IA por Score Global</div>
+  <div class="tw"><table><thead><tr><th>Score Global</th><th>Estratégia Adotada</th><th>Horizonte</th></tr></thead><tbody>
+  <tr><td><span class="badge br">0–199</span></td><td>Estabilização de Emergência — controles básicos e quick wins</td><td>30–60 dias</td></tr>
+  <tr><td><span class="badge bo">200–399</span></td><td>Fundação — estruturar financeiro, processos e processo comercial</td><td>3–9 meses</td></tr>
+  <tr><td><span class="badge by">400–599</span></td><td>Profissionalização — KPIs, gestão por dados, marketing estruturado</td><td>6–18 meses</td></tr>
+  <tr><td><span class="badge bb">600–799</span></td><td>Aceleração — expansão de mercado, automação, novos canais</td><td>12–30 meses</td></tr>
+  <tr><td><span class="badge bg">800–1000</span></td><td>Domínio — inovação de modelo, internacionalização, M&A</td><td>24+ meses</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Ciclo Completo — Da Coleta à Ação</div>
+  <div class="pipe">
+    <div class="ps"><div class="ps-dot" style="border-color:var(--g);color:var(--g)">1</div><div class="ps-body"><div class="ps-lbl">Coleta</div><div class="ps-t">Diagnóstico + Dados Contínuos</div><div class="ps-d">Diagnóstico completo (50 perguntas) ou atualização contínua via dados inseridos na plataforma ao longo do mês.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--b);color:var(--b)">2</div><div class="ps-body"><div class="ps-lbl">Cálculo</div><div class="ps-t">Score Atualizado em Tempo Real</div><div class="ps-d">Score de cada dimensão calculado automaticamente. Score Global atualizado após cada novo dado inserido.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--p);color:var(--p)">3</div><div class="ps-body"><div class="ps-lbl">Análise</div><div class="ps-t">Variações, Padrões e Oportunidades</div><div class="ps-d">IA identifica variações significativas, gargalos, oportunidades e correlações entre dimensões.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--o);color:var(--o)">4</div><div class="ps-body"><div class="ps-lbl">Recomendação</div><div class="ps-t">Plano, Insights e Alertas</div><div class="ps-d">Cards de insight, alertas e plano de ação gerados e calibrados ao nível atual da empresa.</div></div></div>
+    <div class="ps"><div class="ps-dot" style="border-color:var(--y);color:var(--y)">5</div><div class="ps-body"><div class="ps-lbl">Execução + Celebração</div><div class="ps-t">Tarefas, Metas e Reconhecimento</div><div class="ps-d">Tarefas criadas, metas definidas, score recalculado ao concluir. Conquistas celebradas — marcos de nível reconhecidos.</div></div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Gamificação Inteligente do Score</div>
+  <div class="tw"><table><thead><tr><th>Evento</th><th>Condição</th><th>Resposta da Plataforma</th></tr></thead><tbody>
+  <tr><td>Subida de Nível</td><td>Score ultrapassa o limiar do próximo nível</td><td>Celebração visual + relatório especial + plano recalibrado</td></tr>
+  <tr><td>Dimensão Desbloqueada</td><td>Dimensão sai do vermelho (score ≥40)</td><td>Card especial + próximo objetivo definido pela IA</td></tr>
+  <tr><td>Sequência de Evolução</td><td>Score cresce por 3 meses consecutivos</td><td>Badge de consistência + destaque no perfil</td></tr>
+  <tr><td>Benchmark Superado</td><td>Score supera a mediana do setor</td><td>Notificação + novo benchmark como meta</td></tr>
+  <tr><td>Dimensão Referência</td><td>Dimensão atinge 90+</td><td>Reconhecimento + sugestão de uso como alavanca</td></tr>
+  </tbody></table></div></div>`;
+}
+
+const panels = [p0, p1, p2, p3, p4];
+
+function toggleLv(el){
+  const d = el.nextElementSibling;
+  d.classList.toggle('open');
+}
+
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+  },150);
+}
+
+show(0);
+</script>
+</body>
+</html>

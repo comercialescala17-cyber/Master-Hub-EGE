@@ -1,0 +1,410 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGE — Comando 1: Arquitetura Completa do Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060B14;--s1:#0C1524;--s2:#111D30;--s3:#16243A;
+  --teal:#00D4AA;--orange:#FF6B35;--blue:#4A9EFF;--purple:#A855F7;--yellow:#F59E0B;--pink:#EC4899;
+  --text:#E8F0FE;--muted:#5A6B8A;--border:#1A2840;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 600px 400px at 0% 0%,rgba(0,212,170,.05) 0%,transparent 100%),
+    radial-gradient(ellipse 600px 400px at 100% 100%,rgba(74,158,255,.05) 0%,transparent 100%);
+  pointer-events:none;z-index:0}
+
+.page{max-width:1140px;margin:0 auto;padding:48px 24px 100px;position:relative;z-index:1}
+
+/* ── HEADER ── */
+.hdr{margin-bottom:64px;animation:up .8s ease both}
+.cmd-tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--teal);background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);padding:6px 14px;border-radius:6px;margin-bottom:20px}
+.cmd-tag::before{content:'>';color:var(--orange)}
+h1{font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-.02em}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--muted);font-size:16px;font-weight:300;max-width:600px;line-height:1.7}
+
+/* ── SECTION ── */
+.sec{margin-bottom:64px;animation:up .7s ease both}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--orange);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);padding:4px 10px;border-radius:5px}
+.sec-title{font-size:20px;font-weight:700;color:var(--text)}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* ── ARCH TOWER ── */
+.tower{display:flex;flex-direction:column;gap:0;position:relative}
+.tower::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--teal),var(--blue),var(--purple),var(--orange),var(--yellow),var(--pink));opacity:.3;border-radius:2px}
+.t-layer{display:flex;gap:20px;align-items:stretch;margin-bottom:4px}
+.t-index{display:flex;flex-direction:column;align-items:center;gap:0;min-width:50px}
+.t-dot{width:12px;height:12px;border-radius:50%;border:2px solid;flex-shrink:0;margin-top:18px;z-index:1;background:var(--bg)}
+.t-connector{flex:1;width:2px;background:var(--border);margin:0 auto}
+.t-body{flex:1;background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:4px;transition:all .3s;position:relative;overflow:hidden}
+.t-body::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.t-body:hover{transform:translateX(6px);border-color:rgba(255,255,255,.1)}
+.l0 .t-dot{border-color:var(--teal)} .l0 .t-body::before{background:var(--teal)}
+.l1 .t-dot{border-color:var(--blue)} .l1 .t-body::before{background:var(--blue)}
+.l2 .t-dot{border-color:var(--purple)} .l2 .t-body::before{background:var(--purple)}
+.l3 .t-dot{border-color:var(--orange)} .l3 .t-body::before{background:var(--orange)}
+.l4 .t-dot{border-color:var(--yellow)} .l4 .t-body::before{background:var(--yellow)}
+.l5 .t-dot{border-color:var(--pink)} .l5 .t-body::before{background:var(--pink)}
+.t-name{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.l0 .t-name{color:var(--teal)} .l1 .t-name{color:var(--blue)} .l2 .t-name{color:var(--purple)}
+.l3 .t-name{color:var(--orange)} .l4 .t-name{color:var(--yellow)} .l5 .t-name{color:var(--pink)}
+.t-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px;background:var(--s2);color:var(--muted);border:1px solid var(--border)}
+.chip.hot{background:rgba(0,212,170,.08);color:var(--teal);border-color:rgba(0,212,170,.2)}
+
+/* ── INTERACTION DIAGRAM ── */
+.interaction{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:start;margin:16px 0}
+.int-col{display:flex;flex-direction:column;gap:8px}
+.int-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:12px;font-weight:600;color:var(--text);text-align:center}
+.int-arrow-col{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0 8px;min-width:60px}
+.int-arrow{font-size:18px;color:var(--teal);line-height:2}
+.int-label{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+
+/* ── SCALE TIERS ── */
+.tiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.tier{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:all .3s}
+.tier:hover{border-color:rgba(255,255,255,.1);box-shadow:0 8px 40px rgba(0,0,0,.3)}
+.tier-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.08em}
+.tier-t1 .tier-badge{background:rgba(0,212,170,.1);color:var(--teal)}
+.tier-t2 .tier-badge{background:rgba(74,158,255,.1);color:var(--blue)}
+.tier-t3 .tier-badge{background:rgba(168,85,247,.1);color:var(--purple)}
+.tier-num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;line-height:1;margin-bottom:4px}
+.tier-t1 .tier-num{color:var(--teal)} .tier-t2 .tier-num{color:var(--blue)} .tier-t3 .tier-num{color:var(--purple)}
+.tier-label{font-size:13px;color:var(--muted);margin-bottom:16px}
+.tier-title{font-size:16px;font-weight:700;margin-bottom:12px}
+.tier-items{display:flex;flex-direction:column;gap:6px}
+.tier-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted);line-height:1.5}
+.tier-item::before{content:'→';color:var(--teal);flex-shrink:0;margin-top:1px}
+
+/* ── FLOW DIAGRAM ── */
+.flow-diagram{display:flex;flex-direction:column;gap:0}
+.flow-row{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.flow-node{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;font-weight:600;text-align:center;white-space:nowrap;min-width:90px}
+.flow-node.teal{border-color:rgba(0,212,170,.4);color:var(--teal)}
+.flow-node.blue{border-color:rgba(74,158,255,.4);color:var(--blue)}
+.flow-node.orange{border-color:rgba(255,107,53,.4);color:var(--orange)}
+.flow-node.purple{border-color:rgba(168,85,247,.4);color:var(--purple)}
+.flow-arrow{font-size:16px;color:var(--muted);padding:0 6px}
+.flow-sep{width:100%;height:1px;background:var(--border);margin:12px 0;display:flex;align-items:center;justify-content:center}
+.flow-sep-label{background:var(--bg);padding:0 12px;font-size:11px;color:var(--muted);letter-spacing:.08em}
+
+/* ── COMPONENT TABLE ── */
+.comp-table{width:100%;border-collapse:collapse}
+.comp-table th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);background:var(--s2);border-bottom:1px solid var(--border)}
+.comp-table td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:top}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table tr:nth-child(even) td{background:rgba(255,255,255,.01)}
+.comp-table tr:hover td{background:var(--s2)}
+.comp-wrap{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+td.name{font-weight:700;color:var(--text);white-space:nowrap}
+td.tech{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal)}
+td.why{color:var(--muted)}
+
+/* ── AI PIPELINE ── */
+.ai-pipeline{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.ai-step{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:all .3s}
+.ai-step:hover{border-color:rgba(0,212,170,.3);box-shadow:0 4px 24px rgba(0,212,170,.06)}
+.ai-step-n{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:rgba(0,212,170,.15);position:absolute;top:10px;right:14px}
+.ai-step-icon{font-size:24px;margin-bottom:10px}
+.ai-step-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.ai-step-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ── SECURITY GRID ── */
+.sec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.sec-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .3s}
+.sec-card:hover{border-color:rgba(245,158,11,.3)}
+.sec-card-icon{font-size:24px;margin-bottom:10px}
+.sec-card-title{font-size:14px;font-weight:700;margin-bottom:8px}
+.sec-card-items{display:flex;flex-direction:column;gap:5px}
+.sec-card-item{font-size:12px;color:var(--muted);display:flex;gap:6px}
+.sec-card-item::before{content:'✓';color:var(--teal);flex-shrink:0}
+
+/* ── ANIM ── */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.sec:nth-child(1){animation-delay:.05s} .sec:nth-child(2){animation-delay:.1s}
+.sec:nth-child(3){animation-delay:.15s} .sec:nth-child(4){animation-delay:.2s}
+.sec:nth-child(5){animation-delay:.25s} .sec:nth-child(6){animation-delay:.3s}
+.sec:nth-child(7){animation-delay:.35s}
+
+/* ── TAGS ROW ── */
+.tags-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.tag{font-size:12px;font-weight:600;padding:5px 12px;border-radius:7px}
+.tag-teal{background:rgba(0,212,170,.1);color:var(--teal);border:1px solid rgba(0,212,170,.2)}
+.tag-blue{background:rgba(74,158,255,.1);color:var(--blue);border:1px solid rgba(74,158,255,.2)}
+.tag-orange{background:rgba(255,107,53,.1);color:var(--orange);border:1px solid rgba(255,107,53,.2)}
+.tag-purple{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.tag-yellow{background:rgba(245,158,11,.1);color:var(--yellow);border:1px solid rgba(245,158,11,.2)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="cmd-tag">COMANDO 01 / 10</div>
+    <h1>Arquitetura Completa do<br><em>Enterprise Growth Ecosystem</em></h1>
+    <p class="lead">Como cada camada interage, escala e sustenta milhares de empresas simultâneas no mesmo sistema.</p>
+  </div>
+
+  <!-- 1. STACK POR CAMADAS -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">01</span><span class="sec-title">Stack por Camadas — Da IA ao Usuário</span><span class="sec-line"></span></div>
+    <div class="tower">
+      <div class="t-layer l0">
+        <div class="t-index"><div class="t-dot"></div><div class="t-connector"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 1 — IA & Automação</div>
+          <div class="t-desc">O motor inteligente da plataforma. Claude API processa diagnósticos e gera recomendações estratégicas. n8n orquestra todos os fluxos assíncronos sem código. OpenAI fornece embeddings para busca semântica.</div>
+          <div class="chips"><span class="chip hot">Claude API</span><span class="chip hot">n8n Workflows</span><span class="chip">OpenAI Embeddings</span><span class="chip">Webhooks</span><span class="chip">Email Service (Resend)</span></div>
+        </div>
+      </div>
+      <div class="t-layer l1">
+        <div class="t-index"><div class="t-dot"></div><div class="t-connector"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 2 — Dados & Persistência</div>
+          <div class="t-desc">PostgreSQL com Row Level Security garante isolamento total entre empresas. Redis para cache de sessões e respostas frequentes da IA. Supabase Storage para arquivos e relatórios. Backups automáticos diários.</div>
+          <div class="chips"><span class="chip hot">PostgreSQL 15</span><span class="chip hot">Supabase (BaaS)</span><span class="chip">Redis Cache</span><span class="chip">Row Level Security</span><span class="chip">S3-compatible Storage</span></div>
+        </div>
+      </div>
+      <div class="t-layer l2">
+        <div class="t-index"><div class="t-dot"></div><div class="t-connector"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 3 — Serviços de Negócio</div>
+          <div class="t-desc">Microserviços independentes por domínio. Cada serviço possui sua própria lógica, testes e pode escalar separadamente. Comunicação via eventos internos para operações assíncronas.</div>
+          <div class="chips"><span class="chip">Auth Service</span><span class="chip">Company Service</span><span class="chip">Diagnostic Service</span><span class="chip hot">AI Service</span><span class="chip">CRM Service</span><span class="chip">Analytics Service</span><span class="chip">Task Service</span></div>
+        </div>
+      </div>
+      <div class="t-layer l3">
+        <div class="t-index"><div class="t-dot"></div><div class="t-connector"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 4 — API Gateway</div>
+          <div class="t-desc">Porta de entrada única para o frontend. Valida JWT, injeta company_id no contexto, aplica rate limiting por tier de plano, e roteia para o serviço correto. Logs centralizados de todas as requisições.</div>
+          <div class="chips"><span class="chip hot">Node.js + Express</span><span class="chip">JWT Middleware</span><span class="chip">Rate Limiting</span><span class="chip">Request Logger</span><span class="chip">CORS + Helmet</span></div>
+        </div>
+      </div>
+      <div class="t-layer l4">
+        <div class="t-index"><div class="t-dot"></div><div class="t-connector"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 5 — Frontend</div>
+          <div class="t-desc">SPA React com roteamento client-side. React Query gerencia cache de dados e sincronização automática. Zustand para estado global leve. Recharts para visualizações. Design system próprio com Tailwind.</div>
+          <div class="chips"><span class="chip hot">React 18</span><span class="chip">Tailwind CSS</span><span class="chip">React Query</span><span class="chip">Zustand</span><span class="chip hot">Recharts (Radar + Line)</span><span class="chip">React DnD (Kanban)</span></div>
+        </div>
+      </div>
+      <div class="t-layer l5">
+        <div class="t-index"><div class="t-dot"></div></div>
+        <div class="t-body">
+          <div class="t-name">Camada 6 — Usuário Final</div>
+          <div class="t-desc">Interface acessada via browser ou PWA mobile. Experiência fluida independente do dispositivo. Atualizações em tempo real via Supabase Realtime para notificações e mudanças no pipeline.</div>
+          <div class="chips"><span class="chip">Web Browser</span><span class="chip">PWA Mobile</span><span class="chip hot">Supabase Realtime</span><span class="chip">Push Notifications</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. COMO OS COMPONENTES INTERAGEM -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">02</span><span class="sec-title">Como os Componentes se Comunicam</span><span class="sec-line"></span></div>
+    <div class="tags-row">
+      <span class="tag tag-teal">Síncrono: REST API</span>
+      <span class="tag tag-blue">Assíncrono: n8n Webhooks</span>
+      <span class="tag tag-orange">Tempo Real: Supabase Realtime</span>
+      <span class="tag tag-purple">Eventos: PostgreSQL Triggers</span>
+    </div>
+    <div class="comp-wrap">
+      <table class="comp-table">
+        <thead><tr><th>De</th><th>Para</th><th>Protocolo</th><th>Quando acontece</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Frontend (React)</td><td class="tech">API Gateway</td><td class="tag tag-teal" style="display:inline-block;font-size:10px;padding:2px 7px">REST/HTTPS</td><td class="why">Toda interação do usuário: criar lead, lançar métrica, buscar dados</td></tr>
+          <tr><td class="name">API Gateway</td><td class="tech">Serviços</td><td class="tag tag-teal" style="display:inline-block;font-size:10px;padding:2px 7px">Interno REST</td><td class="why">Roteamento validado após autenticação JWT e extração do company_id</td></tr>
+          <tr><td class="name">Serviços</td><td class="tech">PostgreSQL</td><td class="tag tag-purple" style="display:inline-block;font-size:10px;padding:2px 7px">SQL + RLS</td><td class="why">Toda leitura e escrita de dados. RLS aplica isolamento automaticamente</td></tr>
+          <tr><td class="name">Diagnostic Service</td><td class="tech">n8n (webhook)</td><td class="tag tag-blue" style="display:inline-block;font-size:10px;padding:2px 7px">Webhook POST</td><td class="why">Ao concluir diagnóstico → dispara fluxo de análise AI e notificação</td></tr>
+          <tr><td class="name">n8n</td><td class="tech">Claude API</td><td class="tag tag-blue" style="display:inline-block;font-size:10px;padding:2px 7px">HTTP + Bearer</td><td class="why">Monta prompt com contexto da empresa e solicita análise estratégica</td></tr>
+          <tr><td class="name">AI Service</td><td class="tech">PostgreSQL</td><td class="tag tag-purple" style="display:inline-block;font-size:10px;padding:2px 7px">INSERT</td><td class="why">Persiste recomendações em ai_recommendations com prioridade e tipo</td></tr>
+          <tr><td class="name">PostgreSQL</td><td class="tech">Frontend</td><td class="tag tag-orange" style="display:inline-block;font-size:10px;padding:2px 7px">Realtime WS</td><td class="why">Novas recomendações, mudanças de pipeline e alertas aparecem sem refresh</td></tr>
+          <tr><td class="name">n8n</td><td class="tech">Resend (email)</td><td class="tag tag-blue" style="display:inline-block;font-size:10px;padding:2px 7px">HTTP POST</td><td class="why">Boas-vindas, relatório semanal, alerta de tarefas vencidas, insights AI</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. FLUXO PRINCIPAL DO USUÁRIO -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">03</span><span class="sec-title">Fluxo Completo — Do Registro ao Insight</span><span class="sec-line"></span></div>
+    <div class="flow-diagram">
+      <div class="flow-row" style="gap:6px;flex-wrap:wrap">
+        <div class="flow-node teal">1. Registro</div><div class="flow-arrow">→</div>
+        <div class="flow-node blue">2. Verificação Email</div><div class="flow-arrow">→</div>
+        <div class="flow-node orange">3. Cria Empresa</div><div class="flow-arrow">→</div>
+        <div class="flow-node purple">4. Diagnóstico (30 perguntas)</div>
+      </div>
+      <div style="text-align:center;padding:12px 0;color:var(--muted);font-size:20px">↓</div>
+      <div class="flow-row" style="gap:6px;flex-wrap:wrap">
+        <div class="flow-node purple">5. Score Calculado</div><div class="flow-arrow">→</div>
+        <div class="flow-node teal">6. Claude analisa contexto</div><div class="flow-arrow">→</div>
+        <div class="flow-node orange">7. Recomendações geradas</div><div class="flow-arrow">→</div>
+        <div class="flow-node blue">8. Dashboard ativo</div>
+      </div>
+      <div style="text-align:center;padding:12px 0;color:var(--muted);font-size:20px">↓</div>
+      <div class="flow-row" style="gap:6px;flex-wrap:wrap">
+        <div class="flow-node blue">9. CRM + Tarefas</div><div class="flow-arrow">→</div>
+        <div class="flow-node teal">10. Métricas mensais</div><div class="flow-arrow">→</div>
+        <div class="flow-node orange">11. AI re-analisa</div><div class="flow-arrow">→</div>
+        <div class="flow-node purple">12. Crescimento contínuo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ESCALABILIDADE -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">04</span><span class="sec-title">Como Escalar para Milhares de Empresas</span><span class="sec-line"></span></div>
+    <div class="tiers">
+      <div class="tier tier-t1">
+        <span class="tier-badge">TIER 1</span>
+        <div class="tier-num">0→1K</div>
+        <div class="tier-label">empresas ativas</div>
+        <div class="tier-title">Infraestrutura Inicial</div>
+        <div class="tier-items">
+          <div class="tier-item">Supabase Free/Pro — DB + Auth + Storage centralizados</div>
+          <div class="tier-item">Railway ou Render — 1 instância Node.js com auto-restart</div>
+          <div class="tier-item">n8n Cloud — workflows sem gerenciar servidor</div>
+          <div class="tier-item">Redis compartilhado para cache de sessões</div>
+          <div class="tier-item">Custo estimado: R$ 300–600/mês</div>
+        </div>
+      </div>
+      <div class="tier tier-t2">
+        <span class="tier-badge">TIER 2</span>
+        <div class="tier-num">1K→10K</div>
+        <div class="tier-label">empresas ativas</div>
+        <div class="tier-title">Escala Horizontal</div>
+        <div class="tier-items">
+          <div class="tier-item">PostgreSQL dedicado com read replicas para analytics</div>
+          <div class="tier-item">2–4 instâncias Node.js atrás de load balancer</div>
+          <div class="tier-item">Redis Cluster para cache distribuído</div>
+          <div class="tier-item">n8n self-hosted com worker nodes separados</div>
+          <div class="tier-item">CDN para assets estáticos (CloudFlare)</div>
+          <div class="tier-item">Custo estimado: R$ 2K–5K/mês</div>
+        </div>
+      </div>
+      <div class="tier tier-t3">
+        <span class="tier-badge">TIER 3</span>
+        <div class="tier-num">10K+</div>
+        <div class="tier-label">empresas ativas</div>
+        <div class="tier-title">Arquitetura Enterprise</div>
+        <div class="tier-items">
+          <div class="tier-item">Sharding por região (Sul, Sudeste, Nordeste)</div>
+          <div class="tier-item">Microsserviços em containers (Kubernetes / ECS)</div>
+          <div class="tier-item">Message queue (SQS ou RabbitMQ) para picos de IA</div>
+          <div class="tier-item">Metabase dedicado por cluster de clientes enterprise</div>
+          <div class="tier-item">SLA 99.9% com failover automático</div>
+          <div class="tier-item">Custo estimado: R$ 15K–40K/mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. AI PIPELINE DETALHADO -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">05</span><span class="sec-title">Pipeline de Inteligência Artificial</span><span class="sec-line"></span></div>
+    <div class="ai-pipeline">
+      <div class="ai-step"><div class="ai-step-n">1</div><div class="ai-step-icon">🎯</div><div class="ai-step-title">Trigger</div><div class="ai-step-desc">Diagnóstico, nova métrica, lead parado, ou solicitação manual via chat</div></div>
+      <div class="ai-step"><div class="ai-step-n">2</div><div class="ai-step-icon">🗃</div><div class="ai-step-title">Coleta de Contexto</div><div class="ai-step-desc">Query no PostgreSQL: empresa, diagnósticos, pipeline, métricas 6 meses, tasks</div></div>
+      <div class="ai-step"><div class="ai-step-n">3</div><div class="ai-step-icon">📝</div><div class="ai-step-title">Prompt Engineering</div><div class="ai-step-desc">System prompt especializado + contexto JSON estruturado + instrução de output</div></div>
+      <div class="ai-step"><div class="ai-step-n">4</div><div class="ai-step-icon">🤖</div><div class="ai-step-title">Claude API</div><div class="ai-step-desc">claude-sonnet-4 · max_tokens: 2048 · temperature: 0.3 · retorno JSON</div></div>
+      <div class="ai-step"><div class="ai-step-n">5</div><div class="ai-step-icon">✅</div><div class="ai-step-title">Parse & Validação</div><div class="ai-step-desc">Extrai recomendações, classifica por tipo e prioridade, valida campos</div></div>
+      <div class="ai-step"><div class="ai-step-n">6</div><div class="ai-step-icon">💾</div><div class="ai-step-title">Persistência</div><div class="ai-step-desc">INSERT em ai_recommendations com company_id, tipo, prioridade e status</div></div>
+      <div class="ai-step"><div class="ai-step-n">7</div><div class="ai-step-icon">🔔</div><div class="ai-step-title">Notificação</div><div class="ai-step-desc">Realtime push no dashboard + email via n8n/Resend em até 30 segundos</div></div>
+      <div class="ai-step"><div class="ai-step-n">8</div><div class="ai-step-icon">📊</div><div class="ai-step-title">Feedback Loop</div><div class="ai-step-desc">Usuário marca recomendação como implementada → alimenta próxima análise</div></div>
+    </div>
+  </div>
+
+  <!-- 6. SEGURANÇA MULTI-TENANT -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">06</span><span class="sec-title">Segurança & Isolamento Multi-Tenant</span><span class="sec-line"></span></div>
+    <div class="sec-grid">
+      <div class="sec-card">
+        <div class="sec-card-icon">🔐</div>
+        <div class="sec-card-title">Autenticação</div>
+        <div class="sec-card-items">
+          <div class="sec-card-item">JWT + refresh token 7 dias</div>
+          <div class="sec-card-item">Bcrypt rounds: 12</div>
+          <div class="sec-card-item">Rate limit: 10 req/min no login</div>
+          <div class="sec-card-item">2FA opcional via TOTP</div>
+          <div class="sec-card-item">OAuth Google disponível</div>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-icon">🏢</div>
+        <div class="sec-card-title">Isolamento de Dados</div>
+        <div class="sec-card-items">
+          <div class="sec-card-item">Row Level Security em todas as tabelas</div>
+          <div class="sec-card-item">company_id injetado só via middleware</div>
+          <div class="sec-card-item">Frontend nunca envia company_id</div>
+          <div class="sec-card-item">Policy RLS valida JWT automaticamente</div>
+          <div class="sec-card-item">Auditoria de todas as mutações críticas</div>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-icon">🛡</div>
+        <div class="sec-card-title">Proteção da API</div>
+        <div class="sec-card-items">
+          <div class="sec-card-item">HTTPS obrigatório em produção</div>
+          <div class="sec-card-item">Helmet.js — headers de segurança</div>
+          <div class="sec-card-item">Rate limiting por plano e por endpoint</div>
+          <div class="sec-card-item">Input validation com Zod</div>
+          <div class="sec-card-item">SQL injection: Prisma ORM parametrizado</div>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card-icon">📋</div>
+        <div class="sec-card-title">Conformidade & Backup</div>
+        <div class="sec-card-items">
+          <div class="sec-card-item">LGPD: consentimento explícito no cadastro</div>
+          <div class="sec-card-item">Direito ao esquecimento implementado</div>
+          <div class="sec-card-item">Backups automáticos diários — 30 dias</div>
+          <div class="sec-card-item">Logs de auditoria por 90 dias</div>
+          <div class="sec-card-item">Criptografia em repouso para dados sensíveis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. STACK COMPLETO -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-num">07</span><span class="sec-title">Stack Tecnológico Completo</span><span class="sec-line"></span></div>
+    <div class="comp-wrap">
+      <table class="comp-table">
+        <thead><tr><th>Camada</th><th>Tecnologia</th><th>Motivo da Escolha</th></tr></thead>
+        <tbody>
+          <tr><td class="name">UI Framework</td><td class="tech">React 18 + Vite</td><td class="why">Ecossistema maduro, hot reload, component model ideal para dashboards complexos</td></tr>
+          <tr><td class="name">Estilo</td><td class="tech">Tailwind CSS</td><td class="why">Design system consistente, zero CSS morto, dark mode nativo</td></tr>
+          <tr><td class="name">Kanban</td><td class="tech">@dnd-kit/core</td><td class="why">Drag & drop acessível, performático e sem dependências pesadas</td></tr>
+          <tr><td class="name">Charts</td><td class="tech">Recharts</td><td class="why">Radar chart nativo, composable, excelente integração com React</td></tr>
+          <tr><td class="name">Cache/Fetch</td><td class="tech">React Query v5</td><td class="why">Sincronização automática, retry, optimistic updates, cache inteligente</td></tr>
+          <tr><td class="name">Estado Global</td><td class="tech">Zustand</td><td class="why">Simples, sem boilerplate, TypeScript first</td></tr>
+          <tr><td class="name">Backend</td><td class="tech">Node.js + Express</td><td class="why">JSON nativo, alta performance I/O, ecossistema npm extenso</td></tr>
+          <tr><td class="name">Validação</td><td class="tech">Zod</td><td class="why">Schema validation TypeScript-first, erros descritivos</td></tr>
+          <tr><td class="name">ORM</td><td class="tech">Prisma</td><td class="why">Type-safe queries, migrations automáticas, introspection do schema</td></tr>
+          <tr><td class="name">BaaS</td><td class="tech">Supabase</td><td class="why">Auth + PostgreSQL + Storage + Realtime + RLS em uma plataforma</td></tr>
+          <tr><td class="name">Cache</td><td class="tech">Redis (Upstash)</td><td class="why">Cache de respostas AI, sessões, rate limiting distribuído</td></tr>
+          <tr><td class="name">IA Principal</td><td class="tech">Claude API (Anthropic)</td><td class="why">Melhor raciocínio estratégico, contexto longo, JSON confiável</td></tr>
+          <tr><td class="name">Automação</td><td class="tech">n8n</td><td class="why">Self-hosted, visual, 400+ integrações nativas, zero custo por execução</td></tr>
+          <tr><td class="name">Email</td><td class="tech">Resend</td><td class="why">API moderna, alta deliverability, React Email templates</td></tr>
+          <tr><td class="name">Deploy</td><td class="tech">Railway / Render</td><td class="why">Deploy Git-push, escala automática, custo proporcional ao uso</td></tr>
+          <tr><td class="name">CI/CD</td><td class="tech">GitHub Actions</td><td class="why">Testes automatizados, linting, deploy em staging antes de produção</td></tr>
+          <tr><td class="name">Monitoramento</td><td class="tech">Sentry + Uptime Robot</td><td class="why">Captura erros em produção, alertas de downtime, performance tracking</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

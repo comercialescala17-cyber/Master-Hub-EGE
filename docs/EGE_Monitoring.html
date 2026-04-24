@@ -1,0 +1,529 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Sistema de Monitoramento Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 5% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 95% 92%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:50px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,62px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--b),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:580px;margin:0 auto;line-height:1.8}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:44px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.sy::after{background:var(--y)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.sy .sv{color:var(--y)}
+
+/* NAV */
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:38px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--o)}.n4::after{background:var(--g)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+
+/* SEC HEAD */
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+
+/* BLKS */
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* TABLES */
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+
+/* CARDS */
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:26px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+
+/* CALLOUT */
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.br{background:rgba(192,32,32,.12);color:var(--r)}
+.bt{background:rgba(8,128,160,.12);color:var(--t)}
+
+/* ── LIVE DASHBOARD ─────────────────────────────────── */
+.dashboard{background:var(--s1);border:1px solid var(--bd);border-radius:20px;overflow:hidden;margin-bottom:20px}
+.db-topbar{background:var(--s3);padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.db-title{font-size:11px;font-weight:700;color:var(--mid);letter-spacing:.06em;text-transform:uppercase}
+.db-live{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--g);font-weight:700}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 1.5s infinite}
+.db-body{padding:18px}
+
+/* KPI row top */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--s2);border:1px solid var(--bd2);border-radius:13px;padding:14px 12px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.g::before{background:var(--g)}.kpi.b::before{background:var(--b)}.kpi.o::before{background:var(--o)}
+.kpi.r::before{background:var(--r)}.kpi.y::before{background:var(--y)}
+.kpi-label{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:900;line-height:1;margin-bottom:4px}
+.kpi.g .kpi-val{color:var(--g)}.kpi.b .kpi-val{color:var(--b)}.kpi.o .kpi-val{color:var(--o)}
+.kpi.r .kpi-val{color:var(--r)}.kpi.y .kpi-val{color:var(--y)}
+.kpi-delta{font-size:11px;font-weight:600}
+.delta-up{color:var(--g)}.delta-dn{color:var(--r)}.delta-neu{color:var(--mid)}
+.kpi-sub{font-size:10px;color:var(--mid);margin-top:2px}
+
+/* mini charts */
+.charts-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:16px}
+@media(max-width:700px){.charts-row{grid-template-columns:1fr}}
+.chart-box{background:var(--s2);border:1px solid var(--bd2);border-radius:13px;padding:14px}
+.chart-title{font-size:11px;font-weight:700;color:var(--mid);margin-bottom:10px;letter-spacing:.05em}
+canvas{display:block;width:100%!important}
+
+/* funnel */
+.funnel{display:flex;flex-direction:column;gap:6px}
+.fn{display:flex;align-items:center;gap:8px}
+.fn-label{font-size:10.5px;color:var(--mid);min-width:80px;font-weight:500}
+.fn-bar-wrap{flex:1;height:18px;background:var(--s3);border-radius:4px;overflow:hidden;position:relative}
+.fn-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;
+  font-size:10px;font-weight:700;transition:width 1s ease}
+.fn-val{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;min-width:40px;text-align:right}
+
+/* score mini */
+.score-ring{text-align:center}
+.score-big{font-family:'JetBrains Mono',monospace;font-size:44px;font-weight:900;color:var(--g);line-height:1;margin:8px 0 4px}
+.score-lv{font-size:12px;font-weight:700;color:var(--mid)}
+.score-prog-wrap{height:6px;background:var(--s3);border-radius:10px;overflow:hidden;margin:10px 0 4px}
+.score-prog{height:100%;background:linear-gradient(90deg,var(--g),var(--b));border-radius:10px}
+.score-hint{font-size:10px;color:var(--mid)}
+
+/* kpi cat cards */
+.kpi-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:700px){.kpi-cats{grid-template-columns:1fr 1fr}}
+.kcat{background:var(--s2);border:1px solid var(--bd2);border-radius:13px;padding:14px}
+.kcat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kcat-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
+.kcat-icon{font-size:18px}
+.kcat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd)}
+.kcat-row:last-child{border-bottom:none}
+.kcat-k{font-size:11px;color:var(--txt)}
+.kcat-v{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700}
+
+/* alerts */
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.al{display:flex;align-items:flex-start;gap:12px;background:var(--s2);
+  border:1px solid var(--bd2);border-radius:12px;padding:12px 15px;cursor:pointer;transition:all .18s}
+.al:hover{border-color:var(--bd);}
+.al-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.al-body{flex:1}
+.al-title{font-size:12.5px;font-weight:700;margin-bottom:3px}
+.al-msg{font-size:11.5px;color:var(--mid);line-height:1.55}
+.al-time{font-size:10px;color:var(--dim);margin-top:4px}
+.al-tag{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:3px}
+
+/* AI chat */
+.ai-chat{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.ai-chat-head{background:var(--s3);padding:12px 18px;display:flex;align-items:center;gap:10px}
+.ai-chat-icon{font-size:22px}
+.ai-chat-name{font-size:13px;font-weight:700}
+.ai-chat-sub{font-size:11px;color:var(--mid)}
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:12.5px;line-height:1.6}
+.msg.user{align-self:flex-end;background:rgba(19,84,204,.15);border:1px solid rgba(19,84,204,.2);color:var(--txt)}
+.msg.ai{align-self:flex-start;background:rgba(0,192,138,.06);border:1px solid rgba(0,192,138,.15);color:var(--txt)}
+.msg-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.msg.user .msg-label{color:var(--b);text-align:right}.msg.ai .msg-label{color:var(--g)}
+
+/* CORR TABLE */
+.corr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.corr-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.corr-icon{font-size:22px;margin-bottom:8px}
+.corr-title{font-size:12.5px;font-weight:700;margin-bottom:5px}
+.corr-body{font-size:11.5px;color:var(--mid);line-height:1.6}
+.corr-action{margin-top:8px;font-size:11px;padding:6px 10px;background:rgba(0,192,138,.07);
+  border:1px solid rgba(0,192,138,.15);border-radius:7px;color:var(--g)}
+
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Inteligência de Negócios</div>
+  <h1>Monitoramento Empresarial<br><span>em Tempo Real</span></h1>
+  <p class="sub">16 KPIs em 6 categorias · Dashboard com 4 camadas · Alertas automáticos inteligentes · IA analisando correlações continuamente</p>
+</div>
+
+<div class="stats">
+  <div class="st sg"><div class="sv">16</div><div class="sl">KPIs monitorados</div></div>
+  <div class="st sb"><div class="sv">6</div><div class="sl">Categorias</div></div>
+  <div class="st so"><div class="sv">4</div><div class="sl">Camadas de dashboard</div></div>
+  <div class="st sp"><div class="sv">4</div><div class="sl">Níveis de alerta</div></div>
+  <div class="st sy"><div class="sv">∞</div><div class="sl">Atualização contínua</div></div>
+</div>
+
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🎯 Objetivo</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">📊 KPIs</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🖥 Dashboard</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">🔔 Alertas</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🤖 IA Consultora</div></div>
+</div>
+
+<div id="content"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ── shared chart helpers ────────────────────────────────────
+const C = {g:'#00C08A',b:'#1354CC',o:'#D95A08',y:'#B87200',r:'#C02020',p:'#7230DC',mid:'#5E7A9A'};
+
+function lineChart(id,labels,datasets,opts={}){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'line',data:{labels,datasets:datasets.map(d=>({
+    label:d.label,data:d.data,borderColor:d.color,backgroundColor:d.color+'18',
+    borderWidth:2,pointRadius:3,pointHoverRadius:5,fill:d.fill??true,tension:.4
+  }))},options:{responsive:true,plugins:{legend:{display:datasets.length>1,labels:{color:'#5E7A9A',boxWidth:10,font:{size:10}}},tooltip:{mode:'index',intersect:false}},
+  scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5E7A9A',font:{size:9}}},
+          y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5E7A9A',font:{size:9},...(opts.yFmt?{callback:v=>opts.yFmt(v)}:{})}}},
+  ...opts}});
+}
+
+function barChart(id,labels,datasets){
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  new Chart(ctx,{type:'bar',data:{labels,datasets:datasets.map(d=>({
+    label:d.label,data:d.data,backgroundColor:d.color+'88',borderColor:d.color,borderWidth:1,borderRadius:4
+  }))},options:{responsive:true,plugins:{legend:{display:datasets.length>1,labels:{color:'#5E7A9A',boxWidth:10,font:{size:10}}}},
+  scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5E7A9A',font:{size:9}}},
+          y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#5E7A9A',font:{size:9}}}}}});
+}
+
+// ── panels ──────────────────────────────────────────────────
+function p0(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🎯</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Objetivo</div>
+      <div class="sh-title">Por que Monitorar em Tempo Real?</div>
+      <div class="sh-desc">Empresários que reagem a problemas passados perdem. Empresários que antecipam problemas futuros vencem. O monitoramento em tempo real é o que cria essa diferença.</div>
+    </div>
+  </div>
+  <div class="cll">"Decisão baseada em dado de ontem é melhor que decisão baseada em intuição. Decisão baseada em dado de agora é melhor que decisão baseada em dado de ontem."</div>
+  <div class="blk"><div class="blk-h">Os Três Ganhos do Monitoramento em Tempo Real</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">🔮</div><div class="c-t">Previsibilidade</div>
+    <div class="c-b">Identifica padrões de sazonalidade, ciclos de caixa e tendências de comportamento — transforma surpresas em expectativas gerenciáveis.</div></div>
+    <div class="card"><div class="c-e">🎮</div><div class="c-t">Controle</div>
+    <div class="c-b">Visibilidade total sem microgestão. Delega com confiança porque sabe exatamente o que está acontecendo sem precisar perguntar.</div></div>
+    <div class="card"><div class="c-e">⚡</div><div class="c-t">Velocidade de Decisão</div>
+    <div class="c-b">Decide com dados completos e atuais — não com percepção defasada. A qualidade da decisão é limitada pela qualidade da informação disponível.</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Antes vs. Depois do Monitoramento</div>
+  <div class="tw"><table><thead><tr><th>Decisão</th><th>Sem Monitoramento</th><th>Com Monitoramento em Tempo Real</th></tr></thead><tbody>
+  <tr><td>Contratar vendedor</td><td>"Acho que está indo bem" — baseado em percepção</td><td>Decide com conversão atual, ticket médio, CAC e ROI projetado</td></tr>
+  <tr><td>Investir em marketing</td><td>"Vamos tentar mais uma campanha"</td><td>Decide com CAC por canal, LTV por segmento e ROI histórico</td></tr>
+  <tr><td>Aumentar preço</td><td>"Precisamos melhorar a margem"</td><td>Decide com elasticidade de demanda, margem por produto e impacto no churn</td></tr>
+  <tr><td>Abrir nova unidade</td><td>"Parece que o mercado está bom"</td><td>Decide com capacidade operacional, fluxo de caixa e breakeven projetado</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Padrões de Previsibilidade que o Sistema Aprende</div>
+  <div class="tw"><table><thead><tr><th>Indicador</th><th>Padrão Identificado</th><th>Previsão Gerada</th></tr></thead><tbody>
+  <tr><td>Faturamento semanal</td><td>Queda consistente nas semanas 2 e 4 do mês</td><td>Projeção de receita mensal com intervalo de confiança</td></tr>
+  <tr><td>Geração de leads</td><td>Canal Google Ads converte 3x mais em março e setembro</td><td>Otimização de verba por período com ROI projetado</td></tr>
+  <tr><td>Ciclo de vendas</td><td>Negócios acima de R$50k levam 40 dias para fechar</td><td>Forecast de receita com data esperada de fechamento</td></tr>
+  <tr><td>Fluxo de caixa</td><td>Saída concentrada todo dia 5 e 20</td><td>Alerta 7 dias antes com reserva necessária calculada</td></tr>
+  </tbody></table></div></div>`;}
+
+function p1(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+    <div class="sh-icon">📊</div>
+    <div><div class="sh-tag" style="color:var(--b)">Seção 02 — KPIs</div>
+      <div class="sh-title">Os 16 Indicadores em 6 Categorias</div>
+      <div class="sh-desc">Uma arquitetura de inteligência de negócios — não uma lista de métricas. Cada KPI conectado ao score empresarial e ao plano estratégico.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Mapa dos KPIs por Categoria</div>
+  <div class="tw"><table><thead><tr><th>#</th><th>Categoria</th><th>KPIs Monitorados</th><th>Dimensão do Score</th></tr></thead><tbody>
+  <tr><td>01</td><td>💰 Financeiro</td><td>Faturamento, Margem Bruta/Líquida, MRR, Churn de Receita, Burn Rate</td><td>Financeiro (15%)</td></tr>
+  <tr><td>02</td><td>🎯 Comercial</td><td>Ticket Médio, Conversão por Etapa, CAC, LTV, Pipeline, Velocidade</td><td>Vendas (12%)</td></tr>
+  <tr><td>03</td><td>📣 Marketing</td><td>Leads Gerados, CPL por Canal, Taxa de Qualificação, ROI, NPS</td><td>Marketing (10%)</td></tr>
+  <tr><td>04</td><td>⚙️ Operacional</td><td>SLA de Atendimento, Taxa de Retrabalho, Eficiência, Capacidade Utilizada</td><td>Processos (10%)</td></tr>
+  <tr><td>05</td><td>👥 Equipe</td><td>Produtividade Individual, Conclusão no Prazo, eNPS, Turnover</td><td>Liderança (10%)</td></tr>
+  <tr><td>06</td><td>♟ Estratégico</td><td>Score Global, Progresso de OKRs, Variação por Dimensão, Benchmark</td><td>Gestão (12%)</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">KPIs Financeiros — Definições e Fórmulas</div>
+  <div class="tw"><table><thead><tr><th>KPI</th><th>Fórmula</th><th>Benchmark Saudável</th><th>Alerta Automático</th></tr></thead><tbody>
+  <tr><td><strong>Faturamento</strong></td><td>Soma de todas as vendas do período</td><td>Crescimento ≥20%/ano</td><td>Variação &gt;15% negativa vs. projeção</td></tr>
+  <tr><td><strong>Margem Bruta</strong></td><td>(Receita − CPV) / Receita × 100</td><td>&gt;55% em serviços, &gt;30% em produtos</td><td>Queda &gt;5pp em 30 dias</td></tr>
+  <tr><td><strong>Margem de Contribuição</strong></td><td>(Receita − Custos Variáveis) / Receita × 100</td><td>Acima do ponto de equilíbrio</td><td>Abaixo do breakeven — crítico</td></tr>
+  <tr><td><strong>MRR</strong></td><td>MRR anterior + New MRR + Expansion − Churned</td><td>Crescimento &gt;5%/mês</td><td>Net MRR negativo por 2 meses</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">KPIs Comerciais — Definições e Fórmulas</div>
+  <div class="tw"><table><thead><tr><th>KPI</th><th>Fórmula</th><th>Benchmark</th><th>O que Revela</th></tr></thead><tbody>
+  <tr><td><strong>CAC</strong></td><td>(Invest. Marketing + Vendas) / Novos Clientes</td><td>LTV / CAC &gt; 3:1</td><td>Eficiência do motor de crescimento</td></tr>
+  <tr><td><strong>LTV</strong></td><td>Margem de Contribuição / Churn Rate Mensal</td><td>LTV &gt; 3× CAC</td><td>Saúde do modelo de negócio</td></tr>
+  <tr><td><strong>Conversão</strong></td><td>Oportunidades avançadas / Total na etapa × 100</td><td>Total: 8–18%</td><td>Gargalo específico do funil</td></tr>
+  <tr><td><strong>Ticket Médio</strong></td><td>Faturamento / Número de Vendas</td><td>Estável ou crescente</td><td>Mudança no mix ou qualidade de leads</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">KPIs Operacionais e de Equipe</div>
+  <div class="tw"><table><thead><tr><th>KPI</th><th>Fórmula</th><th>Benchmark Saudável</th><th>Correlação Estratégica</th></tr></thead><tbody>
+  <tr><td><strong>Taxa de Retrabalho</strong></td><td>Horas de Retrabalho / Horas Totais × 100</td><td>&lt;5%</td><td>Score Processos — peso 10%</td></tr>
+  <tr><td><strong>SLA de Atendimento</strong></td><td>Tempo médio de resposta em horas</td><td>&lt;4h primeiro contato</td><td>Correlação 0,71 com NPS de clientes</td></tr>
+  <tr><td><strong>eNPS</strong></td><td>% Promotores (9–10) − % Detratores (0–6)</td><td>&gt;20</td><td>Preditor de turnover com 60–90 dias</td></tr>
+  <tr><td><strong>NPS de Clientes</strong></td><td>% Promotores − % Detratores</td><td>&gt;50</td><td>Correlação 0,83 com churn futuro</td></tr>
+  </tbody></table></div></div>`;}
+
+function p2(){
+  return `
+  <div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+    <div class="sh-icon">🖥</div>
+    <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Dashboard</div>
+      <div class="sh-title">O Painel de Controle Empresarial</div>
+      <div class="sh-desc">4 camadas visuais — da visão executiva ao drill-down operacional. Responde 3 perguntas em 30 segundos: Como estamos? O que mudou? O que fazer agora?</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Dashboard Ao Vivo — Mockup Interativo</div>
+  <div class="dashboard">
+    <div class="db-topbar">
+      <div class="db-title">EGE Dashboard · Empresa Demo · Ciclo Q1 2026</div>
+      <div class="db-live"><span class="live-dot"></span>Ao Vivo — atualizado agora</div>
+    </div>
+    <div class="db-body">
+      <!-- KPI TOP ROW -->
+      <div class="kpi-row">
+        <div class="kpi g"><div class="kpi-label">Score EGE</div><div class="kpi-val">621</div><div class="kpi-delta delta-up">▲ +38 pts este mês</div><div class="kpi-sub">Nível 4 — Crescimento</div></div>
+        <div class="kpi b"><div class="kpi-label">Faturamento Mês</div><div class="kpi-val">R$134k</div><div class="kpi-delta delta-up">▲ +18% vs. meta</div><div class="kpi-sub">Meta: R$120k ✓</div></div>
+        <div class="kpi g"><div class="kpi-label">MRR</div><div class="kpi-val">R$92k</div><div class="kpi-delta delta-up">▲ +R$8,2k vs. mês</div><div class="kpi-sub">Churn: 2,1%</div></div>
+        <div class="kpi y"><div class="kpi-label">Margem Contribuição</div><div class="kpi-val">41%</div><div class="kpi-delta delta-dn">▼ -3pp vs. mês</div><div class="kpi-sub">Meta: 42% ⚠</div></div>
+        <div class="kpi g"><div class="kpi-label">Caixa Disponível</div><div class="kpi-val">R$218k</div><div class="kpi-delta delta-neu">→ Projeção estável</div><div class="kpi-sub">Cobertura 68 dias</div></div>
+      </div>
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">📈 Evolução do Faturamento — 12 Meses</div>
+          <canvas id="chartFat" height="120"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">🏆 Score por Dimensão</div>
+          <canvas id="chartScore" height="120"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">🎯 Funil de Vendas</div>
+          <div class="funnel" style="margin-top:8px">
+            ${[['Leads',100,'#00C08A'],['Qualificados',62,'#1354CC'],['Propostas',38,'#B87200'],['Fechamentos',24,'#D95A08']].map(([l,pct,c])=>`
+            <div class="fn">
+              <span class="fn-label">${l}</span>
+              <div class="fn-bar-wrap"><div class="fn-bar" style="width:${pct}%;background:${c}">${pct}%</div></div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <!-- KPI CATS -->
+      <div class="kpi-cats">
+        ${[
+          {icon:'💰',name:'Financeiro',rows:[['Margem Bruta','58%','var(--g)'],['Burn Rate','R$42k','var(--mid)'],['Inadimplência','3,2%','var(--g)']]},
+          {icon:'🎯',name:'Comercial',rows:[['Ticket Médio','R$5.800','var(--g)'],['Conversão','24%','var(--y)'],['CAC','R$1.920','var(--mid)']]},
+          {icon:'📣',name:'Marketing',rows:[['Leads/Mês','127','var(--g)'],['CPL','R$48','var(--b)'],['NPS','67','var(--g)']]},
+          {icon:'⚙️',name:'Operacional',rows:[['Retrabalho','4,1%','var(--g)'],['SLA Resp.','3,2h','var(--g)'],['Capacidade','78%','var(--y)']]},
+          {icon:'👥',name:'Equipe',rows:[['Tarefas OK','84%','var(--g)'],['eNPS','34','var(--b)'],['Turnover','8%','var(--y)']]},
+          {icon:'♟',name:'Estratégico',rows:[['OKRs','68%','var(--b)'],['Ciclo Wk','7/12','var(--mid)'],['Ranking','Q1 (Top25%)','var(--g)']]},
+        ].map(c=>`
+        <div class="kcat">
+          <div class="kcat-head"><span class="kcat-name">${c.name}</span><span class="kcat-icon">${c.icon}</span></div>
+          ${c.rows.map(([k,v,col])=>`<div class="kcat-row"><span class="kcat-k">${k}</span><span class="kcat-v" style="color:${col}">${v}</span></div>`).join('')}
+        </div>`).join('')}
+      </div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">As 4 Camadas do Dashboard</div>
+  <div class="tw"><table><thead><tr><th>Camada</th><th>O que Mostra</th><th>Para quem</th><th>Tempo de Leitura</th></tr></thead><tbody>
+  <tr><td><strong>1 — Visão Executiva</strong></td><td>5 KPIs mais estratégicos com deltas e alertas</td><td>Fundador / CEO</td><td>10 segundos</td></tr>
+  <tr><td><strong>2 — KPIs por Categoria</strong></td><td>6 blocos com todos os indicadores por área</td><td>Gestores de área</td><td>2 minutos</td></tr>
+  <tr><td><strong>3 — Gráficos de Evolução</strong></td><td>Tendências temporais e comparação de períodos</td><td>Time de análise</td><td>5 minutos</td></tr>
+  <tr><td><strong>4 — Benchmarking</strong></td><td>Posição da empresa vs. setor (Q1–Q4)</td><td>Fundador / Conselheiros</td><td>3 minutos</td></tr>
+  </tbody></table></div></div>`;
+}
+
+function p3(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+    <div class="sh-icon">🔔</div>
+    <div><div class="sh-tag" style="color:var(--o)">Seção 04 — Alertas</div>
+      <div class="sh-title">Sistema de Alertas Inteligentes</div>
+      <div class="sh-desc">Alertas raros, precisos e acionáveis — com calibração automática para eliminar falsos positivos e evitar a fadiga de alerta.</div>
+    </div>
+  </div>
+  <div class="cll">"A diferença entre um sistema de alertas bom e inútil: alertas bons orientam ação, alertas ruins criam fadiga. O sistema calibra automaticamente os thresholds com base no histórico da empresa."</div>
+  <div class="blk"><div class="blk-h">Os 4 Níveis de Alerta</div>
+  <div class="tw"><table><thead><tr><th>Nível</th><th>Nome</th><th>Quando Dispara</th><th>Canal</th></tr></thead><tbody>
+  <tr><td><span class="badge br">P0</span></td><td>Crítico</td><td>KPI estratégico fora do limiar de sustentabilidade — requer ação imediata</td><td>Push + SMS + Dashboard</td></tr>
+  <tr><td><span class="badge bo">P1</span></td><td>Urgente</td><td>Meta mensal em risco pela tendência atual — ação necessária em 48h</td><td>Push + E-mail + Dashboard</td></tr>
+  <tr><td><span class="badge by">P2</span></td><td>Atenção</td><td>Indicador desviando da tendência esperada — monitorar e preparar ação</td><td>Dashboard + E-mail semanal</td></tr>
+  <tr><td><span class="badge bg">P3</span></td><td>Informativo</td><td>Marco atingido, melhoria relevante ou oportunidade identificada</td><td>Dashboard + E-mail semanal</td></tr>
+  </tbody></table></div></div>
+  <div class="blk"><div class="blk-h">Alertas em Tempo Real — Simulação Ao Vivo</div>
+  <div class="alert-list">
+    <div class="al" style="border-left:3px solid var(--r)">
+      <div class="al-icon">🔴</div>
+      <div class="al-body">
+        <div class="al-title" style="color:var(--r)">[P0 Crítico] Projeção de Caixa Negativa em 38 Dias</div>
+        <div class="al-msg">Projeção indica saldo negativo em 38 dias — necessidade de R$23.000 em geração de caixa ou redução de custos. Contas a pagar: R$67k · Previsão de entradas: R$44k.</div>
+        <div class="al-time">⏱ Agora mesmo · IA recomenda: acionar antecipação de recebíveis ou renegociar prazo com fornecedores</div>
+      </div>
+      <div class="al-tag" style="background:rgba(192,32,32,.12);color:var(--r)">Financeiro</div>
+    </div>
+    <div class="al" style="border-left:3px solid var(--o)">
+      <div class="al-icon">🟠</div>
+      <div class="al-body">
+        <div class="al-title" style="color:var(--o)">[P1 Urgente] Conversão de Proposta Caiu 24% em 30 Dias</div>
+        <div class="al-msg">Conversão proposta→fechamento: de 31% para 23,6% nas últimas 4 semanas. 18 propostas abertas sem resposta há mais de 14 dias. Impacto projetado: -R$28k no mês.</div>
+        <div class="al-time">⏱ Há 2 horas · IA recomenda: analisar propostas perdidas — objeção de preço mais frequente</div>
+      </div>
+      <div class="al-tag" style="background:rgba(217,90,8,.12);color:var(--o)">Comercial</div>
+    </div>
+    <div class="al" style="border-left:3px solid var(--y)">
+      <div class="al-icon">🟡</div>
+      <div class="al-body">
+        <div class="al-title" style="color:var(--y)">[P2 Atenção] Margem de Contribuição Caiu 3pp este Mês</div>
+        <div class="al-msg">Margem foi de 44% para 41% em novembro. Mix de vendas migrou: 38% do faturamento em produto com margem 28% (vs. 42% da média). Não é problema de custo — é de mix.</div>
+        <div class="al-time">⏱ Hoje, 14h32 · IA recomenda: revisar comissão dos vendedores para incentivar produto de maior margem</div>
+      </div>
+      <div class="al-tag" style="background:rgba(184,114,0,.12);color:var(--y)">Financeiro</div>
+    </div>
+    <div class="al" style="border-left:3px solid var(--g)">
+      <div class="al-icon">🟢</div>
+      <div class="al-body">
+        <div class="al-title" style="color:var(--g)">[P3 Oportunidade] Score Financeiro Subiu 24 Pontos — Nível 3 Próximo</div>
+        <div class="al-msg">Score Financeiro: de 48 para 72 nas últimas 8 semanas. Score Global em 621 — faltam 179 pontos para o Nível 5. As 3 dimensões mais próximas de subir: Processos (+18 pts), Gestão (+14 pts), Cultura (+12 pts).</div>
+        <div class="al-time">⏱ Ontem, 09h15 · IA recomenda: sprint de 30 dias em Processos para destravar Escalabilidade</div>
+      </div>
+      <div class="al-tag" style="background:rgba(0,192,138,.12);color:var(--g)">Estratégico</div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Calibração Inteligente dos Alertas</div>
+  <div class="grid3">
+    <div class="card"><div class="c-e">📅</div><div class="c-t">Ajuste Sazonal</div><div class="c-b">Faturamento baixo em janeiro não é alerta — é padrão histórico. O sistema aprende o calendário sazonal da empresa.</div></div>
+    <div class="card"><div class="c-e">📈</div><div class="c-t">Ajuste por Nível</div><div class="c-b">Empresa Nível 1 tem thresholds mais tolerantes. Empresa Nível 4 tem thresholds mais exigentes. Evolui com a empresa.</div></div>
+    <div class="card"><div class="c-e">⚙️</div><div class="c-t">Personalização Manual</div><div class="c-b">O empresário pode ajustar qualquer threshold com base no contexto específico do negócio.</div></div>
+  </div></div>`;}
+
+function p4(){return `
+  <div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+    <div class="sh-icon">🤖</div>
+    <div><div class="sh-tag" style="color:var(--g)">Seção 05 — IA</div>
+      <div class="sh-title">A IA que Analisa, Correlaciona e Orienta</div>
+      <div class="sh-desc">O dashboard é a memória compartilhada entre o empresário e a IA. Cada alerta, cada variação, cada decisão registrada alimenta o modelo de correlação continuamente.</div>
+    </div>
+  </div>
+  <div class="blk"><div class="blk-h">Correlações que a IA Detecta Automaticamente</div>
+  <div class="corr-grid">
+    <div class="corr-card"><div class="corr-icon">🔗</div><div class="corr-title">CAC × Canal Orgânico</div>
+    <div class="corr-body">Quando a estratégia de conteúdo foi pausada, o CAC subiu 35% em 8 semanas. O canal orgânico era responsável por 40% dos leads com menor CAC.</div>
+    <div class="corr-action">→ Reativar conteúdo — ROI estimado: 3.2× em 90 dias</div></div>
+    <div class="corr-card"><div class="corr-icon">⏱</div><div class="corr-title">Onboarding × LTV</div>
+    <div class="corr-body">Clientes que fazem onboarding nos primeiros 7 dias têm LTV 2,8× maior e churn 3× menor. 31% dos clientes atuais não fizeram onboarding.</div>
+    <div class="corr-action">→ Automatizar onboarding — impacto no MRR: +R$8k/mês</div></div>
+    <div class="corr-card"><div class="corr-icon">📉</div><div class="corr-title">Ciclo de Vendas × Conversão</div>
+    <div class="corr-body">Negócios com ciclo acima de 21 dias têm conversão de 9% vs. 32% dos deals curtos. 14 deals no pipeline com >21 dias sem avanço.</div>
+    <div class="corr-action">→ Gatilho de urgência para deals >14 dias — recuperar R$42k</div></div>
+    <div class="corr-card"><div class="corr-icon">🧠</div><div class="corr-title">Reuniões × Produtividade</div>
+    <div class="corr-body">Em semanas com >2 reuniões imprevistas, a produtividade cai 25% — equivalente a 4,5h por pessoa por semana perdidas.</div>
+    <div class="corr-action">→ Proteger blocos de foco — recuperar 18h/semana de produtividade</div></div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Chat com a IA — Perguntas sobre os Dados</div>
+  <div class="ai-chat">
+    <div class="ai-chat-head">
+      <div class="ai-chat-icon">🤖</div>
+      <div><div class="ai-chat-name">IA Consultora EGE</div><div class="ai-chat-sub">Contexto completo da empresa · Histórico de 8 ciclos · Benchmarks do setor</div></div>
+    </div>
+    <div class="chat-body">
+      <div class="msg user"><div class="msg-label">Empresário</div>Por que a margem caiu esse mês mesmo com faturamento subindo?</div>
+      <div class="msg ai"><div class="msg-label">IA Consultora</div>Analisei os dados e identifiquei a causa: o mix de vendas mudou. O produto Serviço Premium (margem 28%) representou 38% do faturamento em novembro — vs. 21% em outubro. O produto Consultoria Mensal (margem 52%) caiu de 45% para 31% do mix.<br><br>A razão: o vendedor Lucas recebeu um bônus por volume de deals em outubro e concentrou esforços no produto de ticket mais baixo e venda mais fácil. Sugiro: ajustar comissão para incentivar o produto de maior margem e definir um teto de 25% para vendas do produto Serviço Premium.</div>
+      <div class="msg user"><div class="msg-label">Empresário</div>Qual o impacto se eu perder mais 3 clientes este mês?</div>
+      <div class="msg ai"><div class="msg-label">IA Consultora</div>Simulei o cenário com os 3 clientes de maior risco identificados pelo modelo (com base em NPS abaixo de 5 e sem uso do produto há 18+ dias):<br><br>— Impacto no MRR: −R$14.700/mês<br>— Impacto no caixa em 60 dias: −R$29.400<br>— Impacto no Score de Marketing: −4 pts<br>— Probabilidade de atingir a meta anual de MRR: cai de 78% para 61%<br><br>Recomendo acionar o processo de retenção para esses 3 clientes ainda esta semana. Posso gerar o roteiro de abordagem para cada um.</div>
+    </div>
+  </div></div>
+  <div class="blk"><div class="blk-h">Fluxo Completo — Do Dado à Decisão</div>
+  <div class="tw"><table><thead><tr><th>Etapa</th><th>O que Acontece</th><th>Responsável</th></tr></thead><tbody>
+  <tr><td><span class="badge bg">1 Captura</span></td><td>Dado é gerado: venda, despesa, tarefa concluída, NPS respondido</td><td>Sistema / Usuário</td></tr>
+  <tr><td><span class="badge bb">2 Processamento</span></td><td>KPIs calculados, score atualizado, variação registrada</td><td>Motor de Analytics</td></tr>
+  <tr><td><span class="badge bt">3 Detecção</span></td><td>Algoritmo verifica se algum threshold de alerta foi cruzado</td><td>Motor de Alertas</td></tr>
+  <tr><td><span class="badge bp">4 Insight</span></td><td>IA analisa contexto, identifica causa e formula recomendação</td><td>IA Consultora</td></tr>
+  <tr><td><span class="badge by">5 Entrega</span></td><td>Alerta + insight no dashboard e push/e-mail conforme prioridade</td><td>Sistema de Notificações</td></tr>
+  <tr><td><span class="badge bo">6 Ação</span></td><td>Empresário decide com base no alerta e executa a ação recomendada</td><td>Empresário</td></tr>
+  <tr><td><span class="badge bg">7 Aprendizado</span></td><td>Resultado da ação alimenta o modelo de correlação para melhorar as próximas análises</td><td>Motor de IA</td></tr>
+  </tbody></table></div></div>`;}
+
+const panels=[p0,p1,p2,p3,p4];
+
+function initCharts(){
+  const months=['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'];
+  const fat=[68,72,79,75,88,92,97,105,112,108,121,134];
+  const meta=[75,75,80,80,85,90,95,100,105,110,115,120];
+  lineChart('chartFat',months,
+    [{label:'Faturamento',data:fat,color:C.g},{label:'Meta',data:meta,color:C.b,fill:false}],
+    {yFmt:v=>'R$'+v+'k'});
+
+  const dims=['Estratégia','Gestão','Processos','Vendas','Mktg','Financeiro','Liderança','Cultura','Tecnol.','Escala'];
+  const scores=[74,68,52,78,62,72,65,55,58,48];
+  barChart('chartScore',dims,[{label:'Score',data:scores,color:C.g}]);
+}
+
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=panels[i]();
+    el.style.transition='opacity .35s';
+    el.style.opacity=1;
+    if(i===2) setTimeout(initCharts,100);
+  },150);
+}
+show(0);
+</script>
+</body>
+</html>

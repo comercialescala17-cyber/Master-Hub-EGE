@@ -1,0 +1,531 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EGE — Arquitetura de Banco de Dados</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030C18;--s1:#061524;--s2:#0A1C30;--s3:#0E2438;
+  --g:#00C08A;--b:#1354CC;--p:#7230DC;--o:#D95A08;--y:#B87200;--t:#0880A0;--r:#C02020;
+  --txt:#E6F0FF;--mid:#5E7A9A;--bd:#182E48;--bd2:#223C5A;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 4% 8%,rgba(0,192,138,.05),transparent),
+             radial-gradient(ellipse 50% 50% at 96% 90%,rgba(19,84,204,.04),transparent)}
+.wrap{max-width:1100px;margin:0 auto;padding:46px 18px 100px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:48px;animation:up 1s ease both}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;
+  border:1px solid rgba(0,192,138,.25);background:rgba(0,192,138,.07);
+  color:var(--g);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.2s infinite}
+h1{font-size:clamp(30px,5.5vw,60px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin-bottom:14px}
+h1 span{background:linear-gradient(130deg,var(--g),var(--t),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:14px;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.8}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:42px;animation:up 1s .06s ease both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 10px;text-align:center;position:relative;overflow:hidden}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sg::after{background:var(--g)}.sb::after{background:var(--b)}.so::after{background:var(--o)}.sp::after{background:var(--p)}.st2::after{background:var(--t)}
+.sv{font-size:26px;font-weight:900;line-height:1}.sl{font-size:10.5px;color:var(--mid);margin-top:3px}
+.sg .sv{color:var(--g)}.sb .sv{color:var(--b)}.so .sv{color:var(--o)}.sp .sv{color:var(--p)}.st2 .sv{color:var(--t)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:36px;animation:up 1s .1s ease both}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,1fr)}}
+.nb{padding:13px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:13px;cursor:pointer;
+  transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.nb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .2s}
+.nb.on,.nb:hover{background:var(--s2);border-color:var(--bd2)}
+.nb.on::after,.nb:hover::after{opacity:1}
+.n0::after{background:var(--g)}.n1::after{background:var(--b)}.n2::after{background:var(--p)}
+.n3::after{background:var(--t)}.n4::after{background:var(--o)}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--mid);margin-bottom:5px}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--txt);line-height:1.3}
+.sh{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;background:var(--s1);
+  border:1px solid var(--bd);border-radius:18px;margin-bottom:26px;position:relative;overflow:hidden}
+.sh-bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sh-icon{font-size:36px;flex-shrink:0}
+.sh-tag{font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:5px}
+.sh-title{font-size:21px;font-weight:800;margin-bottom:6px}
+.sh-desc{font-size:13px;color:var(--mid);line-height:1.65;max-width:640px}
+.blk{margin-bottom:26px}
+.blk-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.blk-h::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--s3);color:var(--g);font-weight:700;padding:9px 13px;text-align:left;font-size:10px;letter-spacing:.07em}
+tbody td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.013)}
+tbody tr:last-child td{border-bottom:none}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:18px;transition:transform .2s}
+.card:hover{transform:translateY(-2px)}
+.c-e{font-size:28px;margin-bottom:9px}.c-t{font-size:13.5px;font-weight:700;margin-bottom:5px}
+.c-b{font-size:12px;color:var(--mid);line-height:1.6}
+.cll{background:rgba(0,192,138,.04);border:1px solid rgba(0,192,138,.18);border-left:4px solid var(--g);
+  border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0;font-size:13px;font-style:italic;line-height:1.75}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.bg{background:rgba(0,192,138,.12);color:var(--g)}.bb{background:rgba(19,84,204,.12);color:var(--b)}
+.bo{background:rgba(217,90,8,.12);color:var(--o)}.bp{background:rgba(114,48,220,.12);color:var(--p)}
+.by{background:rgba(184,114,0,.12);color:var(--y)}.bt{background:rgba(8,128,160,.12);color:var(--t)}
+.br{background:rgba(192,32,32,.12);color:var(--r)}
+/* Code block */
+.code-block{background:var(--s2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.code-head{background:var(--s3);padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.1em}
+.code-body{padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.8;color:#C8D8EC;white-space:pre;overflow-x:auto}
+.kw{color:var(--p)}.ty{color:var(--b)}.cm{color:var(--mid);font-style:italic}.st{color:var(--g)}
+/* Entity cards */
+.entity-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:16px 0}
+.entity-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.entity-head{padding:14px 16px;border-bottom:1px solid var(--bd);position:relative}
+.entity-head::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.entity-name{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;margin-bottom:4px}
+.entity-role{font-size:10.5px;color:var(--mid);line-height:1.4}
+.entity-fields{padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+.ef{font-size:10.5px;display:flex;gap:6px;align-items:flex-start}
+.ef-name{color:var(--txt);font-weight:600;min-width:100px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.ef-type{color:var(--mid)}
+/* Flow */
+.flow-num{display:flex;flex-direction:column;gap:8px}
+.fn-item{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;
+  background:var(--s1);border:1px solid var(--bd);border-radius:11px}
+.fn-n{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.fn-body{flex:1}
+.fn-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.fn-desc{font-size:12px;color:var(--mid);line-height:1.6}
+.fn-code{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--g);margin-top:4px;
+  background:rgba(0,192,138,.06);padding:3px 8px;border-radius:4px;display:inline-block}
+/* Security layers */
+.sec-layers{display:flex;flex-direction:column;gap:8px}
+.sl-item{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.sl-head{padding:12px 18px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.sl-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0}
+.sl-name{font-size:13px;font-weight:700}
+.sl-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:auto}
+.sl-body{padding:0 18px 14px;border-top:1px solid var(--bd)}
+.sl-item-inner{font-size:12px;color:var(--mid);padding:5px 0;line-height:1.6;border-bottom:1px solid rgba(255,255,255,.04)}
+.sl-item-inner:last-child{border-bottom:none}
+.sl-item-inner strong{color:var(--txt);font-weight:700}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="chip"><span class="dot"></span>Database Architecture</div>
+  <h1>Arquitetura de<br><span>Banco de Dados EGE</span></h1>
+  <p class="sub">PostgreSQL 15 · Supabase · Row Level Security multi-tenant · Particionamento para 50M+ rows · Criptografia em 6 camadas. Seguro por design, performático por padrão.</p>
+</div>
+<div class="stats">
+  <div class="st sg"><div class="sv">6</div><div class="sl">Domínios lógicos</div></div>
+  <div class="st sb"><div class="sv">28</div><div class="sl">Tabelas no schema</div></div>
+  <div class="st sp"><div class="sv">50M+</div><div class="sl">Rows (kpi_values)</div></div>
+  <div class="st so"><div class="sv">6</div><div class="sl">Camadas de segurança</div></div>
+  <div class="st st2"><div class="sv">RLS</div><div class="sl">Multi-tenant isolado</div></div>
+</div>
+<div class="nav" id="nav">
+  <div class="nb n0 on" onclick="show(0)"><div class="nb-n">SEÇÃO 01</div><div class="nb-t">🧩 Entidades</div></div>
+  <div class="nb n1" onclick="show(1)"><div class="nb-n">SEÇÃO 02</div><div class="nb-t">🗃 Estrutura</div></div>
+  <div class="nb n2" onclick="show(2)"><div class="nb-n">SEÇÃO 03</div><div class="nb-t">🔄 Fluxo de Dados</div></div>
+  <div class="nb n3" onclick="show(3)"><div class="nb-n">SEÇÃO 04</div><div class="nb-t">📈 Escalabilidade</div></div>
+  <div class="nb n4" onclick="show(4)"><div class="nb-n">SEÇÃO 05</div><div class="nb-t">🔒 Segurança</div></div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+function p0(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--g)"></div>
+  <div class="sh-icon">🧩</div>
+  <div><div class="sh-tag" style="color:var(--g)">Seção 01 — Core Entities</div>
+    <div class="sh-title">Entidades Principais — Definição e Papel</div>
+    <div class="sh-desc">6 domínios lógicos, 28 tabelas. Cada entidade tem responsabilidade única e cada relacionamento tem justificativa funcional. O campo <code style="color:var(--g);background:rgba(0,192,138,.1);padding:1px 5px;border-radius:3px">company_id</code> é obrigatório em toda tabela — é a fundação do isolamento multi-tenant.</div>
+  </div>
+</div>
+<div class="cll">"Todo dado no sistema pertence a uma company. O company_id com Row Level Security garante que nenhuma query retorna dados de uma empresa para outra — por design de banco, não apenas por lógica de aplicação."</div>
+
+<div class="blk"><div class="blk-h">Domínio 1 — Identidade e Acesso</div>
+<div class="entity-grid">
+  ${[
+    {name:'users',role:'Pessoa física que acessa o sistema',color:'var(--g)',fields:[['id','UUID PK'],['auth_id','UUID FK→Auth'],['email','TEXT UNIQUE'],['full_name','TEXT'],['onboarding_completed','BOOLEAN']]},
+    {name:'companies',role:'Tenant raiz — toda hierarquia parte daqui',color:'var(--g)',fields:[['id','UUID PK'],['slug','TEXT UNIQUE'],['sector','TEXT'],['size_range','TEXT'],['plan','TEXT'],['metadata','JSONB']]},
+    {name:'team_members',role:'Relação N:N entre users e companies com papel',color:'var(--g)',fields:[['company_id','UUID FK'],['user_id','UUID FK'],['role','TEXT'],['department','TEXT'],['UNIQUE','(company+user)']]},
+  ].map(e=>`
+  <div class="entity-card">
+    <div class="entity-head" style="--ec:${e.color}">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${e.color}"></div>
+      <div class="entity-name" style="color:${e.color}">${e.name}</div>
+      <div class="entity-role">${e.role}</div>
+    </div>
+    <div class="entity-fields">
+      ${e.fields.map(f=>`<div class="ef"><span class="ef-name">${f[0]}</span><span class="ef-type">${f[1]}</span></div>`).join('')}
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Domínio 2 — Diagnóstico e Score</div>
+<div class="entity-grid">
+  ${[
+    {name:'diagnostics',role:'Instância de diagnóstico — histórico acumula ao longo do tempo',color:'var(--b)',fields:[['id','UUID PK'],['company_id','UUID FK'],['version','TEXT'],['status','TEXT'],['total_score','NUMERIC'],['completed_at','TIMESTAMPTZ']]},
+    {name:'diagnostic_answers',role:'Respostas individuais — granularidade máxima para reanálise',color:'var(--b)',fields:[['diagnostic_id','UUID FK'],['question_id','TEXT'],['dimension','TEXT'],['score_value','SMALLINT 1-5'],['weight','NUMERIC']]},
+    {name:'scores',role:'Snapshot de maturidade por empresa por ciclo',color:'var(--b)',fields:[['company_id','UUID FK'],['diagnostic_id','UUID FK'],['total_score','NUMERIC 0-100'],['level','TEXT'],['dimension_scores','JSONB'],['sector_percentile','NUMERIC']]},
+  ].map(e=>`
+  <div class="entity-card">
+    <div class="entity-head">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${e.color}"></div>
+      <div class="entity-name" style="color:${e.color}">${e.name}</div>
+      <div class="entity-role">${e.role}</div>
+    </div>
+    <div class="entity-fields">
+      ${e.fields.map(f=>`<div class="ef"><span class="ef-name">${f[0]}</span><span class="ef-type">${f[1]}</span></div>`).join('')}
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Domínio 3 — Estratégia e Execução</div>
+<div class="tw"><table><thead><tr><th>Tabela</th><th>Papel</th><th>Campos Chave</th><th>Relacionamento</th></tr></thead><tbody>
+<tr><td><span class="badge bt">cycles</span></td><td>Ciclo de planejamento trimestral (12 semanas) — unidade temporal central</td><td>start_date, end_date, status, target_score</td><td>Parent de strategic_plans</td></tr>
+<tr><td><span class="badge bt">strategic_plans</span></td><td>Plano gerado pela IA para o ciclo — contém o raciocínio estratégico</td><td>cycle_id, ai_rationale TEXT, focus_dimensions, expected_gain</td><td>Parent de initiatives</td></tr>
+<tr><td><span class="badge bt">initiatives</span></td><td>As 3 grandes apostas do ciclo com dono, prazo e impacto esperado</td><td>plan_id, title, responsible, impact_score, dimension_target</td><td>Parent de tasks</td></tr>
+<tr><td><span class="badge bt">tasks</span></td><td>Unidade mínima de execução — pode ter subtasks via auto-referência</td><td>initiative_id, parent_task_id (self-ref), assigned_to, status, priority, due_date</td><td>Self-ref para subtasks</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Domínio 4 — CRM Comercial</div>
+<div class="grid2">
+  <div class="card"><div class="c-e">👤</div><div class="c-t">contacts</div><div class="c-b">Pessoas físicas — leads e clientes. Campos: name, email, phone, source, lead_score, is_customer, metadata JSONB para dados customizados.</div></div>
+  <div class="card"><div class="c-e">💼</div><div class="c-t">deals</div><div class="c-b">Oportunidades no pipeline. Campos: title, value, currency, stage, pipeline_id, owner_id, expected_close_date, won_at, lost_at, lost_reason.</div></div>
+  <div class="card"><div class="c-e">📞</div><div class="c-t">activities</div><div class="c-b">Registro de interações: call, email, meeting, note. Vinculada a deal + contact + user. Campo occurred_at para histórico cronológico.</div></div>
+  <div class="card"><div class="c-e">🗂</div><div class="c-t">pipelines</div><div class="c-b">Define estágios e critérios de progressão por empresa. Campo stages JSONB com array de objetos [{name, criteria, color}].</div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Domínio 5 — KPIs e Monitoramento + Domínio 6 — IA e Mercado</div>
+<div class="tw"><table><thead><tr><th>Tabela</th><th>Papel</th><th>Volume Estimado (10k empresas)</th></tr></thead><tbody>
+<tr><td><span class="badge bg">kpis</span></td><td>Define as métricas com targets, thresholds e frequência de medição</td><td>~200k rows (20/empresa)</td></tr>
+<tr><td><span class="badge br">kpi_values</span></td><td>Cada valor registrado — PK composta (id, recorded_at) para particionamento</td><td>~50M rows — tabela de maior volume</td></tr>
+<tr><td><span class="badge bo">alerts</span></td><td>Criado quando value ultrapassa threshold — severity P0/P1/P2</td><td>~1M rows ativos</td></tr>
+<tr><td><span class="badge bp">ai_conversations</span></td><td>Sessões de chat com a IA — mantém contexto e token_count</td><td>~2M rows</td></tr>
+<tr><td><span class="badge bp">ai_messages</span></td><td>Cada mensagem individual — role: user / assistant</td><td>~20M rows</td></tr>
+<tr><td><span class="badge bp">ai_insights</span></td><td>Insights proativos gerados pela IA sem prompt do usuário</td><td>~500k rows ativos</td></tr>
+<tr><td><span class="badge bt">market_data</span></td><td>Dados externos: notícias, tendências, movimentos setoriais</td><td>~5M rows — particionado por quarter</td></tr>
+<tr><td><span class="badge by">benchmarks</span></td><td>Agregados anonimizados por setor — p25, p50, p75, p90 por métrica</td><td>~50k rows — pequeno mas consultado muito</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p1(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--b)"></div>
+  <div class="sh-icon">🗃</div>
+  <div><div class="sh-tag" style="color:var(--b)">Seção 02 — Database Structure</div>
+    <div class="sh-title">DDL, PKs, FKs e Índices</div>
+    <div class="sh-desc">O schema completo com constraints, índices estratégicos e Row Level Security. Cada FK tem uma política ON DELETE definida por análise de negócio — CASCADE onde o dado filho não existe sem o pai, SET NULL onde a referência é opcional.</div>
+  </div>
+</div>
+
+<div class="blk"><div class="blk-h">DDL — Tabela companies (Tenant Raiz)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">PostgreSQL 15</span></div>
+  <div class="code-body"><span class="kw">CREATE TABLE</span> <span class="ty">companies</span> (
+  id           <span class="ty">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  name         <span class="ty">TEXT NOT NULL</span>,
+  slug         <span class="ty">TEXT UNIQUE NOT NULL</span>,
+  sector       <span class="ty">TEXT NOT NULL</span>,
+  size_range   <span class="ty">TEXT NOT NULL</span>
+               <span class="kw">CHECK</span> (size_range <span class="kw">IN</span> (<span class="st">'micro'</span>,<span class="st">'small'</span>,<span class="st">'medium'</span>)),
+  plan         <span class="ty">TEXT NOT NULL DEFAULT</span> <span class="st">'starter'</span>
+               <span class="kw">CHECK</span> (plan <span class="kw">IN</span> (<span class="st">'starter'</span>,<span class="st">'growth'</span>,<span class="st">'scale'</span>,<span class="st">'enterprise'</span>)),
+  metadata     <span class="ty">JSONB DEFAULT</span> <span class="st">'{}'</span>,
+  created_at   <span class="ty">TIMESTAMPTZ DEFAULT</span> now(),
+  updated_at   <span class="ty">TIMESTAMPTZ DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_companies_sector <span class="kw">ON</span> companies(sector);
+<span class="kw">CREATE INDEX</span> idx_companies_plan   <span class="kw">ON</span> companies(plan);</div>
+</div></div>
+
+<div class="blk"><div class="blk-h">DDL — Tabela tasks (Auto-Referência para Subtasks)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">PostgreSQL 15</span></div>
+  <div class="code-body"><span class="kw">CREATE TABLE</span> <span class="ty">tasks</span> (
+  id              <span class="ty">UUID PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  company_id      <span class="ty">UUID NOT NULL REFERENCES</span> companies(id) <span class="kw">ON DELETE CASCADE</span>,
+  initiative_id   <span class="ty">UUID REFERENCES</span> initiatives(id) <span class="kw">ON DELETE SET NULL</span>,
+  parent_task_id  <span class="ty">UUID REFERENCES</span> tasks(id) <span class="kw">ON DELETE CASCADE</span>,  <span class="cm">-- self-ref</span>
+  assigned_to     <span class="ty">UUID REFERENCES</span> users(id) <span class="kw">ON DELETE SET NULL</span>,
+  title           <span class="ty">TEXT NOT NULL</span>,
+  status          <span class="ty">TEXT NOT NULL DEFAULT</span> <span class="st">'todo'</span>
+                  <span class="kw">CHECK</span> (status <span class="kw">IN</span> (<span class="st">'todo'</span>,<span class="st">'in_progress'</span>,<span class="st">'blocked'</span>,<span class="st">'done'</span>,<span class="st">'cancelled'</span>)),
+  priority        <span class="ty">SMALLINT DEFAULT</span> 2 <span class="kw">CHECK</span> (priority <span class="kw">BETWEEN</span> 1 <span class="kw">AND</span> 4),
+  due_date        <span class="ty">DATE</span>,
+  created_at      <span class="ty">TIMESTAMPTZ DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_tasks_company_status <span class="kw">ON</span> tasks(company_id, status);
+<span class="kw">CREATE INDEX</span> idx_tasks_assigned_due   <span class="kw">ON</span> tasks(assigned_to, due_date);
+<span class="kw">CREATE INDEX</span> idx_tasks_initiative     <span class="kw">ON</span> tasks(initiative_id);</div>
+</div></div>
+
+<div class="blk"><div class="blk-h">DDL — kpi_values (Particionada por Mês)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">PostgreSQL 15 — Declarative Partitioning</span></div>
+  <div class="code-body"><span class="kw">CREATE TABLE</span> <span class="ty">kpi_values</span> (
+  id          <span class="ty">UUID DEFAULT</span> gen_random_uuid(),
+  kpi_id      <span class="ty">UUID NOT NULL REFERENCES</span> kpis(id) <span class="kw">ON DELETE CASCADE</span>,
+  company_id  <span class="ty">UUID NOT NULL REFERENCES</span> companies(id) <span class="kw">ON DELETE CASCADE</span>,
+  value       <span class="ty">NUMERIC</span>(15,4) <span class="ty">NOT NULL</span>,
+  recorded_at <span class="ty">TIMESTAMPTZ NOT NULL</span>,
+  source      <span class="ty">TEXT DEFAULT</span> <span class="st">'manual'</span>,  <span class="cm">-- manual / integration / calculated</span>
+  raw_data    <span class="ty">JSONB</span>,
+  <span class="kw">PRIMARY KEY</span> (id, recorded_at)   <span class="cm">-- PK composta obrigatória para particionamento</span>
+) <span class="kw">PARTITION BY RANGE</span> (recorded_at);
+
+<span class="cm">-- Partições criadas via pg_partman (automático):</span>
+<span class="cm">-- kpi_values_2026_01, kpi_values_2026_02 ...</span>
+
+<span class="kw">CREATE INDEX</span> idx_kv_kpi_time     <span class="kw">ON</span> kpi_values(kpi_id, recorded_at <span class="kw">DESC</span>);
+<span class="kw">CREATE INDEX</span> idx_kv_company_time <span class="kw">ON</span> kpi_values(company_id, recorded_at <span class="kw">DESC</span>);</div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Mapa Completo de Foreign Keys</div>
+<div class="tw"><table><thead><tr><th>Tabela</th><th>Campo FK</th><th>Referencia</th><th>ON DELETE</th><th>Tipo</th></tr></thead><tbody>
+<tr><td>team_members</td><td>company_id</td><td>companies.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — empresa tem muitos membros</td></tr>
+<tr><td>team_members</td><td>user_id</td><td>users.id</td><td><span class="badge br">CASCADE</span></td><td>N:N — usuário em muitas empresas</td></tr>
+<tr><td>diagnostics</td><td>company_id</td><td>companies.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — empresa tem muitos diagnósticos</td></tr>
+<tr><td>diagnostic_answers</td><td>diagnostic_id</td><td>diagnostics.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — diagnóstico tem 40 respostas</td></tr>
+<tr><td>scores</td><td>diagnostic_id</td><td>diagnostics.id</td><td><span class="badge by">SET NULL</span></td><td>1:1 — diagnóstico gera um score</td></tr>
+<tr><td>scores</td><td>cycle_id</td><td>cycles.id</td><td><span class="badge by">SET NULL</span></td><td>N:1 — ciclo acumula scores</td></tr>
+<tr><td>initiatives</td><td>plan_id</td><td>strategic_plans.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — plano tem 3–5 iniciativas</td></tr>
+<tr><td>tasks</td><td>initiative_id</td><td>initiatives.id</td><td><span class="badge by">SET NULL</span></td><td>N:1 — iniciativa tem muitas tarefas</td></tr>
+<tr><td>tasks</td><td>parent_task_id</td><td>tasks.id</td><td><span class="badge br">CASCADE</span></td><td>Self-ref — subtasks</td></tr>
+<tr><td>deals</td><td>owner_id</td><td>users.id</td><td><span class="badge by">SET NULL</span></td><td>N:1 — vendedor tem muitos deals</td></tr>
+<tr><td>activities</td><td>deal_id</td><td>deals.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — deal tem muitas atividades</td></tr>
+<tr><td>kpi_values</td><td>kpi_id</td><td>kpis.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — KPI tem milhares de valores</td></tr>
+<tr><td>alerts</td><td>kpi_id</td><td>kpis.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — KPI gera alertas</td></tr>
+<tr><td>ai_messages</td><td>conversation_id</td><td>ai_conversations.id</td><td><span class="badge br">CASCADE</span></td><td>N:1 — conversa tem muitas msgs</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p2(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--p)"></div>
+  <div class="sh-icon">🔄</div>
+  <div><div class="sh-tag" style="color:var(--p)">Seção 03 — Data Flow</div>
+    <div class="sh-title">Do Cadastro ao Monitoramento Contínuo</div>
+    <div class="sh-desc">Cada ação do usuário dispara uma cascata de eventos que mantém o contexto da IA sempre atualizado. O dado flui de forma natural — o empresário não precisa alimentar o sistema manualmente para ter insights relevantes.</div>
+  </div>
+</div>
+<div class="cll">"A IA nunca trabalha com dados desatualizados. Cada mudança dispara — via trigger ou evento assíncrono — a atualização dos contextos relevantes antes da próxima interação do usuário."</div>
+
+<div class="blk"><div class="blk-h">Fluxo Principal — 5 Etapas do Ciclo de Vida</div>
+<div class="flow-num">
+  <div class="fn-item"><div class="fn-n" style="background:rgba(0,192,138,.15);color:var(--g)">1</div>
+    <div class="fn-body"><div class="fn-title">Cadastro → Criação do Tenant</div>
+    <div class="fn-desc">Auth provider dispara webhook → INSERT users → wizard cria companies → INSERT team_members (role='owner') → INSERT cycles (ciclo 1, 12 semanas) → INSERT kpis (padrão do setor).</div>
+    <div class="fn-code">users → companies → team_members → cycles → kpis</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(19,84,204,.15);color:var(--b)">2</div>
+    <div class="fn-body"><div class="fn-title">Diagnóstico → Score</div>
+    <div class="fn-desc">INSERT diagnostics (status='in_progress') → INSERT diagnostic_answers ×40 em tempo real → UPDATE diagnostics (completed) → TRIGGER calculate_score() → INSERT scores (dimension_scores JSONB + sector_percentile) → ASYNC: INSERT ai_insights ×3.</div>
+    <div class="fn-code">diagnostics → diagnostic_answers → scores → ai_insights</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(114,48,220,.15);color:var(--p)">3</div>
+    <div class="fn-body"><div class="fn-title">Score → Plano Estratégico</div>
+    <div class="fn-desc">ASYNC: Claude API recebe score + dimension_scores + benchmarks → INSERT strategic_plans (ai_rationale) → INSERT initiatives ×3 (impact_score, dimension_target) → INSERT tasks (primeira de cada iniciativa, due_date = +7 dias).</div>
+    <div class="fn-code">scores → strategic_plans → initiatives → tasks</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(8,128,160,.15);color:var(--t)">4</div>
+    <div class="fn-body"><div class="fn-title">Execução → Monitoramento</div>
+    <div class="fn-desc">UPDATE tasks (status='done') → TRIGGER recalcula initiatives.progress_pct → TRIGGER recalcula strategic_plans.completion_pct. INSERT kpi_values → TRIGGER verifica thresholds → INSERT alerts se violação → ASYNC: análise da IA + notificação push.</div>
+    <div class="fn-code">tasks → initiatives → plans | kpi_values → alerts → ai_insights</div></div></div>
+  <div class="fn-item"><div class="fn-n" style="background:rgba(217,90,8,.15);color:var(--o)">5</div>
+    <div class="fn-body"><div class="fn-title">Ciclo Encerrado → Próximo Ciclo</div>
+    <div class="fn-desc">UPDATE cycles (status='completed') → TRIGGER: score final calculado + relatório gerado. ASYNC: retrospectiva da IA. INSERT cycles (novo) → ASYNC: Claude API gera novo plano com base nos aprendizados do ciclo anterior.</div>
+    <div class="fn-code">cycles (completed) → scores (final) → cycles (new) → strategic_plans (new)</div></div></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Eventos Assíncronos — Fora do Request-Response</div>
+<div class="tw"><table><thead><tr><th>Evento Disparador</th><th>Tabela Origem</th><th>Ação Assíncrona</th><th>SLA</th></tr></thead><tbody>
+<tr><td>Diagnóstico completado</td><td>diagnostics UPDATE</td><td>Calcular score + gerar 3 insights iniciais da IA</td><td><span class="badge bg">&lt; 30s</span></td></tr>
+<tr><td>KPI em threshold</td><td>kpi_values INSERT</td><td>Criar alert + notificação + análise IA se P0</td><td><span class="badge bg">&lt; 5s</span></td></tr>
+<tr><td>Alerta P0 criado</td><td>alerts INSERT</td><td>Análise aprofundada da IA + push + e-mail + WhatsApp</td><td><span class="badge bg">&lt; 60s</span></td></tr>
+<tr><td>CRON: domingo 23h</td><td>scheduler</td><td>Insight semanal para todas as empresas ativas</td><td><span class="badge by">&lt; 5min</span></td></tr>
+<tr><td>Tarefa concluída</td><td>tasks UPDATE</td><td>Recalcular progresso da iniciativa pai</td><td><span class="badge bg">&lt; 2s</span></td></tr>
+<tr><td>Ciclo encerrado</td><td>cycles UPDATE</td><td>Retrospectiva IA + criar próximo ciclo + novo plano</td><td><span class="badge by">&lt; 3min</span></td></tr>
+<tr><td>CRON: dia 1 do mês</td><td>scheduler</td><td>Relatório mensal automático para todas as empresas</td><td><span class="badge by">&lt; 15min</span></td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Contexto Passado para a IA em Cada Request</div>
+<div class="grid3">
+  <div class="card"><div class="c-e">📊</div><div class="c-t">Score e Diagnóstico</div><div class="c-b">Score atual + score do início do ciclo + dimension_scores + sector_percentile + histórico dos 3 ciclos anteriores.</div></div>
+  <div class="card"><div class="c-e">📋</div><div class="c-t">Plano e Progresso</div><div class="c-b">Iniciativas do ciclo atual + progresso de cada uma + tarefas abertas + tarefas atrasadas + dias restantes no ciclo.</div></div>
+  <div class="card"><div class="c-e">📈</div><div class="c-t">KPIs da Semana</div><div class="c-b">Últimos 7 valores de cada KPI ativo + variação % + alertas abertos + KPIs abaixo do target atual.</div></div>
+  <div class="card"><div class="c-e">💼</div><div class="c-t">Pipeline CRM</div><div class="c-b">Total de deals abertos por estágio + valor total + deals sem atividade há mais de 7 dias + conversão do ciclo.</div></div>
+  <div class="card"><div class="c-e">🌐</div><div class="c-t">Intel de Mercado</div><div class="c-b">Últimas 5 notícias do setor + benchmark setorial das métricas críticas + movimentações de concorrentes se disponível.</div></div>
+  <div class="card"><div class="c-e">💬</div><div class="c-t">Histórico da Conversa</div><div class="c-b">Últimas 10 mensagens da conversa atual + sumário das 3 conversas anteriores + insights não lidos.</div></div>
+</div></div>`;
+}
+
+function p3(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--t)"></div>
+  <div class="sh-icon">📈</div>
+  <div><div class="sh-tag" style="color:var(--t)">Seção 04 — Scalability</div>
+    <div class="sh-title">Suportando de 50 a 50.000 Empresas</div>
+    <div class="sh-desc">4 camadas de escalabilidade independentes. Cada uma pode ser evoluída sem mudança estrutural no schema principal. A meta: mesma performance e custo unitário com 1.000x mais empresas.</div>
+  </div>
+</div>
+<div class="cll">"A escalabilidade foi planejada desde a primeira migration. kpi_values já nasce particionada. RLS já está ativo desde o primeiro tenant. Índices compostos já cobrem as queries do dashboard. Não há dívida técnica de escala para pagar depois."</div>
+
+<div class="blk"><div class="blk-h">Camada 1 — Row Level Security (Isolamento por Tenant)</div>
+<div class="code-block">
+  <div class="code-head"><span class="code-lang">RLS Policy — Isolamento Multi-Tenant</span></div>
+  <div class="code-body"><span class="cm">-- RLS ativado em TODAS as tabelas com dados de empresa</span>
+<span class="kw">ALTER TABLE</span> tasks <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="cm">-- Política base: usuário só vê dados da empresa ativa</span>
+<span class="kw">CREATE POLICY</span> tenant_isolation <span class="kw">ON</span> tasks
+  <span class="kw">USING</span> (
+    company_id = current_setting(<span class="st">'app.current_company_id'</span>)::<span class="ty">UUID</span>
+  );
+
+<span class="cm">-- Cada API request seta a variável antes de qualquer query:</span>
+<span class="cm">-- SET app.current_company_id = '&lt;uuid&gt;';</span>
+<span class="cm">-- O PostgreSQL aplica o filtro em todas as tabelas protegidas.</span>
+
+<span class="cm">-- Mesmo com bug na aplicação, o banco nunca cruza dados.</span></div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Camada 2 — Indexação Estratégica</div>
+<div class="tw"><table><thead><tr><th>Índice</th><th>Query Beneficiada</th><th>Tipo</th><th>Ganho</th></tr></thead><tbody>
+<tr><td><code style="color:var(--g)">(company_id, status) ON tasks</code></td><td>Dashboard: tarefas abertas do dia</td><td>BTREE composto</td><td>Seq scan → index scan: 100x mais rápido</td></tr>
+<tr><td><code style="color:var(--b)">(kpi_id, recorded_at DESC)</code></td><td>Gráfico de evolução de KPI</td><td>BTREE composto + DESC</td><td>Evita sort após fetch</td></tr>
+<tr><td><code style="color:var(--b)">(company_id, recorded_at DESC)</code></td><td>Dashboard: todos KPIs da empresa</td><td>BTREE composto</td><td>Uma scan para todos os KPIs</td></tr>
+<tr><td><code style="color:var(--p)">GIN (dimension_scores) ON scores</code></td><td>Filtrar por score de dimensão específica</td><td>GIN para JSONB</td><td>Query em JSONB sem seq scan</td></tr>
+<tr><td><code style="color:var(--t)">(sector, period) ON benchmarks</code></td><td>Benchmarks setoriais</td><td>BTREE composto</td><td>Tabela pequena mas consultada em todo request de IA</td></tr>
+<tr><td><code style="color:var(--o)">(company_id, stage) ON deals</code></td><td>Kanban do pipeline CRM</td><td>BTREE composto</td><td>Um fetch por estágio sem filtro full</td></tr>
+<tr><td>PARTIAL WHERE status='active'</td><td>ai_insights ativos (maioria expirou)</td><td>PARTIAL index</td><td>Índice 10x menor — só rows relevantes</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Camada 3 — Particionamento de Tabelas de Alto Volume</div>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--r)">
+    <div class="c-e">📊</div><div class="c-t">kpi_values — 50M+ rows</div>
+    <div class="c-b">PARTITION BY RANGE(recorded_at) por mês. Queries de dashboard (últimos 30 dias) tocam apenas 1 partição. pg_partman cria partições futuras automaticamente. TimescaleDB comprime dados com +90 dias em até 90% menos volume.</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--p)">
+    <div class="c-e">💬</div><div class="c-t">ai_messages — 20M+ rows</div>
+    <div class="c-b">Particionada por mês. Conversas com mais de 12 meses movidas para cold storage (object storage). Histórico disponível sob demanda, não sempre em memória.</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--t)">
+    <div class="c-e">🌐</div><div class="c-t">market_data — 5M+ rows</div>
+    <div class="c-b">Particionada por quarter. Dados com mais de 1 ano arquivados. A plataforma mantém apenas 2 quarters online para Intel de Mercado — suficiente para análise de tendências.</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--y)">
+    <div class="c-e">📋</div><div class="c-t">audit_logs — crescimento contínuo</div>
+    <div class="c-b">Particionada por mês com retenção de 24 meses online. Partições mais antigas movidas para cold storage com acesso de leitura mantido para compliance LGPD.</div>
+  </div>
+</div></div>
+
+<div class="blk"><div class="blk-h">Camada 4 — Distribuição de Carga com Read Replicas e Cache</div>
+<div class="tw"><table><thead><tr><th>Destino</th><th>Tipo de Query</th><th>Volume</th><th>Latência Alvo</th></tr></thead><tbody>
+<tr><td><span class="badge br">Primary DB</span></td><td>INSERT, UPDATE, DELETE — todas as escritas</td><td>~15% do total</td><td>&lt; 50ms</td></tr>
+<tr><td><span class="badge bb">Read Replica</span></td><td>Dashboard, analytics, relatórios, AI context</td><td>~75% do total</td><td>&lt; 100ms</td></tr>
+<tr><td><span class="badge bg">Redis L1</span></td><td>Score atual, KPIs do dia, perfil da empresa — TTL 5min</td><td>~8% (cache hit &gt;90%)</td><td>&lt; 5ms</td></tr>
+<tr><td><span class="badge bg">Redis L2</span></td><td>Benchmarks setoriais, configs, planos ativos — TTL 1h</td><td>~2%</td><td>&lt; 5ms</td></tr>
+</tbody></table></div></div>
+
+<div class="blk"><div class="blk-h">Capacidade Estimada por Configuração</div>
+<div class="tw"><table><thead><tr><th>Configuração</th><th>Empresas Suportadas</th><th>Queries/seg</th><th>Custo Estimado/mês</th></tr></thead><tbody>
+<tr><td>Supabase Pro (MVP)</td><td>até 500</td><td>~500 qps</td><td>R$300–R$800</td></tr>
+<tr><td>Supabase + Read Replica</td><td>até 5.000</td><td>~2.000 qps</td><td>R$2.000–R$5.000</td></tr>
+<tr><td>Supabase Enterprise + TimescaleDB</td><td>até 20.000</td><td>~10.000 qps</td><td>R$10.000–R$25.000</td></tr>
+<tr><td>PostgreSQL gerenciado (AWS RDS / GCP)</td><td>50.000+</td><td>50.000+ qps</td><td>R$40.000+</td></tr>
+</tbody></table></div></div>`;
+}
+
+function p4(){return`
+<div class="sh"><div class="sh-bar" style="background:var(--o)"></div>
+  <div class="sh-icon">🔒</div>
+  <div><div class="sh-tag" style="color:var(--o)">Seção 05 — Security</div>
+    <div class="sh-title">Proteção de Dados Empresariais em 6 Camadas</div>
+    <div class="sh-desc">Defesa em profundidade: nenhuma camada é suficiente isolada, mas juntas tornam uma violação extremamente difícil e detectável. Segurança não é uma feature — é um requisito não-funcional de cada tabela criada.</div>
+  </div>
+</div>
+<div class="cll">"O banco de dados é a fundação de confiança do EGE. A certeza de que dados estratégicos nunca são acessíveis por terceiros é garantida por design no nível do banco — não apenas por política de aplicação."</div>
+
+<div class="blk"><div class="blk-h">As 6 Camadas de Segurança</div>
+<div class="sec-layers">
+  ${[
+    {n:'1',name:'Autenticação — Quem é Você?',color:'var(--g)',items:[
+      ['JWT com expiração curta','Tokens de acesso expiram em 1 hora. Refresh tokens com rotação automática a cada uso.'],
+      ['OAuth 2.0 com Google','Login via Google Workspace — zero armazenamento de senha na plataforma.'],
+      ['MFA obrigatório','TOTP obrigatório para roles owner e admin — Authy ou Google Authenticator.'],
+      ['Detecção de anomalia','Login de IP ou país incomum bloqueia e exige confirmação por e-mail antes de prosseguir.'],
+    ]},
+    {n:'2',name:'Autorização — O que Você Pode Fazer?',color:'var(--b)',items:[
+      ['5 roles hierárquicos','owner > admin > manager > operator > viewer — matriz de permissões por módulo e operação.'],
+      ['RLS no nível do banco','Isolamento multi-tenant garantido pelo PostgreSQL — funciona mesmo com bug na aplicação.'],
+      ['current_setting por request','Cada API request seta app.current_company_id na sessão PostgreSQL antes de qualquer query.'],
+      ['Permissões por módulo','Para CRM, Plano, KPIs e IA — define-se quais roles podem executar read / write / delete.'],
+    ]},
+    {n:'3',name:'Criptografia — Dados São Ilegíveis Mesmo com Acesso',color:'var(--p)',items:[
+      ['Dados em trânsito','TLS 1.3 obrigatório — downgrade para versões anteriores bloqueado em nível de infra.'],
+      ['Dados em repouso','Criptografia AES-256 em nível de disco no servidor do banco (Supabase native).'],
+      ['Campos ultra-sensíveis','pgcrypto para colunas críticas: tokens de integração, dados fiscais, chaves de API.'],
+      ['Tokens de API','Armazenados apenas como hash bcrypt (cost=12) — nunca o valor original em texto.'],
+    ]},
+    {n:'4',name:'Auditoria — Registro Imutável de Tudo',color:'var(--t)',items:[
+      ['INSERT only','audit_logs nunca recebe UPDATE ou DELETE — imutável por design.'],
+      ['Trigger automático','Qualquer mudança em tabelas críticas captura old_data e new_data como JSONB.'],
+      ['IP e user_agent','Todo registro de auditoria inclui o IP de origem e o browser/client do request.'],
+      ['Particionado 24 meses','Retenção de 24 meses online, arquivamento automático de partições antigas.'],
+    ]},
+    {n:'5',name:'Conformidade LGPD',color:'var(--y)',items:[
+      ['Minimização de dados','Coletamos apenas o necessário — campos desnecessários não existem no schema.'],
+      ['Direito ao esquecimento','DELETE CASCADE destrói todos os dados do tenant ao cancelar — verificado em CI/CD.'],
+      ['Portabilidade','Endpoint /export gera ZIP com todos os dados em JSON/CSV em até 72 horas.'],
+      ['DPA formalizado','Contrato de processamento de dados assinado no onboarding para planos Scale+.'],
+    ]},
+    {n:'6',name:'Proteção de Infraestrutura',color:'var(--o)',items:[
+      ['IP allowlist','Porta 5432 nunca exposta publicamente — acesso restrito aos IPs do backend.'],
+      ['Secrets no Vault','Nenhuma credencial em variável de ambiente — HashiCorp Vault com rotação trimestral.'],
+      ['Dependency scanning','npm audit em cada PR — merge bloqueado com vulnerabilidade CVSS ≥ 9.0.'],
+      ['Pentest trimestral','Relatório disponível para clientes enterprise. Achados críticos corrigidos em 72h.'],
+    ]},
+  ].map(l=>`
+  <div class="sl-item">
+    <div class="sl-head">
+      <div class="sl-num" style="background:${l.color}1A;color:${l.color}">${l.n}</div>
+      <div class="sl-name">${l.name}</div>
+      <span class="badge" style="background:${l.color}1A;color:${l.color};margin-left:auto">Ativa</span>
+    </div>
+    <div class="sl-body">
+      ${l.items.map(([t,d])=>`<div class="sl-item-inner"><strong>${t}:</strong> ${d}</div>`).join('')}
+    </div>
+  </div>`).join('')}
+</div></div>
+
+<div class="blk"><div class="blk-h">Matriz de Permissões por Role e Módulo</div>
+<div class="tw"><table><thead><tr><th>Módulo</th><th>Owner</th><th>Admin</th><th>Manager</th><th>Operator</th><th>Viewer</th></tr></thead><tbody>
+<tr><td>Diagnóstico</td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>Score e Histórico</td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td><td><span class="badge bb">R</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>Plano Estratégico</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>Tarefas</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>CRM / Deals</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>KPIs e Alertas</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td></tr>
+<tr><td>IA Consultora</td><td><span class="badge bg">Full</span></td><td><span class="badge bg">Full</span></td><td><span class="badge bg">Full</span></td><td><span class="badge bb">R</span></td><td>❌</td></tr>
+<tr><td>Configurações</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td>Membros da Equipe</td><td><span class="badge bg">R+W+D</span></td><td><span class="badge bg">R+W</span></td><td><span class="badge bb">R</span></td><td>❌</td><td>❌</td></tr>
+</tbody></table></div></div>`;
+}
+
+const panels=[p0,p1,p2,p3,p4];
+function show(i){
+  document.querySelectorAll('.nb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{el.innerHTML=panels[i]();el.style.transition='opacity .3s';el.style.opacity=1;},140);
+}
+show(0);
+</script>
+</body>
+</html>

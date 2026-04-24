@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGE — Motor de IA Consultora</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030712;--s1:#060F1E;--s2:#0C1829;--s3:#111F35;
+  --g:#00D4AA;--b:#3B82F6;--o:#F97316;--p:#A855F7;--y:#EAB308;--r:#EF4444;
+  --t:#F1F5F9;--m:#64748B;--bd:#1E293B;--bd2:#253347;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+
+/* ANIMATED BG */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 40% at 15% 15%,rgba(0,212,170,.06),transparent),
+    radial-gradient(ellipse 50% 50% at 85% 85%,rgba(59,130,246,.05),transparent),
+    radial-gradient(ellipse 40% 30% at 50% 50%,rgba(168,85,247,.03),transparent)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:48px 24px 120px;position:relative}
+
+/* ── HERO ── */
+.hero{text-align:center;margin-bottom:72px;animation:up 1s ease both}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 20px;border-radius:100px;border:1px solid rgba(0,212,170,.25);background:rgba(0,212,170,.06);color:var(--g);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:28px}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--g);animation:pulse 2s infinite}
+h1{font-family:'Syne',sans-serif;font-size:clamp(38px,6vw,72px);font-weight:800;line-height:1.04;letter-spacing:-.025em;margin-bottom:20px}
+h1 .em{background:linear-gradient(135deg,var(--g) 0%,var(--b) 60%,var(--p) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:16px;color:var(--m);font-weight:400;max-width:520px;margin:0 auto;line-height:1.75}
+
+/* ── MANIFESTO ── */
+.manifesto{background:linear-gradient(135deg,rgba(0,212,170,.06),rgba(59,130,246,.04));border:1px solid rgba(0,212,170,.2);border-radius:20px;padding:32px 40px;margin-bottom:64px;animation:up 1s .1s ease both}
+.manifesto p{font-size:17px;line-height:1.8;color:var(--t);font-weight:400}
+.manifesto strong{color:var(--g)}
+
+/* ── NAV GRID ── */
+.nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:48px;animation:up 1s .15s ease both}
+@media(max-width:700px){.nav-grid{grid-template-columns:repeat(2,1fr)}}
+.nav-btn{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 12px;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden}
+.nav-btn::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .22s}
+.nav-btn:hover,.nav-btn.on{background:var(--s2);border-color:var(--bd2)}
+.nav-btn:hover::before,.nav-btn.on::before{opacity:1}
+.nb-n{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--m);margin-bottom:5px;font-weight:600}
+.nb-t{font-size:11.5px;font-weight:700;color:var(--t);line-height:1.3}
+
+/* color accents per section */
+.nav-btn.c0::before,.nav-btn.c5::before{background:var(--g)}
+.nav-btn.c1::before,.nav-btn.c6::before{background:var(--b)}
+.nav-btn.c2::before,.nav-btn.c7::before{background:var(--p)}
+.nav-btn.c3::before,.nav-btn.c8::before{background:var(--o)}
+.nav-btn.c4::before,.nav-btn.c9::before{background:var(--y)}
+
+/* ── PANEL ── */
+.panel{display:none;animation:up .45s ease both}
+.panel.on{display:block}
+
+/* ── SECTION HEADER ── */
+.sec-head{display:flex;gap:20px;align-items:flex-start;padding:28px 32px;border-radius:20px;margin-bottom:32px;position:relative;overflow:hidden;border:1px solid var(--bd)}
+.sec-head-bg{position:absolute;inset:0;opacity:.04;background:linear-gradient(135deg,currentColor,transparent)}
+.sec-icon{font-size:40px;flex-shrink:0;position:relative}
+.sec-meta{position:relative}
+.sec-tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.sec-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--t);margin-bottom:8px}
+.sec-desc{font-size:14px;color:var(--m);line-height:1.65;max-width:640px}
+
+/* ── CONTENT BLOCKS ── */
+.block{margin-bottom:32px}
+.block-title{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.block-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* ── CARDS ── */
+.cards-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-2px);border-color:var(--bd2)}
+.card-emoji{font-size:26px;margin-bottom:10px}
+.card-t{font-size:14px;font-weight:700;color:var(--t);margin-bottom:6px}
+.card-b{font-size:13px;color:var(--m);line-height:1.6}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--s3);color:var(--g);font-weight:700;padding:11px 14px;text-align:left;font-size:11px;letter-spacing:.06em;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--bd);vertical-align:top;line-height:1.55}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+tr:last-child td{border-bottom:none}
+.badge-sm{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.g{background:rgba(0,212,170,.12);color:var(--g)}
+.b{background:rgba(59,130,246,.12);color:var(--b)}
+.o{background:rgba(249,115,22,.12);color:var(--o)}
+.p{background:rgba(168,85,247,.12);color:var(--p)}
+.y{background:rgba(234,179,8,.12);color:var(--y)}
+.r{background:rgba(239,68,68,.12);color:var(--r)}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{display:flex;gap:16px;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px 20px;transition:border-color .2s}
+.step:hover{border-color:var(--bd2)}
+.step-n{min-width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+.step-info{}
+.step-t{font-size:14px;font-weight:700;color:var(--t);margin-bottom:4px}
+.step-d{font-size:13px;color:var(--m);line-height:1.6}
+.step-d strong{color:var(--t)}
+
+/* ── LIST ── */
+.flist{display:flex;flex-direction:column;gap:8px}
+.fitem{display:flex;gap:12px;padding:12px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:10px}
+.fitem-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.fitem-body{font-size:13px;line-height:1.6}
+.fitem-body strong{color:var(--t);display:block;font-weight:700;margin-bottom:2px}
+.fitem-body span{color:var(--m)}
+
+/* ── QUOTE ── */
+.quote{background:rgba(0,212,170,.04);border:1px solid rgba(0,212,170,.18);border-left:4px solid var(--g);border-radius:0 14px 14px 0;padding:20px 24px;margin:20px 0;font-size:14px;font-style:italic;color:var(--t);line-height:1.75}
+
+/* ── ALERTS ── */
+.alerts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.alert-card{border-radius:12px;padding:16px;border:1px solid}
+.alert-r{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.25)}
+.alert-y{background:rgba(234,179,8,.06);border-color:rgba(234,179,8,.25)}
+.alert-g{background:rgba(0,212,170,.06);border-color:rgba(0,212,170,.25)}
+.alert-b{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.25)}
+.alert-level{font-size:12px;font-weight:700;margin-bottom:6px}
+.alert-r .alert-level{color:var(--r)}
+.alert-y .alert-level{color:var(--y)}
+.alert-g .alert-level{color:var(--g)}
+.alert-b .alert-level{color:var(--b)}
+.alert-text{font-size:12px;color:var(--m);line-height:1.55}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:40px}
+.timeline::before{content:'';position:absolute;left:11px;top:8px;bottom:0;width:2px;background:var(--bd)}
+.tl-item{position:relative;margin-bottom:24px}
+.tl-dot{position:absolute;left:-34px;top:4px;width:14px;height:14px;border-radius:50%;border:2px solid var(--g);background:var(--bg)}
+.tl-month{font-size:11px;font-weight:700;color:var(--g);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.tl-text{font-size:13px;color:var(--m);line-height:1.6}
+.tl-text strong{color:var(--t)}
+
+/* ── ANIMATIONS ── */
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge"><span class="badge-dot"></span>Arquitetura de IA Consultiva</div>
+    <h1>Motor de IA<br><span class="em">Consultora</span></h1>
+    <p class="hero-sub">O cérebro do Enterprise Growth Ecosystem — como a IA pensa, analisa, recomenda e aprende com cada empresa.</p>
+  </div>
+
+  <div class="manifesto">
+    <p>A maioria das empresas nunca terá acesso a um consultor estratégico de alto nível. O custo é proibitivo. A disponibilidade é limitada. O Motor de IA do EGE foi criado para mudar isso: <strong>um McKinsey digital, permanente, contextualizado e acessível para qualquer empresário.</strong></p>
+  </div>
+
+  <div class="nav-grid" id="nav">
+    <div class="nav-btn c0 on" onclick="show(0)"><div class="nb-n">01</div><div class="nb-t">Definição & Missão</div></div>
+    <div class="nav-btn c1" onclick="show(1)"><div class="nb-n">02</div><div class="nb-t">Modelo de Raciocínio</div></div>
+    <div class="nav-btn c2" onclick="show(2)"><div class="nb-n">03</div><div class="nb-t">Análise Empresarial</div></div>
+    <div class="nav-btn c3" onclick="show(3)"><div class="nb-n">04</div><div class="nb-t">Diagnóstico</div></div>
+    <div class="nav-btn c4" onclick="show(4)"><div class="nb-n">05</div><div class="nb-t">Recomendações</div></div>
+    <div class="nav-btn c5" onclick="show(5)"><div class="nb-n">06</div><div class="nb-t">Plano de Execução</div></div>
+    <div class="nav-btn c6" onclick="show(6)"><div class="nb-n">07</div><div class="nb-t">Acompanhamento</div></div>
+    <div class="nav-btn c7" onclick="show(7)"><div class="nb-n">08</div><div class="nb-t">Aprendizado</div></div>
+    <div class="nav-btn c8" onclick="show(8)"><div class="nb-n">09</div><div class="nb-t">Experiência</div></div>
+    <div class="nav-btn c9" onclick="show(9)"><div class="nb-n">10</div><div class="nb-t">Resultado Final</div></div>
+  </div>
+
+  <div id="content"></div>
+
+</div>
+
+<script>
+const sections = [
+
+// 0 — DEFINIÇÃO
+{icon:'🧠',color:'var(--g)',tag:'Seção 01',title:'Definição & Missão da IA',desc:'O papel, a missão e o valor gerado pelo Motor de IA Consultora.',html:`
+  <div class="block"><div class="block-title">Os 3 Papéis Simultâneos</div>
+  <div class="cards-3">
+    <div class="card"><div class="card-emoji">🎓</div><div class="card-t">Consultora</div><div class="card-b">Analisa a situação atual. Identifica o que impede o crescimento. Prioriza intervenções por impacto e urgência real.</div></div>
+    <div class="card"><div class="card-emoji">🔍</div><div class="card-t">Analista de Negócios</div><div class="card-b">Processa dados financeiros e operacionais. Detecta padrões e anomalias invisíveis. Gera relatórios em linguagem clara.</div></div>
+    <div class="card"><div class="card-emoji">♟</div><div class="card-t">Estrategista</div><div class="card-b">Transforma análises em planos concretos. Define metas, prioridades e sequência de execução. Recalibra conforme resultados.</div></div>
+  </div></div>
+  <div class="block"><div class="block-title">Valor Gerado</div>
+  <div class="flist">
+    <div class="fitem"><div class="fitem-dot" style="background:var(--g)"></div><div class="fitem-body"><strong>Previsibilidade</strong><span>Transforma operações caóticas em negócios gerenciáveis com dados e processos.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--b)"></div><div class="fitem-body"><strong>Velocidade de decisão</strong><span>Reduz de semanas para horas o tempo para identificar e agir sobre um problema.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--p)"></div><div class="fitem-body"><strong>Acesso democrático</strong><span>Entrega consultoria de alto nível para empresas que jamais poderiam pagar por ela.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--o)"></div><div class="fitem-body"><strong>Memória institucional</strong><span>Conhece o histórico completo da empresa e usa esse contexto em cada nova análise.</span></div></div>
+  </div></div>`
+},
+
+// 1 — RACIOCÍNIO
+{icon:'⚙️',color:'var(--b)',tag:'Seção 02',title:'Modelo de Raciocínio — 6 Etapas',desc:'Como a IA processa dados e chega a recomendações estratégicas.',html:`
+  <div class="block"><div class="block-title">Ciclo de Raciocínio</div>
+  <div class="steps">
+    <div class="step"><div class="step-n" style="background:rgba(0,212,170,.1);color:var(--g)">01</div><div class="step-info"><div class="step-t">Coleta de Dados</div><div class="step-d">Agrega dados de todos os módulos ativos: métricas, diagnóstico, CRM, tarefas, histórico. <strong>Quanto mais módulos, mais precisa a análise.</strong></div></div></div>
+    <div class="step"><div class="step-n" style="background:rgba(59,130,246,.1);color:var(--b)">02</div><div class="step-info"><div class="step-t">Diagnóstico Empresarial</div><div class="step-d">Avalia as 9 dimensões, calcula scores ponderados, compara com benchmarks do setor e identifica onde a empresa está em relação ao seu potencial.</div></div></div>
+    <div class="step"><div class="step-n" style="background:rgba(168,85,247,.1);color:var(--p)">03</div><div class="step-info"><div class="step-t">Identificação de Gargalos</div><div class="step-d">Aplica Matriz Impacto × Urgência. <strong>Problemas críticos primeiro.</strong> Evita que o empresário se perca em listas infinitas.</div></div></div>
+    <div class="step"><div class="step-n" style="background:rgba(249,115,22,.1);color:var(--o)">04</div><div class="step-info"><div class="step-t">Análise Estratégica</div><div class="step-d">Avalia os caminhos possíveis de ação considerando: recursos disponíveis, benchmarks de empresas similares e histórico de resultados.</div></div></div>
+    <div class="step"><div class="step-n" style="background:rgba(234,179,8,.1);color:var(--y)">05</div><div class="step-info"><div class="step-t">Criação do Plano de Ação</div><div class="step-d">Gera plano estruturado com metas SMART, tarefas com prazos, KPIs de sucesso e marcos de revisão. <strong>Calibrado para a realidade da empresa.</strong></div></div></div>
+    <div class="step"><div class="step-n" style="background:rgba(0,212,170,.1);color:var(--g)">06</div><div class="step-info"><div class="step-t">Acompanhamento de Execução</div><div class="step-d">A cada nova entrada de dados, reavalia o progresso. Se um KPI cai, alerta e sugere correção. Se a meta é atingida, recalibra para o próximo nível.</div></div></div>
+  </div></div>`
+},
+
+// 2 — ANÁLISE
+{icon:'📐',color:'var(--p)',tag:'Seção 03',title:'Modelo de Análise — 9 Dimensões',desc:'Como a IA avalia pontos fortes e fracos em cada área do negócio.',html:`
+  <div class="block"><div class="block-title">9 Dimensões com Peso Estratégico</div>
+  <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Dimensão</th><th>Peso</th><th>Indicadores Analisados</th></tr></thead><tbody>
+  <tr><td><span class="badge-sm g">01</span></td><td>Liderança</td><td>15%</td><td>Visão, delegação, tomada de decisão, cultura de feedback</td></tr>
+  <tr><td><span class="badge-sm b">02</span></td><td>Gestão Financeira</td><td>20%</td><td>Fluxo de caixa, margem, DRE, ponto de equilíbrio</td></tr>
+  <tr><td><span class="badge-sm o">03</span></td><td>Marketing</td><td>10%</td><td>Posicionamento, geração de demanda, CAC, digital</td></tr>
+  <tr><td><span class="badge-sm p">04</span></td><td>Vendas</td><td>15%</td><td>Processo comercial, conversão, ciclo, pipeline</td></tr>
+  <tr><td><span class="badge-sm y">05</span></td><td>Operações</td><td>10%</td><td>Eficiência, qualidade, capacidade, SLA</td></tr>
+  <tr><td><span class="badge-sm g">06</span></td><td>Processos</td><td>10%</td><td>Documentação, padronização, automação</td></tr>
+  <tr><td><span class="badge-sm b">07</span></td><td>Equipe</td><td>10%</td><td>Engajamento, produtividade, retenção, NPS interno</td></tr>
+  <tr><td><span class="badge-sm o">08</span></td><td>Posicionamento</td><td>5%</td><td>Diferenciação, proposta de valor, precificação</td></tr>
+  <tr><td><span class="badge-sm p">09</span></td><td>Crescimento</td><td>5%</td><td>Estratégia de expansão, inovação, vantagem competitiva</td></tr>
+  </tbody></table></div></div>
+  <div class="block"><div class="block-title">Matriz de Priorização</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Quadrante</th><th>Impacto</th><th>Urgência</th><th>Ação da IA</th></tr></thead><tbody>
+  <tr><td><span class="badge-sm r">Crítico 🔴</span></td><td>Alto</td><td>Alta</td><td>Recomendação imediata — plano de 30 dias</td></tr>
+  <tr><td><span class="badge-sm b">Estratégico 🔵</span></td><td>Alto</td><td>Baixa</td><td>Plano trimestral com prioridade alta</td></tr>
+  <tr><td><span class="badge-sm y">Operacional 🟡</span></td><td>Baixo</td><td>Alta</td><td>Quick win — ação rápida de baixo esforço</td></tr>
+  <tr><td><span class="badge-sm g">Monitorar 🟢</span></td><td>Baixo</td><td>Baixa</td><td>Alerta passivo — revisado no próximo diagnóstico</td></tr>
+  </tbody></table></div></div>`
+},
+
+// 3 — DIAGNÓSTICO
+{icon:'🩺',color:'var(--o)',tag:'Seção 04',title:'Sistema de Diagnóstico Inteligente',desc:'Dados coletados, lógica de interpretação e geração de relatórios.',html:`
+  <div class="block"><div class="block-title">4 Tipos de Dados Coletados</div>
+  <div class="cards-3">
+    <div class="card"><div class="card-emoji">📝</div><div class="card-t">Declarativos</div><div class="card-b">40 perguntas em escala Likert 1–5 cobrindo as 9 dimensões empresariais.</div></div>
+    <div class="card"><div class="card-emoji">👆</div><div class="card-t">Comportamentais</div><div class="card-b">Padrão de uso da plataforma, frequência de acesso, módulos utilizados.</div></div>
+    <div class="card"><div class="card-emoji">📊</div><div class="card-t">Operacionais</div><div class="card-b">Métricas financeiras, pipeline CRM, produtividade de tarefas.</div></div>
+    <div class="card"><div class="card-emoji">🌐</div><div class="card-t">Contextuais</div><div class="card-b">Setor, porte, tempo de empresa, localização, regime tributário.</div></div>
+  </div></div>
+  <div class="block"><div class="block-title">Padrões de Correlação que a IA Detecta</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Padrão</th><th>Correlação</th><th>Diagnóstico Gerado</th></tr></thead><tbody>
+  <tr><td>Finanças ↓ + Vendas ↑</td><td>Crescimento sem controle</td><td>Empresa cresce mas não gera caixa — risco de insolvência</td></tr>
+  <tr><td>Liderança ↓ + Equipe ↓</td><td>Cultura fraca</td><td>Alta rotatividade e baixa produtividade estrutural</td></tr>
+  <tr><td>Marketing ↑ + Vendas ↓</td><td>Funil quebrado</td><td>Gera demanda mas não converte — falha no processo comercial</td></tr>
+  <tr><td>Operações ↓ + Processos ↓</td><td>Dependência do fundador</td><td>Empresa não funciona sem o dono — escala impossível</td></tr>
+  <tr><td>Tudo ↑ exceto Crescimento</td><td>Maturidade sem estratégia</td><td>Bem estruturada mas sem visão de expansão clara</td></tr>
+  </tbody></table></div></div>`
+},
+
+// 4 — RECOMENDAÇÕES
+{icon:'💡',color:'var(--y)',tag:'Seção 05',title:'Motor de Recomendação Estratégica',desc:'Como a IA gera planos práticos, priorizados e baseados em impacto.',html:`
+  <div class="block"><div class="block-title">4 Tipos de Recomendação</div>
+  <div class="cards-3">
+    <div class="card"><div class="card-emoji">🔧</div><div class="card-t">Ação Corretiva</div><div class="card-b">Corrige um problema ativo que está causando dano agora. Prazo: 7–30 dias.</div></div>
+    <div class="card"><div class="card-emoji">🏗</div><div class="card-t">Melhoria Estrutural</div><div class="card-b">Eleva um processo de maturidade. Prazo: 30–90 dias.</div></div>
+    <div class="card"><div class="card-emoji">🚀</div><div class="card-t">Iniciativa Estratégica</div><div class="card-b">Abre um novo caminho de crescimento. Prazo: 90–180 dias.</div></div>
+    <div class="card"><div class="card-emoji">⚠️</div><div class="card-t">Alerta Preventivo</div><div class="card-b">Sinaliza risco que ainda não se materializou. Monitoramento contínuo.</div></div>
+  </div></div>
+  <div class="block"><div class="block-title">Estrutura de uma Recomendação Completa</div>
+  <div class="flist">
+    <div class="fitem"><div class="fitem-dot" style="background:var(--g)"></div><div class="fitem-body"><strong>Título</strong><span>Nome claro e objetivo da recomendação.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--b)"></div><div class="fitem-body"><strong>Contexto</strong><span>Por que essa recomendação está sendo feita agora — baseada nos dados da empresa.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--p)"></div><div class="fitem-body"><strong>Impacto esperado</strong><span>O que muda na empresa se essa ação for executada.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--o)"></div><div class="fitem-body"><strong>Como fazer</strong><span>Passo a passo prático adaptado à realidade do negócio.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--y)"></div><div class="fitem-body"><strong>Métricas de sucesso</strong><span>Como saber se funcionou — indicadores mensuráveis e verificáveis.</span></div></div>
+  </div></div>
+  <div class="quote">"A IA nunca diz 'você deve melhorar suas finanças'. Ela diz: sua margem caiu 8 pontos nos últimos 2 meses. O principal driver é o CAC acima de R$300. A ação mais eficaz agora é revisar os canais de aquisição."</div>`
+},
+
+// 5 — EXECUÇÃO
+{icon:'🎯',color:'var(--g)',tag:'Seção 06',title:'Plano de Execução',desc:'Como a IA transforma insights em ações concretas dentro da plataforma.',html:`
+  <div class="block"><div class="block-title">Componentes do Plano</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Componente</th><th>O que contém</th><th>Onde aparece</th></tr></thead><tbody>
+  <tr><td>Metas SMART</td><td>Específicas, mensuráveis, atingíveis, relevantes e temporais</td><td>Módulo Planejamento</td></tr>
+  <tr><td>OKRs Trimestrais</td><td>3 objetivos com 3 key results cada, revisados a cada 90 dias</td><td>Módulo Planejamento</td></tr>
+  <tr><td>Tarefas Criadas</td><td>Ações concretas com responsável, prazo e prioridade</td><td>Módulo Tarefas</td></tr>
+  <tr><td>KPIs de Acompanhamento</td><td>Indicadores que provam que o plano funciona</td><td>Dashboard + Alertas</td></tr>
+  <tr><td>Marcos de Revisão</td><td>Check-ins mensais automáticos para avaliar progresso</td><td>n8n + IA</td></tr>
+  </tbody></table></div></div>
+  <div class="block"><div class="block-title">Adaptação por Realidade da Empresa</div>
+  <div class="cards-3">
+    <div class="card"><div class="card-emoji">👥</div><div class="card-t">Tamanho da equipe</div><div class="card-b">Plano de 3 pessoas é radicalmente diferente de um para 50. A IA calibra escopo e prazos.</div></div>
+    <div class="card"><div class="card-emoji">💰</div><div class="card-t">Caixa disponível</div><div class="card-b">Prioriza ações de baixo custo quando a empresa tem restrição financeira.</div></div>
+    <div class="card"><div class="card-emoji">📈</div><div class="card-t">Histórico de execução</div><div class="card-b">Se empresa tem padrão de não executar, ajusta a complexidade das ações sugeridas.</div></div>
+  </div></div>`
+},
+
+// 6 — ACOMPANHAMENTO
+{icon:'📡',color:'var(--b)',tag:'Seção 07',title:'Acompanhamento Contínuo',desc:'Monitoramento 24/7, alertas inteligentes e cadência de revisões.',html:`
+  <div class="block"><div class="block-title">Sistema de Alertas</div>
+  <div class="alerts">
+    <div class="alert-card alert-r"><div class="alert-level">🔴 Crítico</div><div class="alert-text">KPI abaixo de 60% da meta por 2 semanas. Notificação imediata + análise de causa + plano de correção em 24h.</div></div>
+    <div class="alert-card alert-y"><div class="alert-level">🟡 Atenção</div><div class="alert-text">Tendência de queda em 3 semanas consecutivas. Alerta proativo + recomendação preventiva.</div></div>
+    <div class="alert-card alert-g"><div class="alert-level">🟢 Oportunidade</div><div class="alert-text">KPI superou meta + capacidade ociosa. Nova iniciativa de crescimento sugerida pela IA.</div></div>
+    <div class="alert-card alert-b"><div class="alert-level">🔵 Informativo</div><div class="alert-text">Relatório semanal toda segunda-feira. Resumo de progresso + destaque positivo + próximo foco.</div></div>
+  </div></div>
+  <div class="block"><div class="block-title">Cadência de Revisões</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Frequência</th><th>O que é verificado</th><th>Gerado por</th></tr></thead><tbody>
+  <tr><td>Diária</td><td>KPIs críticos + tarefas vencidas</td><td>Automação n8n</td></tr>
+  <tr><td>Semanal</td><td>Progresso do plano + comparativo da semana anterior</td><td>n8n + IA</td></tr>
+  <tr><td>Mensal</td><td>Tendências + recalibração de recomendações</td><td>IA (Claude API)</td></tr>
+  <tr><td>Trimestral</td><td>Novo diagnóstico + revisão completa do plano</td><td>IA + empresário</td></tr>
+  <tr><td>Anual</td><td>Evolução de maturidade + benchmarking setorial</td><td>Relatório completo da IA</td></tr>
+  </tbody></table></div></div>`
+},
+
+// 7 — APRENDIZADO
+{icon:'🔬',color:'var(--p)',tag:'Seção 08',title:'Aprendizado e Evolução da IA',desc:'Como o sistema fica mais inteligente e personalizado com o tempo.',html:`
+  <div class="block"><div class="block-title">3 Camadas de Aprendizado</div>
+  <div class="cards-3">
+    <div class="card"><div class="card-emoji">🏢</div><div class="card-t">Individual</div><div class="card-b">Histórico da empresa, feedback do empresário, resultados das recomendações. Personalização progressiva.</div></div>
+    <div class="card"><div class="card-emoji">🌐</div><div class="card-t">Coletivo</div><div class="card-b">Padrões anônimos de todas as empresas na plataforma. Benchmarks mais precisos e padrões de sucesso.</div></div>
+    <div class="card"><div class="card-emoji">📰</div><div class="card-t">Setorial</div><div class="card-b">Dados de mercado, tendências macroeconômicas. Recomendações contextualizadas no cenário atual.</div></div>
+  </div></div>
+  <div class="block"><div class="block-title">Mecanismo de Feedback</div>
+  <div class="flist">
+    <div class="fitem"><div class="fitem-dot" style="background:var(--g)"></div><div class="fitem-body"><strong>✅ Implementei</strong><span>Confirma execução, solicita análise de resultado. A IA registra o que funcionou para aquela empresa.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--r)"></div><div class="fitem-body"><strong>❌ Descartei</strong><span>Registra motivo para calibrar futuras recomendações. A IA aprende o que não é viável para aquele contexto.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--y)"></div><div class="fitem-body"><strong>⏰ Adiada</strong><span>Reprograma com nova data e mantém no acompanhamento. A IA não esquece.</span></div></div>
+  </div></div>`
+},
+
+// 8 — EXPERIÊNCIA
+{icon:'✨',color:'var(--o)',tag:'Seção 09',title:'Experiência do Empresário',desc:'Como o empresário interage com a IA de forma simples e estratégica.',html:`
+  <div class="block"><div class="block-title">3 Modos de Interação</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Modo</th><th>Como funciona</th><th>Melhor para</th></tr></thead><tbody>
+  <tr><td>📌 Cards de Insight</td><td>Recomendações proativas no dashboard sem precisar perguntar</td><td>Acompanhamento passivo, alertas e oportunidades</td></tr>
+  <tr><td>💬 Chat Advisor</td><td>Conversa direta com a IA contextualizada nos dados da empresa</td><td>Perguntas específicas, análises sob demanda, cenários</td></tr>
+  <tr><td>📊 Relatórios Auto</td><td>Análises periódicas entregues por email e no painel</td><td>Visão executiva, comunicação com sócios e investidores</td></tr>
+  </tbody></table></div></div>
+  <div class="block"><div class="block-title">Exemplos de Perguntas ao Chat Advisor</div>
+  <div class="flist">
+    <div class="fitem"><div class="fitem-dot" style="background:var(--g)"></div><div class="fitem-body"><strong>"Por que meu faturamento caiu nos últimos 3 meses?"</strong><span>A IA cruza métricas, pipeline e sazonalidade para dar uma resposta precisa.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--b)"></div><div class="fitem-body"><strong>"Como estou comparado com empresas do meu setor?"</strong><span>Benchmarking instantâneo baseado em dados reais da plataforma.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--p)"></div><div class="fitem-body"><strong>"Devo contratar mais pessoas ou automatizar primeiro?"</strong><span>A IA analisa capacidade, caixa e gargalos para recomendar o melhor caminho.</span></div></div>
+    <div class="fitem"><div class="fitem-dot" style="background:var(--o)"></div><div class="fitem-body"><strong>"Qual é a melhor forma de dobrar o faturamento em 12 meses?"</strong><span>Plano estratégico personalizado gerado em segundos.</span></div></div>
+  </div></div>`
+},
+
+// 9 — RESULTADO
+{icon:'🏆',color:'var(--y)',tag:'Seção 10',title:'O Consultor Estratégico Permanente',desc:'Como a IA transforma a gestão, aumenta a previsibilidade e impulsiona o crescimento.',html:`
+  <div class="block"><div class="block-title">Transformação ao Longo do Tempo</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Aspecto</th><th>Antes da IA</th><th>Depois de 12 meses</th></tr></thead><tbody>
+  <tr><td>Decisões</td><td>Intuitivas, baseadas em feeling</td><td>Baseadas em dados e análise histórica</td></tr>
+  <tr><td>Visibilidade financeira</td><td>Retroativa (soube que perdeu depois)</td><td>Preditiva (alerta antes do problema)</td></tr>
+  <tr><td>Planejamento</td><td>Anual, estático, esquecido em meses</td><td>Trimestral, dinâmico, revisado continuamente</td></tr>
+  <tr><td>Tempo do fundador</td><td>80% no operacional</td><td>60% no estratégico</td></tr>
+  <tr><td>Crescimento</td><td>Oportunista, sem método</td><td>Estruturado, priorizado, com cronograma</td></tr>
+  </tbody></table></div></div>
+  <div class="block"><div class="block-title">Horizonte de Valor</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-month">Mês 1</div><div class="tl-text"><strong>Primeiros insights do diagnóstico.</strong> Clareza sobre os 3 maiores gargalos. Primeira recomendação estratégica.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-month">Mês 3</div><div class="tl-text"><strong>Primeiras melhorias mensuráveis nos KPIs.</strong> Processos inicialmente estruturados. Pipeline mais previsível.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-month">Mês 6</div><div class="tl-text"><strong>Aumento de eficiência operacional entre 20–40%.</strong> Equipe com metas claras. Decisões mais rápidas.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-month">Mês 12</div><div class="tl-text"><strong>Empresa opera com previsibilidade.</strong> Fundador libera tempo do operacional. Score de maturidade subiu pelo menos 2 níveis.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-month">Ano 2+</div><div class="tl-text"><strong>A IA antecipa problemas meses antes de se materializarem.</strong> Memória institucional completa. Consultoria permanente e personalizada.</div></div>
+  </div></div>`
+}
+];
+
+const cMap={0:'var(--g)',1:'var(--b)',2:'var(--p)',3:'var(--o)',4:'var(--y)',5:'var(--g)',6:'var(--b)',7:'var(--p)',8:'var(--o)',9:'var(--y)'};
+
+function show(i){
+  document.querySelectorAll('.nav-btn').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const s=sections[i];const c=cMap[i];
+  const el=document.getElementById('content');
+  el.style.opacity=0;
+  setTimeout(()=>{
+    el.innerHTML=`
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:28px 32px;margin-bottom:32px;position:relative;overflow:hidden;border-left:4px solid ${c}">
+        <div style="position:absolute;right:24px;top:12px;font-family:'Syne',sans-serif;font-size:64px;font-weight:800;opacity:.07;color:${c}">${String(i+1).padStart(2,'0')}</div>
+        <div style="font-size:40px;margin-bottom:12px">${s.icon}</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${c};margin-bottom:6px">${s.tag}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--t);margin-bottom:8px">${s.title}</div>
+        <div style="font-size:14px;color:var(--m);line-height:1.65;max-width:640px">${s.desc}</div>
+      </div>
+      ${s.html}
+    `;
+    el.style.transition='opacity .35s';el.style.opacity=1;
+  },150);
+}
+show(0);
+</script>
+</body>
+</html>
